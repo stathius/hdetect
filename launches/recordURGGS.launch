@@ -1,0 +1,31 @@
+<launch>
+
+<!-- 	*the camera node. it's a gscam driver -->
+
+	<node name="camera" pkg="gscam" type="gscam" output="screen" required="true">
+		<env name="GSCAM_CONFIG" value="v4l2src device=/dev/video0 ! video/x-raw-rgb ! ffmpegcolorspace"/>
+		<!--remap from="/gscam/image_raw" to="/camera/image_raw"/>		
+		<remap from="/gscam/camera_info" to="/camera/camera_info"/-->
+	</node>
+
+<!-- 	the hokuyo laser node -->
+	
+	<node name="laser" pkg="hokuyo_node" type="hokuyo_node" required="true">
+   		<param name="port" value="/dev/ttyACM0"/>
+		<param name="min_ang" type="double" value="-1.0"/>
+		<param name="max_ang" type="double" value="1.0"/>
+		<param name="frame_id" type="string" value="/laser"/>
+	</node>
+
+	<node pkg="image_proc" type="image_proc" name="image_proc">
+	<env name="ROS_NAMESPACE" value="/camera"/>
+	</node>
+
+	<node name="image_view" pkg="image_view" type="image_view" args="image:=/camera/image_raw">
+    		<param name="autosize" value="true"/>
+	</node>
+  	
+	<node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/kabamaru/ros_workspace/upm/bag/upm /camera/image_raw /camera/image_rect /camera/camera_info  /scan /diagnostics /laser/parameter_description /laser/parameter_updates" required="true" /> 
+
+
+</launch> 

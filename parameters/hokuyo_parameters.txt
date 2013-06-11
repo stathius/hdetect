@@ -1,0 +1,167 @@
+parameters: 
+  - 
+    name: min_ang
+    type: double
+    level: 1
+    description: The angle of the first range measurement. The unit depends on ~ang_radians.
+    edit_method: ''
+  - 
+    name: max_ang
+    type: double
+    level: 1
+    description: The angle of the first range measurement. The unit depends on ~ang_radians.
+    edit_method: ''
+  - 
+    name: intensity
+    type: bool
+    level: 1
+    description: Whether or not the hokuyo returns intensity values.
+    edit_method: ''
+  - 
+    name: cluster
+    type: int
+    level: 1
+    description: The number of adjacent range measurements to cluster into a single reading
+    edit_method: ''
+  - 
+    name: skip
+    type: int
+    level: 1
+    description: The number of scans to skip between each measured scan
+    edit_method: ''
+  - 
+    name: port
+    type: str
+    level: 3
+    description: The serial port where the hokuyo device can be found
+    edit_method: ''
+  - 
+    name: calibrate_time
+    type: bool
+    level: 3
+    description: Whether the node should calibrate the hokuyo's time offset
+    edit_method: ''
+  - 
+    name: frame_id
+    type: str
+    level: 0
+    description: The frame in which laser scans will be returned
+    edit_method: ''
+  - 
+    name: time_offset
+    type: double
+    level: 0
+    description: An offet to add to the timestamp before publication of a scan
+    edit_method: ''
+  - 
+    name: allow_unsafe_settings
+    type: bool
+    level: 3
+    description: Turn this on if you wish to use the UTM-30LX with an unsafe angular range. Turning this option on may cause occasional crashes or bad data. This option is a tempory workaround that will hopefully be removed in an upcoming driver version.
+    edit_method: ''
+max: 
+  bools: 
+    - 
+      name: intensity
+      value: True
+    - 
+      name: calibrate_time
+      value: True
+    - 
+      name: allow_unsafe_settings
+      value: True
+  ints: 
+    - 
+      name: cluster
+      value: 99
+    - 
+      name: skip
+      value: 9
+  strs: 
+    - 
+      name: port
+      value: ''
+    - 
+      name: frame_id
+      value: ''
+  doubles: 
+    - 
+      name: min_ang
+      value: 3.14159265359
+    - 
+      name: max_ang
+      value: 3.14159265359
+    - 
+      name: time_offset
+      value: 0.25
+min: 
+  bools: 
+    - 
+      name: intensity
+      value: False
+    - 
+      name: calibrate_time
+      value: False
+    - 
+      name: allow_unsafe_settings
+      value: False
+  ints: 
+    - 
+      name: cluster
+      value: 0
+    - 
+      name: skip
+      value: 0
+  strs: 
+    - 
+      name: port
+      value: ''
+    - 
+      name: frame_id
+      value: ''
+  doubles: 
+    - 
+      name: min_ang
+      value: -3.14159265359
+    - 
+      name: max_ang
+      value: -3.14159265359
+    - 
+      name: time_offset
+      value: -0.25
+dflt: 
+  bools: 
+    - 
+      name: intensity
+      value: False
+    - 
+      name: calibrate_time
+      value: True
+    - 
+      name: allow_unsafe_settings
+      value: False
+  ints: 
+    - 
+      name: cluster
+      value: 1
+    - 
+      name: skip
+      value: 0
+  strs: 
+    - 
+      name: port
+      value: /dev/ttyACM0
+    - 
+      name: frame_id
+      value: laser
+  doubles: 
+    - 
+      name: min_ang
+      value: -1.57079632679
+    - 
+      name: max_ang
+      value: 1.57079632679
+    - 
+      name: time_offset
+      value: 0.0
+---

@@ -1,0 +1,21 @@
+scan_filter_chain:
+- name: shadows
+  type: laser_filters/ScanShadowsFilter
+  params:
+    min_angle: 10
+    max_angle: 170
+    neighbors: 1
+    window: 1
+- name: dark_shadows
+  type: laser_filters/LaserScanIntensityFilter
+  params: 
+    lower_threshold: 0
+    upper_threshold: 30000
+    disp_histogram: 0
+- name: angle_bound
+  type: laser_filters/LaserScanAngularBoundsFilter
+  params:
+    lower_angle: -1.58
+    upper_angle:  1.58
+
+

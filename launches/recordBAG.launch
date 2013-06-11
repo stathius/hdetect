@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="rosbag" type="record" name="record" output="screen" 
+	args="-o $(find upm)/bag/UTMFF_ 
+	/laser/parameter_updates
+	/laser/scan
+	/camera/camera_info
+	/camera/image_raw/compressed" 
+	required="true">
+	</node> 
+</launch>

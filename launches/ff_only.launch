@@ -1,0 +1,8 @@
+<launch>
+	<node name="camera" pkg="camera1394" type="camera1394_node" output="screen" cwd="node">
+		<param name="frame_id" value="/camera"/>
+		<param name="video_mode" value="format7_mode0"/>
+		<param name="frame_rate" value="60"/>
+		<param name="camera_info_url" value="file:///home/kabamaru/ros_workspace/upm/yaml/camera_calib.yaml" />
+	</node>
+</launch>

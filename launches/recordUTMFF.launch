@@ -1,0 +1,49 @@
+<launch>
+	<node pkg="iri_hokuyo_laser"
+        	type="iri_hokuyo_laser"
+        	name="laser"
+        	output="screen">
+    		<param name="frame_id"     value="/laser" />
+    		<param name="use_ethernet" value="true"         />
+    		<param name="ip_address"   value="192.168.0.11" /> 
+    		<param name="angle_min"    value="-1.5708"      /> 
+    		<param name="angle_max"    value="1.5708"       /> 
+    		<param name="interval"     value="1"            />
+    		<param name="type"         value="1"            /> 
+	</node>
+	
+	<node name="camera" pkg="camera1394" type="camera1394_node" 
+	output="screen">
+	<param name="frame_id" value="/camera"/>
+	<param name="camera_info_url"
+        	value="file://yaml/camera_calib.yaml" />
+	</node>
+
+	<node pkg="image_proc" type="image_proc" name="image_proc">
+	<env name="ROS_NAMESPACE" value="/camera"/>
+	</node>
+
+	<node name="firefly_view" pkg="image_view" type="image_view" 
+	args="image:=camera/image_raw">
+	</node>
+
+    <node pkg="rosbag" type="record" name="record" output="screen" 
+	args="-o /home/kabamaru/ros_workspace/upm/bag/urg_firefly_DELETE 
+	/camera/camera_info
+	/camera/image_raw
+	/camera/image_rect   
+	/camera/image_raw/compressed
+	/camera/image_raw/compressed/parameter_descriptions
+	/camera/image_raw/compressed/parameter_updates
+	/camera1394_node/parameter_descriptions
+	/camera1394_node/parameter_updates
+	/diagnostics
+	/rosout
+	/rosout_agg
+	/laser/parameter_descriptions
+	/laser/parameter_updates
+	/laser/scan" 
+	required="true">
+	</node> 
+
+</launch>

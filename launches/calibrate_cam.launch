@@ -1,0 +1,15 @@
+<launch>
+
+<!-- 	*the camera node. it's a gscam driver -->
+
+	<node name="camera" pkg="gscam" type="gscam" output="screen" respawn="false" >
+		<env name="GSCAM_CONFIG" value="v4l2src device=/dev/video0 ! video/x-raw-rgb ! ffmpegcolorspace"/>
+		<remap from="/gscam/image_raw" to="/camera/image_raw"/>		
+		<remap from="/gscam/camera_info" to="/camera/camera_info"/>
+	</node>
+
+	<node name="camera_calibration" pkg="camera_calibration" type="cameracalibrator.py" 
+	args="-- size 8x6 --square 0.035 image:=/camera/image_raw camera:=/camera">
+	</node>
+
+</launch>

@@ -1,0 +1,13 @@
+<launch>
+	<node pkg="iri_hokuyo_laser"
+        	type="iri_hokuyo_laser"
+        	name="laser"
+        	output="screen">
+    		<param name="frame_id"     value="/laser" />
+    		<param name="use_ethernet" value="true"         />
+    		<param name="ip_address"   value="192.168.0.11" /> <!-- default IP address -->
+    		<param name="angle_min"    value="-1.57080"      /> <!-- -pi/2 -->
+    		<param name="angle_max"    value="1.57080"       /> <!-- pi/2 -->
+    		<param name="interval"     value="0"            /> <!-- changes the hz rate -->
+	</node>
+</launch>
