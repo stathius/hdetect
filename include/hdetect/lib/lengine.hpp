@@ -31,8 +31,8 @@
 
 typedef struct
 {
-  double dseg, sqjumpdist;
-  int featuremix;
+  double jumpdist, laser_range;
+  int feature_set;
   char segonly, sanity, verbosity;
 } sw_param_str;
 
@@ -41,13 +41,13 @@ class laserscan_data
 {
 public:
 
-  LSL_Point3D_container data;
+  Point3D_container data;
   double timestamp;
 
   laserscan_data() { }
   laserscan_data(int num)
   {
-    data = LSL_Point3D_container(num);
+    data = Point3D_container(num);
   }
 };
 
@@ -55,14 +55,14 @@ class lengine
 {
 private:
   sw_param_str params;
-  std::vector<laserscan_data> laserscan;int get_breakpoint(std::vector<LSL_Point3D_str> &pts, int last_breaking_idx,
-                                                           double sqjumpdist);int sanity_check(
+  std::vector<laserscan_data> laserscan;int get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx
+                                                                );int sanity_check(
   std::vector<std::vector<Real> > & descriptor);
 
   unsigned int fsz;
 
   // made it public
-  LSL_lfeatures_class *lfeatures;
+  lfeatures_class *lfeatures;
 
   // UPM
   // instead of using the vector laserscan we will be using a
@@ -76,13 +76,12 @@ public:
   {
     fsz = 0;
     params = param_in;
-    params.sqjumpdist = params.dseg * params.dseg;
   }
 
   void set_featureset();
 
   // UPM functions
-
+  // Null constructor
   lengine() { }
 
   void load_scandata(laserscan_data laserscan_input)
@@ -95,9 +94,9 @@ public:
     return laserscan_single.data.pts.size();
   }
 
-  int segmentscanJDC(std::vector<LSL_Point3D_container> &clusters);
+  int segmentscanJDC(std::vector<Point3D_container> &clusters);
 
-  void computeFeatures(std::vector<LSL_Point3D_container> &clusters, std::vector<std::vector<float> > &descriptor);
+  void computeFeatures(std::vector<Point3D_container> &clusters, std::vector<std::vector<float> > &descriptor);
 
 };
 #endif

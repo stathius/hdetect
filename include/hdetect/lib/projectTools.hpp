@@ -4,11 +4,10 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include "tf/transform_listener.h"
 #include "sensor_msgs/CameraInfo.h"
-#include <upm/ClusteredScan.h>
+#include <hdetect/ClusteredScan.h>
 
-#define M_TO_PIXELS 1000.0 /// Used to compute the size of the bounding box. 3m height 1.5 meters width
-#define HEIGHT 800.0   /// The laser plane height in pixels
-#define WIDTH 1200.0  /// The laser plane width in pixels
+#define HEIGHT 700 // the laser window height
+#define WIDTH 1000 // and width
 
 using namespace std;
 using namespace cv;
@@ -33,11 +32,14 @@ void getCrop (cv::Mat &roi, cv::Mat &image, cv::Point &upleft, int &boxSize);
  *
  * @param[in] it The laser point. Used to compute the distance of the box.
  * @param[in] pt2D The point in pixel coords.
- * @param[out] boxSize Size of the box in pixels
+ * @param[out] boxWidth Size of the box in pixels
  * @param[out] upleft Upper left corner of the box in pixel coords.
  * @param[out] downright Lower right corner of the box in pixel coords.
- */void getBox(geometry_msgs::Point32 &it, cv::Point2d &pt2D, int &boxSize,
-               cv::Point &upleft, cv::Point &downright);
+ * @param[in] M_TO_PIXELS The meter to pixels ration
+ * @param[in] BODY_RATIO The ratio of the upper body part to the lower body part
+ */
+void getBox(geometry_msgs::Point32 &it, cv::Point2d &pt2D, int &boxSize,
+         cv::Point &upleft, cv::Point &downright, double &M_TO_PIXELS, double &BODY_RATIO);
 
  /**
   *
@@ -58,7 +60,6 @@ void getCrop (cv::Mat &roi, cv::Mat &image, cv::Point &upleft, int &boxSize);
  void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, sensor_msgs::CameraInfo &cam_info,
                    tf::StampedTransform &transform);
 
-
  void pointToPlane(geometry_msgs::Point32 &ptIn, cv::Point &ptOut, int &zoom);
 
  /**
@@ -73,7 +74,7 @@ void getCrop (cv::Mat &roi, cv::Mat &image, cv::Point &upleft, int &boxSize);
    // dereferencing the void object pointer
    obj_class * newObj = (obj_class*)obj; //recasted
 
-   upm::ClusteredScan scanClusters = newObj->getClusteredScan();
+   hdetect::ClusteredScan scanClusters = newObj->getClusteredScan();
 
    Mat laserPlane;
    laserPlane.create(HEIGHT, WIDTH, CV_8UC3);

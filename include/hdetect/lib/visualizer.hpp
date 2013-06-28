@@ -6,7 +6,7 @@
 // OPENCV INCLUDES
 #include <opencv2/highgui/highgui.hpp>
 
-#include <upm/lib/detector.hpp>
+#include <hdetect/lib/detector.hpp>
 
 #define FALSE 0
 #define TRUE 1
@@ -25,7 +25,7 @@ class visualizer : public detector
 protected:
 	/// Publisher used to count the hz rate of the node
 	ros::Publisher pub;
-	std_msgs::Byte flag;
+	std_msgs::Byte dummy;
 
 	CvFont font_;
 
@@ -53,7 +53,7 @@ public:
 	Scalar getColor(geometry_msgs::Point32 &point);
 
 	/// Returns the ClusteredScan from the object
-	upm::ClusteredScan getClusteredScan() { return scanData; };
+	hdetect::ClusteredScan getClusteredScan() { return scanData; };
 
 	/// Set the laserplane for visualizing purposes
 	/// @param lp The computed laser plane image.

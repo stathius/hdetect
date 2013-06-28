@@ -1,3 +1,7 @@
+/**
+ * Trains a boosted classifier and saves the model to data/trained_boost.xml
+ * TODO: input from command line the file and the number of weak classifiers to be trained
+ */
 #include <cstdlib>
 #include "opencv/cv.h"
 #include "opencv/ml.h"
@@ -5,10 +9,7 @@
 
 using namespace std;
 using namespace cv;
-/**
- * Trains a boosted classifier and saves the model to data/trained_boost.xml
- * TODO: input from command line the file and the number of weak classifiers to be trained
- */
+
 int main(int argc, char** argv) {
 
   /* STEP 2. Opening the file */

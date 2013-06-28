@@ -6,19 +6,20 @@ Features as ScanFeaturesMsg
 
 Stathis Fotiadis 2012
 */
-#include "upm/lib/laserLib.hpp"
+#include "hdetect/lib/laserLib.hpp"
+
 
 /// Starts the laser filter. people2D_engine parameter setting.
-/// TODO Load the shadowfilter parameters from the server
-laserLib::laserLib() : laserFilter("sensor_msgs::LaserScan") {
+laserLib::laserLib(double &jumpdist, int feature_set, double laser_range ) : laserFilter("sensor_msgs::LaserScan") {
 	// Set the configuration
 	// segmentation distance
-	float dseg = 0.20; // in meters
-	libEngineParams.dseg = dseg;
-	libEngineParams.sqjumpdist = dseg * dseg ;	
+	libEngineParams.jumpdist = jumpdist;
+	libEngineParams.feature_set = feature_set; // WE SHOULD TRY CHANGING THAT TO 2
+	libEngineParams.laser_range = laser_range;
+
 	libEngineParams.sanity = 1;
 	libEngineParams.segonly = 0;
-	libEngineParams.featuremix = 0; // WE SHOULD TRY CHANGING THAT TO 2
+
 	libEngine = lengine( libEngineParams );
 
 	// Shadow filtering parameters
@@ -68,7 +69,7 @@ void laserLib::loadScan(sensor_msgs::LaserScan ls) {
  *  Computes the features and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getFeatures(upm::ClusteredScan &features) {
+void laserLib::getFeatures(hdetect::ClusteredScan &features) {
 	
 	// Compute the features
 	libEngine.computeFeatures(clusters, descriptor);
@@ -94,7 +95,7 @@ void laserLib::getFeatures(upm::ClusteredScan &features) {
  *  Each cluster's annotation initialised to FALSE (0)
  *  Each cluster's fusion attribute initialised to FALSE (0)
  * */
-void laserLib::features2ROS(upm::ClusteredScan &features)
+void laserLib::features2ROS(hdetect::ClusteredScan &features)
 {
         features.features.clear();
         features.features.resize(descriptor.size());
@@ -142,7 +143,7 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls) {
 	float ang;
 
 	// helping LSL_Point3D_str
-	LSL_Point3D_str point;
+	Point3D_str point;
 	point.z=0;
 	point.label=0;
  
@@ -163,8 +164,11 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls) {
 		  point.y = *it * sin(ang);
 
 		// Push it to the libScan vector if its a valid range
-		if(point.x>= -30.0 && point.x <=30.0 && point.y>= -30.0 && point.y <=30.0) 
+		if( sqrt( pow(point.x,2) + pow(point.y,2) ) <= libEngineParams.laser_range )
 			libScan.data.pts.push_back(point);
+		else
+      	  ROS_WARN("[LASER_LIB] point out of bounds x %f y %f ", pt.x, pt.y) ;
+
 	        }
 		//ROS_INFO("i %d libScan size before %d",i, libScan.data.pts.size());
 		/*
@@ -187,7 +191,7 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls) {
  *  Computes the individual clusters and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getClusters(upm::ClusteredScan &laserClusters) {
+void laserLib::getClusters(hdetect::ClusteredScan &laserClusters) {
 	
 	// Set the header
 	laserClusters.header.seq=seq;
@@ -201,7 +205,7 @@ void laserLib::getClusters(upm::ClusteredScan &laserClusters) {
 	laserClusters.cogs.clear();
 
 	int i=0;
-	for (std::vector<LSL_Point3D_container>::iterator 
+	for (std::vector<Point3D_container>::iterator 
 		it = clusters.begin(); it!=clusters.end(); it++) 
 	{
 		// compute cog
@@ -218,13 +222,13 @@ void laserLib::getClusters(upm::ClusteredScan &laserClusters) {
 
                   laserClusters.cogs.push_back(cogROS);
 
-                  for (std::vector<LSL_Point3D_str>::iterator it2 = it->pts.begin();
+                  for (std::vector<Point3D_str>::iterator it2 = it->pts.begin();
                   it2!=it->pts.end(); it2++)
                   {
                           pt.x=it2->x;
                           pt.y=it2->y;
                           pt.z=it2->z;
-                          if(pt.x<= -30.0 || pt.x >=30.0 || pt.y<= -30.0 || pt.y >=30.0) 				ROS_WARN("LASER_TRANSLATOR point out of bounds x %f y %f ", pt.x, pt.y) ;
+                          //if( sqrt( pow(pt.x,2) + pow(pt.y,2) ) > libEngineParams.laser_range )
                           laserClusters.clusters[i].points.push_back(pt);
                   }
                   i++;

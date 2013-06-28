@@ -1,8 +1,6 @@
 <package>
-  <description brief="upm">
-
-  upm
-
+  <description brief="hdetect">
+  hdetect
   </description>
   <author>Stathis Fotiadis</author>
   <license>BSD</license>
@@ -27,7 +25,6 @@
   <depend package="geometry_msgs"/>
   <depend package="image_geometry"/>
   <depend package="camera_calibration_parsers"/>
-
 </package>
 
 

@@ -1,5 +1,0 @@
-<launch>
-	<node name="camera" pkg="camera1394" type="camera1394_node" output="screen">
-	<param name="frame_id" value="/camera"/>
-	</node>
-</launch>

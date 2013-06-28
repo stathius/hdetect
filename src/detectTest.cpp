@@ -1,18 +1,19 @@
 /* detectBAG
  Reads the camera topic, the laser topic, and the ClusteredScan from a bag
  Then it does the detection.
+ ITS
  */
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include <boost/foreach.hpp>
 #include <rosgraph_msgs/Clock.h>
 
-#include <upm/lib/visualizer.hpp>
-#include <upm/ClusteredScan.h>
+#include <hdetect/lib/visualizer.hpp>
+#include <hdetect/ClusteredScan.h>
 
 
-/**
- * A node to set up all things needed for the detection test.
+/** TODO A LOT
+ * Makes the detection test from a bag file.
  * The name file is given from command line.
  * @author Stathis Fotiadis
  * @date 10/10/2012
@@ -66,11 +67,12 @@ detectTest::detectTest(std::string bagFile)
 	rosbag::View view(bag, rosbag::TopicQuery(topics));
 
 	int count = 0;
+	// Reads the topics form the bag file
 	BOOST_FOREACH(rosbag::MessageInstance const m, view)
 	{
 		if (m.getTopic() == clusteredTopic)
 		{
-			upm::ClusteredScan::ConstPtr mes = m.instantiate<upm::ClusteredScan>();
+			hdetect::ClusteredScan::ConstPtr mes = m.instantiate<hdetect::ClusteredScan>();
 			if (mes != NULL)
 			{
 				// Publish the clock
@@ -81,8 +83,6 @@ detectTest::detectTest(std::string bagFile)
 				sensor_msgs::LaserScan::ConstPtr laser_ptr = boost::make_shared<sensor_msgs::LaserScan>(mes->scan);
 
 				visualizeData(image_ptr, laser_ptr);
-				// Check if the detector made the same segmentation
-
 			}
 			else
 			{

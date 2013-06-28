@@ -9,7 +9,7 @@
 
 #include <boost/bind.hpp>
 
-#include "upm/lib/visualizer.hpp"
+#include "hdetect/lib/visualizer.hpp"
 
 /**
  * A node to set up all things needed for visualization.
@@ -61,8 +61,9 @@ public:
 
 };
 
-visualizeRT::visualizeRT(std::string laserTopic, std::string cameraTopic)
+visualizeRT::visualizeRT(std::string laserTopic, std::string cameraTopic) : nh("~")
 {
+
   // Subscibe to the corresponding topics
   cameraImage_sub_.subscribe(nh,cameraTopic,3);
   laserScan_sub_.subscribe(nh,laserTopic,3);

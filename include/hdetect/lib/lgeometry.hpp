@@ -62,7 +62,7 @@ typedef struct
 	double 	tag;
 	int 	 label;
 	int 	 id;
-}LSL_Point3D_str;
+}Point3D_str;
 
 typedef struct
 {
@@ -75,51 +75,51 @@ typedef struct
 	int 	 label;	
 	int 	 id;
 	double 	tag;
-}LSL_Point3D_polar_str;
+}Point3D_polar_str;
 
-class LSL_Point3D_container 
+class Point3D_container 
 {
 	private:
 
 		
 	public: 
-		std::vector <LSL_Point3D_str> pts;
+		std::vector <Point3D_str> pts;
 		
 		// constructor
-		LSL_Point3D_container();	
-		LSL_Point3D_container(unsigned int sz);	
-		LSL_Point3D_container(std::vector <LSL_Point3D_str> &ptvec);	
+		Point3D_container();	
+		Point3D_container(unsigned int sz);	
+		Point3D_container(std::vector <Point3D_str> &ptvec);	
 
 		// compute cog
-		void compute_cog(LSL_Point3D_str *pts_out);	
+		void compute_cog(Point3D_str *pts_out);	
 
 		// get x y or z
 		void get_coords(std::vector <double> &pts_coord, char coord_sel);
 		
 		// compute cog
-		void conv2polar(std::vector <LSL_Point3D_polar_str> &pts_polar_out);
+		void conv2polar(std::vector <Point3D_polar_str> &pts_polar_out);
 
 		// destructor
-		~LSL_Point3D_container();		
+		~Point3D_container();		
 };
 
  
 
 // p2p 
-double distance_L2_XY (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1);
-double distance_L2_XY_sqr (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1);
+double distance_L2_XY (Point3D_str *pt0, Point3D_str *pt1);
+double distance_L2_XY_sqr (Point3D_str *pt0, Point3D_str *pt1);
 
 // convertstuf
-void conv2polar_func(std::vector <LSL_Point3D_str>& pts_in, std::vector <LSL_Point3D_polar_str>& pts_polar_out);
-void conv2cart_func(std::vector <LSL_Point3D_polar_str>& pts_polar_in, std::vector <LSL_Point3D_str>& pts_out);
+void conv2polar_func(std::vector <Point3D_str>& pts_in, std::vector <Point3D_polar_str>& pts_polar_out);
+void conv2cart_func(std::vector <Point3D_polar_str>& pts_polar_in, std::vector <Point3D_str>& pts_out);
 
 // order points
-void order_bytheta (std::vector <LSL_Point3D_polar_str> &pts_polar_out);
-void order_bytheta_incart (std::vector <LSL_Point3D_str>& pts_out);
+void order_bytheta (std::vector <Point3D_polar_str> &pts_polar_out);
+void order_bytheta_incart (std::vector <Point3D_str>& pts_out);
 
 //~ line param and circle param from a set of pts
-void get_line_param(LSL_Point3D_container *laserfeat_cluster, 	LSL_Point3D_str *line_param);
-void get_circle_param(LSL_Point3D_container *laserfeat_cluster, 	LSL_Point3D_str *circle_param);
+void get_line_param(Point3D_container *laserfeat_cluster, 	Point3D_str *line_param);
+void get_circle_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circle_param);
 
 
 #endif

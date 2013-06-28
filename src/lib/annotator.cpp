@@ -1,4 +1,4 @@
-#include "upm/lib/annotator.hpp"
+#include "hdetect/lib/annotator.hpp"
 
 /**
  * Creates the directory and the files to save
@@ -12,7 +12,7 @@ annotator::annotator(string bagFile)
   if(nh.hasParam("pkg_path")) {
     ros::param::get("/pkg_path",abs_path);
   }
-  else ROS_WARN("[ANNOTATOR] Parameter pkg_path (absolute package path) not found.");
+  else ROS_ERROR("[ANNOTATOR] Parameter pkg_path (absolute package path) not found.");
 
   // File where the image crops will be saved
   bagFile = bagFile.substr( bagFile.find_last_of("UTMFF__") + 1,
@@ -105,8 +105,8 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
   {
 
     if (scanData.fusion[i] == 1) {
-      projectPoint(scanData.cogs[i], prPixel, cInfo, transform);
-      getBox(scanData.cogs[i], prPixel, boxSize, upleft, downright);
+      projectPoint(scanData.cogs[i], prPixel, params.cInfo, transform);
+      getBox(scanData.cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
 
         getCrop (crop, cv_ptr->image, upleft, boxSize);
 

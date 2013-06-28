@@ -1,4 +1,4 @@
-#include <upm/lib/visualizer.hpp>
+#include <hdetect/lib/visualizer.hpp>
 
 visualizer::visualizer() {
 
@@ -19,7 +19,7 @@ visualizer::visualizer() {
 	createTrackbar("Zoom:", L_WINDOW, &zoom, 30, &plotLaser<visualizer>, this);
 
 	pub = nh.advertise<std_msgs::Byte>("visualizer", 5);
-	flag.data=1;
+	dummy.data=1;
 }
 
 visualizer::~visualizer() {
@@ -55,7 +55,7 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			/// TODO add code so when in detector mode we classify the crop/cluster or only cluster
 
 			/// This cluster is in the image
-			/// Doesn't matter if we use fusion or only laser, we want to show the classification to the image
+			/// Doedsn't matter if we use fusion or only laser, we want to show the classification to the image
 			/// check if fused
 			/// use getCrop
 			/// use a new method that computes class for cluster , cluster/crop
@@ -68,7 +68,7 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			for (uint j = 0; j < scanData.clusters[i].points.size(); j++)
 			{
 				// Convert each cluster point to image coordinates
-				projectPoint(scanData.clusters[i].points[j], prPixel, cInfo, transform);
+				projectPoint(scanData.clusters[i].points[j], prPixel, params.cInfo, transform);
 
 				// Draw the point to the image
 				if (prPixel.x >= 0 && prPixel.x < colorImage.cols && prPixel.y >= 0 && prPixel.y < colorImage.rows)
@@ -100,7 +100,7 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 	waitKey(3);
 
 	//waitKey();
-	pub.publish(flag);
+	pub.publish(dummy);
 }
 
 /// Returns a color from the pallete, based on its position

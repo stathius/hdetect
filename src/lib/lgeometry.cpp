@@ -20,17 +20,17 @@
 
 
 
-#include "upm/lib/lgeometry.hpp"
+#include "hdetect/lib/lgeometry.hpp"
 
-LSL_Point3D_container :: LSL_Point3D_container (void)
+Point3D_container :: Point3D_container (void)
 {
 }
 
 ////-------------------------------------------------------------------------------------------------------------------
 
-LSL_Point3D_container :: LSL_Point3D_container(unsigned int sz)
+Point3D_container :: Point3D_container(unsigned int sz)
 {
-	pts = std::vector <LSL_Point3D_str> (sz);
+	pts = std::vector <Point3D_str> (sz);
 }
 
 
@@ -38,14 +38,14 @@ LSL_Point3D_container :: LSL_Point3D_container(unsigned int sz)
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-LSL_Point3D_container :: ~LSL_Point3D_container ()
+Point3D_container :: ~Point3D_container ()
 {
 }
  
 
 ////-------------------------------------------------------------------------------------------------------------------
 
-double distance_L2_XY (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1)
+double distance_L2_XY (Point3D_str *pt0, Point3D_str *pt1)
 {
 	return ( sqrt( (pt0->x - pt1->x)*(pt0->x - pt1->x) + (pt0->y - pt1->y)*(pt0->y - pt1->y) ) );
 }
@@ -53,7 +53,7 @@ double distance_L2_XY (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1)
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-double distance_L2_XY_sqr (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1)
+double distance_L2_XY_sqr (Point3D_str *pt0, Point3D_str *pt1)
 {
  	double dist = (pt0->x - pt1->x)*(pt0->x - pt1->x) + (pt0->y - pt1->y)*(pt0->y - pt1->y);
  	return(dist);
@@ -63,10 +63,10 @@ double distance_L2_XY_sqr (LSL_Point3D_str *pt0, LSL_Point3D_str *pt1)
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-void order_bytheta_incart (std::vector <LSL_Point3D_str>& pts_out)
+void order_bytheta_incart (std::vector <Point3D_str>& pts_out)
 {
 
-	std::vector <LSL_Point3D_polar_str> pts_polar_out;
+	std::vector <Point3D_polar_str> pts_polar_out;
 		
 	// convert and order
 	conv2polar_func(pts_out, pts_polar_out);
@@ -85,10 +85,10 @@ void order_bytheta_incart (std::vector <LSL_Point3D_str>& pts_out)
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-void order_bytheta (std::vector <LSL_Point3D_polar_str> &pts_polar_out)
+void order_bytheta (std::vector <Point3D_polar_str> &pts_polar_out)
 {
-	std::vector <LSL_Point3D_polar_str> pts_polar_tmp;
-	LSL_Point3D_polar_str polar_p;
+	std::vector <Point3D_polar_str> pts_polar_tmp;
+	Point3D_polar_str polar_p;
 	
 	std::vector <double> th_val;
 	size_t *p = (size_t*) malloc(pts_polar_out.size() * sizeof(size_t));
@@ -128,7 +128,7 @@ void order_bytheta (std::vector <LSL_Point3D_polar_str> &pts_polar_out)
 
 ////-------------------------------------------------------------------------------------------------------------------
 
-LSL_Point3D_container :: LSL_Point3D_container(std::vector <LSL_Point3D_str> &ptvec)
+Point3D_container :: Point3D_container(std::vector <Point3D_str> &ptvec)
 {
 	pts = ptvec;
 }
@@ -136,7 +136,7 @@ LSL_Point3D_container :: LSL_Point3D_container(std::vector <LSL_Point3D_str> &pt
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-void LSL_Point3D_container :: compute_cog(LSL_Point3D_str *pts_out)
+void Point3D_container :: compute_cog(Point3D_str *pts_out)
 {
 	double x_sum = 0;
 	double y_sum = 0;
@@ -166,7 +166,7 @@ void LSL_Point3D_container :: compute_cog(LSL_Point3D_str *pts_out)
  * @param pts_coord
  * @param coord_sel
  */
-void LSL_Point3D_container :: get_coords(std::vector <double> &pts_coord, char coord_sel)
+void Point3D_container :: get_coords(std::vector <double> &pts_coord, char coord_sel)
 {
  
 	//pts_coord = std::vector <double> (pts.size());
@@ -197,13 +197,13 @@ void LSL_Point3D_container :: get_coords(std::vector <double> &pts_coord, char c
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-void conv2polar_func(std::vector <LSL_Point3D_str>& pts_in, std::vector <LSL_Point3D_polar_str>& pts_polar_out)
+void conv2polar_func(std::vector <Point3D_str>& pts_in, std::vector <Point3D_polar_str>& pts_polar_out)
 {
 	// theta is angle plane x-y	
 	// alpha is angle plane z-y	
 
-	LSL_Point3D_str origin;	
-	LSL_Point3D_polar_str polar_pt;
+	Point3D_str origin;	
+	Point3D_polar_str polar_pt;
 	
 	origin.x = 0;
 	origin.y = 0;
@@ -232,12 +232,12 @@ void conv2polar_func(std::vector <LSL_Point3D_str>& pts_in, std::vector <LSL_Poi
 ////-------------------------------------------------------------------------------------------------------------------
 
 
-void conv2cart_func(std::vector <LSL_Point3D_polar_str>& pts_polar_in, std::vector <LSL_Point3D_str>& pts_out)
+void conv2cart_func(std::vector <Point3D_polar_str>& pts_polar_in, std::vector <Point3D_str>& pts_out)
 {
 	// theta is angle plane x-y	
 	// alpha is angle plane z-y	
 
-	LSL_Point3D_str pt;	
+	Point3D_str pt;	
 	
 	for(unsigned int i= 0; i < pts_polar_in.size() ; i++)
 	{
@@ -265,7 +265,7 @@ void conv2cart_func(std::vector <LSL_Point3D_polar_str>& pts_polar_in, std::vect
 
 
 
-void  get_circle_param(LSL_Point3D_container *laserfeat_cluster, 	LSL_Point3D_str *circle_param)
+void  get_circle_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circle_param)
 {
 	// takes only plane XY
 
@@ -317,7 +317,7 @@ void  get_circle_param(LSL_Point3D_container *laserfeat_cluster, 	LSL_Point3D_st
 
 
 
-void get_line_param(LSL_Point3D_container *laserfeat_cluster, 	LSL_Point3D_str *circle_param)
+void get_line_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circle_param)
 {
 	// takes only plane XY
 	

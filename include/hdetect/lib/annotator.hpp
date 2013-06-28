@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include <rosbag/bag.h>
-#include "upm/lib/visualizer.hpp"
+#include <hdetect/lib/visualizer.hpp>
 
 /**
  * It's a class used for the annotation of the laser and the cropped image data.

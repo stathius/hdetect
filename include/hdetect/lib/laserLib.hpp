@@ -5,7 +5,8 @@
 #include <filters/filter_chain.h>
 #include "sensor_msgs/LaserScan.h"
 #include "lengine.hpp"
-#include <upm/ClusteredScan.h>
+#include <hdetect/ClusteredScan.h>
+
 
 /**
  * A class used as a ROS wrapper for the lengine class.
@@ -14,8 +15,8 @@ class laserLib {
 private:
 
   /// Needed by getClusters()
-  LSL_Point3D_str cogLSL;
-  LSL_Point3D_str origin;
+  Point3D_str cogLSL;
+  Point3D_str origin;
   geometry_msgs::Point32 pt;
   geometry_msgs::Point32 cogROS;
 
@@ -33,7 +34,7 @@ private:
   sw_param_str libEngineParams;
 
   ///  Vector to hold the clusters of each scan in people2d_engine format
-  std::vector<LSL_Point3D_container> clusters;  // lgeometry.hpp
+  std::vector<Point3D_container> clusters;  // lgeometry.hpp
 
   /// The feature vector
   std::vector < std::vector <float> > descriptor;
@@ -56,23 +57,32 @@ private:
    *
    * @param features[out] Exported cluster features.
    */
-  void features2ROS(upm::ClusteredScan &features);
+  void features2ROS(hdetect::ClusteredScan &features);
 
 public:
+  /// Null constructor
   laserLib();
   ~laserLib();
+
+  /**
+   * Constructor that receiver parameters from the calling class (e.g. detector)
+   * @param jumpdist The cluster segmentation distance
+   * @param feature_set Feature set to be used (0 = 17, 1 = 63, 2 = 73)
+   * @param laser_range The maximum trusted laser range
+   */
+  laserLib(double &jumpdist, int feature_set, double laser_range);
 
   /**
    *
    * @param features[out] Exported cluster features
    */
-  void getFeatures(upm::ClusteredScan &features);
+  void getFeatures(hdetect::ClusteredScan &features);
 
   /**
    *
    * @param features[out] Where the clusters are going to be exported.
    */
-  void getClusters(upm::ClusteredScan &laserClusters);
+  void getClusters(hdetect::ClusteredScan &laserClusters);
 
   /**
    *

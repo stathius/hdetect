@@ -18,7 +18,7 @@
  *
  *****************************************************************/
 
-#include "upm/lib/lengine.hpp"
+#include "hdetect/lib/lengine.hpp"
 
 
 
@@ -28,7 +28,7 @@ void lengine::set_featureset()
   std::vector<int> featnum;
   std::vector<int> featnum_comparative;
   //~ default mix
-  if (params.featuremix == 0)
+  if (params.feature_set == 0)
   {
     //printf("Standard features mix\n");
     featnum.push_back(0);
@@ -51,7 +51,7 @@ void lengine::set_featureset()
   }
 
   //~ no distance
-  if (params.featuremix == 1)
+  if (params.feature_set == 1)
   {
     printf("Features mix 1\n");
     featnum.push_back(0);
@@ -73,7 +73,7 @@ void lengine::set_featureset()
   }
 
   //~ no distance no relational
-  if (params.featuremix == 2)
+  if (params.feature_set == 2)
   {
     printf("Features mix 2\n");
     featnum.push_back(0);
@@ -93,7 +93,7 @@ void lengine::set_featureset()
     featnum.push_back(14);
   }
 
-  lfeatures = new LSL_lfeatures_class(featnum, featnum_comparative);
+  lfeatures = new lfeatures_class(featnum, featnum_comparative);
   fsz = featnum.size() + featnum_comparative.size();
 
 }
@@ -135,7 +135,7 @@ int lengine::sanity_check(std::vector<std::vector<Real> > &descriptor)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-int lengine::get_breakpoint(std::vector<LSL_Point3D_str> &pts, int last_breaking_idx, double sqjumpdist)
+int lengine::get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx)
 {
   int ptsz = pts.size() - 1;
 
@@ -147,7 +147,7 @@ int lengine::get_breakpoint(std::vector<LSL_Point3D_str> &pts, int last_breaking
     double dist;
     dist = distance_L2_XY_sqr(&pts[i], &pts[i + 1]);
 
-    if (dist > sqjumpdist)
+    if (dist > params.jumpdist)
     {
       //~ printf("dist: %g  (%g): [%g %g]v[%g %g]\n",dist, sqjumpdist, pts[i].x,pts[i].y, pts[i + 1].x, pts[i + 1].y);
 
@@ -163,7 +163,7 @@ int lengine::get_breakpoint(std::vector<LSL_Point3D_str> &pts, int last_breaking
 }
 
 
-int lengine::segmentscanJDC(std::vector<LSL_Point3D_container> &clusters)
+int lengine::segmentscanJDC(std::vector<Point3D_container> &clusters)
 {
 
   //~ bailing var
@@ -179,8 +179,8 @@ int lengine::segmentscanJDC(std::vector<LSL_Point3D_container> &clusters)
   //~ last break point index
   int last_breaking_idx = 0;
 
-  LSL_Point3D_str single_cog;
-  std::vector<LSL_Point3D_str> all_cog;
+  Point3D_str single_cog;
+  std::vector<Point3D_str> all_cog;
   uint i;
   double dist[5];
 
@@ -193,12 +193,12 @@ int lengine::segmentscanJDC(std::vector<LSL_Point3D_container> &clusters)
     if (last_breaking_idx < ptsz - 1)
     {
       //~ max distance check
-      int breaking_idx = get_breakpoint(laserscan_single.data.pts, last_breaking_idx, params.sqjumpdist);
+      int breaking_idx = get_breakpoint(laserscan_single.data.pts, last_breaking_idx);
 
       if (breaking_idx - last_breaking_idx >= L_MINCLUSTERSZ)
       {
         //~ a cluster
-        LSL_Point3D_container single_cluster;
+        Point3D_container single_cluster;
 
         //~ pump it into
         single_cluster.pts.insert(single_cluster.pts.begin(), laserscan_single.data.pts.begin() + last_breaking_idx,
@@ -224,7 +224,7 @@ int lengine::segmentscanJDC(std::vector<LSL_Point3D_container> &clusters)
           dist[3] = distance_L2_XY(&clusters[i].pts.back(), &single_cluster.pts.back());
           dist[4] = distance_L2_XY(&single_cog, &all_cog[i]);
           //printf("distances: %f\t%f\t%f\t%f\t%f\n", dist[0],dist[1],dist[2],dist[3],dist[4]);
-          if (*std::min_element(dist, dist + 5) < params.dseg) // half of the segmentation distance
+          if (*std::min_element(dist, dist + 5) < params.jumpdist) // half of the segmentation distance
           //if (dist[4] <  params.dseg) // half of the segmentation distance
           { //printf("close cluster %d\n", i);
             newcluster = false;
@@ -261,7 +261,7 @@ int lengine::segmentscanJDC(std::vector<LSL_Point3D_container> &clusters)
   return (1);
 }
 
-void lengine::computeFeatures(std::vector<LSL_Point3D_container> &clusters,
+void lengine::computeFeatures(std::vector<Point3D_container> &clusters,
                                       std::vector<std::vector<float> > &descriptor)
 {
   // set feature set

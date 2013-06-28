@@ -2,7 +2,7 @@
 // Reads three specified topics from a vector of string
 // Publishes clock time
 
-#include "upm/lib/bagReader.hpp"
+#include "hdetect/lib/bagReader.hpp"
 
 
 /**

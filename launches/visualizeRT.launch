@@ -1,26 +1,25 @@
 <launch>
 	<param name="use_sim_time" value="false" />
-	<param name="pkg_path" value="$(find upm)"/>
         <!-- laser shadow filtering file -->
-        <rosparam command="load" file="$(find upm)/yaml/laser_filter.yaml"/>
+        <rosparam command="load" file="$(find hdetect)/yaml/laser_filter.yaml"/>
 
-	<node pkg="iri_hokuyo_laser"
+	<!--node pkg="iri_hokuyo_laser"
         	type="iri_hokuyo_laser"
         	name="laser"
         	output="screen">
     		<param name="frame_id"     value="/laser" />
     		<param name="use_ethernet" value="true"         />
-    		<param name="ip_address"   value="192.168.0.11" /> <!-- default IP address -->
-    		<param name="angle_min"    value="-1.57080"      /> <!-- -pi/2 -->
-    		<param name="angle_max"    value="1.57080"       /> <!-- pi/2 -->
+    		<param name="ip_address"   value="192.168.0.11" /> 
+    		<param name="angle_min"    value="-1.57080"      /> 
+    		<param name="angle_max"    value="1.57080"       /--> 
     		<param name="interval"     value="1"            /> <!-- changes the hz rate -->
-	</node>
+	<!--/node-->
 
 	<node name="camera" pkg="camera1394" type="camera1394_node" output="screen" cwd="node">
 		<param name="frame_id" value="/camera"/>
 		<param name="video_mode" value="format7_mode0"/>
-		<param name="frame_rate" value="30"/>
-		<param name="camera_info_url" value="file://$(find upm)/yaml/camera_calib.yaml" />
+		<param name="frame_rate" value="60"/>
+		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib.yaml" />
 	</node>
 
   	<node pkg="tf" type="static_transform_publisher" name="world_to_laser"
@@ -28,11 +27,15 @@
     	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /camera /laser 10">
 	</node>
 
-	<node pkg="upm" type="visualizeRT" name="vzlive" output="screen" cwd="node"
+	<node pkg="hdetect" type="visualizeRT" name="visualizeRT" output="screen" cwd="node"
 	args="/laser/scan /camera/image_raw">
+	<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib.yaml"/>
+	<param name="/camera_name" value="00b09d0100aa73bb"/>
+	<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+        <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 	</node>
 
 	<!--node pkg="image_proc" type="image_proc" name="image_proc">
-	<env name="ROS_NAMESPACE" value="/camera"/-->
-	</node>
+	<env name="ROS_NAMESPACE" value="/camera"/>
+	</node-->
 </launch> 
