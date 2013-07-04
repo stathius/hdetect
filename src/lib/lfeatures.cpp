@@ -27,8 +27,8 @@
 
 void lfeatures_class ::descr(void)
 {
- 	feature_descr.push_back("feature 01: Num of points");
- 	feature_descr.push_back("feature 02: std from centroid (in 2D x and y)"); 	
+	feature_descr.push_back("feature 01: Num of points");
+	feature_descr.push_back("feature 02: std from centroid (in 2D x and y)");
 	feature_descr.push_back("feature 03: Mean average deviation from median (in 2D xy)");
 	feature_descr.push_back("feature 04: width");
 	feature_descr.push_back("feature 05: circularity  (in 2D plane xy)");
@@ -49,98 +49,152 @@ void lfeatures_class ::descr(void)
 
 ////-------------------------------------------------------------------------------------------------------------------
 
-lfeatures_class::lfeatures_class(const std::vector <int> &featnum, const std::vector <int> &featnum_comparative)
+lfeatures_class::lfeatures_class(int feature_set)
 {
+	this->feature_set = feature_set;
+
 	//~ standard feats
-	for (unsigned int i = 0 ; i< featnum.size(); i++)
+	if (feature_set == 0)
 	{
-		if(featnum[i] == 0)
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_01);
-		if(featnum[i] == 1)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_02);		
-		if(featnum[i] == 2)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_03);		
-		if(featnum[i] == 3)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_04);		
-		if(featnum[i] == 4)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_05);		
-		if(featnum[i] == 5)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_06);		
-		if(featnum[i] == 6)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_07);		
-		if(featnum[i] == 7)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_08);		
-		if(featnum[i] == 8)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_09);		
-		if(featnum[i] == 9)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_10);		
-		if(featnum[i] == 10)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_11);		
-		if(featnum[i] == 11)
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_12);
-		if(featnum[i] == 12)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_13);		
-		if(featnum[i] == 13)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_14);		
-		if(featnum[i] == 14)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_15);		
-		if(featnum[i] == 15)			
-			ptr_ezfeature_vec_1D.push_back (&lfeatures_class::feature_16);		
+		ptr_feature_vector.push_back (&lfeatures_class::feature_01);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_02);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_03);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_04);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_05);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_06);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_07);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_08);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_09);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_10);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_11);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_12);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_13);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_14);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_15);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_16);
+		ptr_feature_vector_cmp.push_back (&lfeatures_class::feature_01_comparative);
+
+		feature_size = FEATURE_SET_0;
+	} else if (feature_set == 1 ) {
+		ptr_feature_vector.push_back (&lfeatures_class::feature_01);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_02);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_03);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_04);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_05);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_06);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_07);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_08);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_09);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_10);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_11);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_12);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_13);
+		ptr_feature_vector.push_back (&lfeatures_class::feature_16);
+		feature_size = FEATURE_SET_1;
+
 	}
-	
-	//~ feats of relations
-	for (unsigned int i = 0 ; i< featnum_comparative.size(); i++)
-	{
-		if(featnum[i] == 0)
-			ptr_ezfeature_vec_1D_cmp.push_back (&lfeatures_class::feature_01_comparative);
-	}
-	
 }
 
 ////-------------------------------------------------------------------------------------------------------------------
- 
+
 void lfeatures_class ::  compute_descriptor(std::vector <Point3D_container> &all_laserfeat_cluster, std::vector < std::vector <Real> > &descriptor)
 {		
 
-	descriptor = std::vector < std::vector <Real> > (all_laserfeat_cluster.size(), (std::vector <Real> ( ptr_ezfeature_vec_1D.size() +ptr_ezfeature_vec_1D_cmp.size() ) ) );
-	
-	//~ all segments
-	for (unsigned int c = 0 ; c< all_laserfeat_cluster.size(); c++)
-	{
-		unsigned int fidx = 0;
-		//~ do standard feats
-		for (unsigned int f = 0; f < ptr_ezfeature_vec_1D.size(); f++)		
+	//	descriptor = std::vector < std::vector <Real> > (all_laserfeat_cluster.size(), (std::vector <Real> ( feature_size ) ) );
+	descriptor = std::vector < std::vector <Real> > (all_laserfeat_cluster.size(), (std::vector <Real>  (0) ) );
+
+
+	if ( feature_set == 0) {
+
+		for (unsigned int c = 0 ; c< all_laserfeat_cluster.size(); c++)
 		{
-			Real value;
-			char ret = CALL_MEMBER_FN(*this, ptr_ezfeature_vec_1D[f]) (&all_laserfeat_cluster[c], &value); 
-				
-			if(!ret)
+			//			unsigned int fidx = 0;
+			//~ do standard feats
+			for (unsigned int f = 0; f < ptr_feature_vector.size(); f++)
 			{
-				printf("lfeatures.cpp: Error in feature computation SMP.   Check data validity [f: %d c: %d]\n",f,c);
-				exit(1);
+				Real value;
+				char ret = CALL_MEMBER_FN(*this, ptr_feature_vector[f]) (&all_laserfeat_cluster[c], &value);
+
+				if(!ret)
+				{
+					printf("lfeatures.cpp: Error in feature computation SMP.   Check data validity [f: %d c: %d]\n",f,c);
+					exit(1);
+				}
+				descriptor[c].push_back(value);
+				//				descriptor[c][fidx] = value;
+				//				fidx++;
 			}
-				
-			descriptor[c][fidx] = value;
-			fidx++;
+
+			//~  do rel feats
+			for (unsigned int f = 0; f < ptr_feature_vector_cmp.size(); f++)
+			{
+				Real value;
+				char ret = CALL_MEMBER_FN_CMP(*this, ptr_feature_vector_cmp[f]) (all_laserfeat_cluster, c, &value);
+
+				if(!ret)
+				{
+					printf("lfeatures.cpp: Error in feature computation CMP. Check data validity [f: %d c: %d]\n",f,c);
+					exit(1);
+				}
+
+				descriptor[c].push_back(value);
+				//descriptor[c][fidx] = value;
+				//fidx++;
+			}
+
 		}
-			
-		//~  do rel feats
-		for (unsigned int f = 0; f < ptr_ezfeature_vec_1D_cmp.size(); f++)		
+
+	} else if (feature_set == 1) {
+
+		for (unsigned int c = 0 ; c< all_laserfeat_cluster.size(); c++)
 		{
-			Real value;
-			char ret = CALL_MEMBER_FN_CMP(*this, ptr_ezfeature_vec_1D_cmp[f]) (all_laserfeat_cluster, c, &value); 
-				
-			if(!ret)
+
+			//~ do standard feats
+			for (unsigned int f = 0; f < FEATURE_BASIS ; f++)
 			{
-				printf("lfeatures.cpp: Error in feature computation CMP. Check data validity [f: %d c: %d]\n",f,c);
-				exit(1);
+				Real value;
+				char ret = CALL_MEMBER_FN(*this, ptr_feature_vector[f]) (&all_laserfeat_cluster[c], &value);
+
+				if(!ret)
+				{
+					printf("lfeatures.cpp: Error in feature computation SMP.   Check data validity [f: %d c: %d]\n",f,c);
+					exit(1);
+				}
+				descriptor[c].push_back(value);
 			}
-				
-			descriptor[c][fidx] = value;
-			fidx++;
-		}			
+
+			/*
+			    case 63
+            featuresVector = [featuresVector([1:3,6:15],:); ...
+            featuresVector([1:3,6:15],:)./repmat(featuresVector(16,:),[13 1]); ... % dist normalized
+            featuresVector([1:3,6:15],:).*repmat(featuresVector(16,:),[13 1]);
+            featuresVector([2:3,6:15],:)./repmat(featuresVector(1,:),[12 1]); ... % point normalized
+            featuresVector([2:3,6:15],:).*repmat(featuresVector(1,:),[12 1])];
+			 */
+
+			// EXTRA FEATURES
+			float distance;
+			feature_16(&all_laserfeat_cluster[c], &distance);
+
+			for (uint i = 0; i < FEATURE_BASIS; i ++)
+				descriptor[c].push_back(descriptor[c][i] / distance);
+			for (uint i = 0; i < FEATURE_BASIS; i ++)
+							descriptor[c].push_back(descriptor[c][i] * distance);
+			for (uint i = 1; i < FEATURE_BASIS; i ++)
+							descriptor[c].push_back(descriptor[c][i] / descriptor[c][0]);
+			for (uint i = 1; i < FEATURE_BASIS; i ++)
+							descriptor[c].push_back(descriptor[c][i] * descriptor[c][0]);
+		}
+
+	} else {
+		printf("[LFEATURES] Wrong feature_set value");
+		exit(-1);
 	}
+
+	//~ all segments
+
 }
+
 
 
 ////-------------------------------------------------------------------------------------------------------------------
@@ -151,7 +205,7 @@ int lfeatures_class ::  feature_01(Point3D_container *laserfeat_cluster, Real *o
 	*out = laserfeat_cluster -> pts.size();
 	return(1);
 }
- 
+
 
 ////-------------------------------------------------------------------------------------------------------------------
 /// feature 02: std from centroid (in 2D x and y)
@@ -159,22 +213,22 @@ int lfeatures_class ::  feature_02(Point3D_container *laserfeat_cluster, Real *o
 {
 	Point3D_str pts_cog;	
 	char ret = 1;
-	
+
 	// cog	
 	laserfeat_cluster -> compute_cog(&pts_cog);
 
 	// compute vectorial std from 
 	double s_sum = 0;
-	
+
 	for(unsigned int i = 0; i < laserfeat_cluster -> pts.size(); i++ )
 	{
 		double val = distance_L2_XY (&pts_cog, &laserfeat_cluster -> pts[i]);
 		s_sum += val*val;
 	}
-	
+
 	if(s_sum == 0)
 		ret = 0;
-	
+
 	*out  = sqrt( (1.0 /  ((double)laserfeat_cluster -> pts.size()))   * s_sum);
 	return(ret);
 }
@@ -187,21 +241,21 @@ int lfeatures_class ::  feature_03(Point3D_container *laserfeat_cluster, Real *o
 	char ret = 1;
 	double s_sum = 0;
 	Point3D_str pts_median;
-	
+
 	std::vector <double> pts_coordx,pts_coordy;
-	
+
 	// take x
 	laserfeat_cluster -> get_coords(pts_coordx, GEOMETRY_COORD_X);		
 	// sort data
-    gsl_sort (&pts_coordx[0], 1, pts_coordx.size());
+	gsl_sort (&pts_coordx[0], 1, pts_coordx.size());
 	// median
-    pts_median.x = gsl_stats_median_from_sorted_data (&pts_coordx[0], 1, pts_coordx.size());	
+	pts_median.x = gsl_stats_median_from_sorted_data (&pts_coordx[0], 1, pts_coordx.size());
 	// take y
 	laserfeat_cluster -> get_coords(pts_coordy, GEOMETRY_COORD_Y);			
 	// sort data
-     gsl_sort (&pts_coordy[0], 1, pts_coordy.size());
+	gsl_sort (&pts_coordy[0], 1, pts_coordy.size());
 	// median
-     pts_median.y = gsl_stats_median_from_sorted_data (&pts_coordy[0], 1, pts_coordy.size());
+	pts_median.y = gsl_stats_median_from_sorted_data (&pts_coordy[0], 1, pts_coordy.size());
 	// project on xy plane
 	pts_median.z = 0;
 
@@ -211,14 +265,14 @@ int lfeatures_class ::  feature_03(Point3D_container *laserfeat_cluster, Real *o
 		s_sum += val * val;	
 	}
 
-	
+
 	if(s_sum == 0)
 		ret = 0;
 
-        //printf("feature 03: median x %f y %f , sum %f \n",pts_median.x, pts_median.y, s_sum);
+	//printf("feature 03: median x %f y %f , sum %f \n",pts_median.x, pts_median.y, s_sum);
 
 	*out = sqrt( ( 1.0 /  (double)laserfeat_cluster -> pts.size() )   * s_sum);
-	
+
 	return(ret);
 }
 
@@ -228,10 +282,10 @@ int lfeatures_class ::  feature_03(Point3D_container *laserfeat_cluster, Real *o
 int lfeatures_class ::  feature_04(Point3D_container *laserfeat_cluster, Real *out)
 {
 	char ret = 1;
-	
+
 	//~ endpoints
 	int lastidx = laserfeat_cluster->pts.size()-1;
-	
+
 	//~ 2 pts are enough
 	if(laserfeat_cluster->pts.size() > 1)
 		*out = distance_L2_XY (&laserfeat_cluster->pts[0] , &laserfeat_cluster->pts[lastidx]);
@@ -247,10 +301,10 @@ int lfeatures_class ::  feature_04(Point3D_container *laserfeat_cluster, Real *o
 int lfeatures_class ::  feature_05(Point3D_container *laserfeat_cluster, Real *out)
 {	 
 	char ret = 1;
-	
+
 	Point3D_str circle_param;
 	double s_sum =0;
-		   
+
 	//~ 3 pts to fit a circle
 	if(laserfeat_cluster-> pts.size() > 2)
 	{
@@ -283,7 +337,7 @@ int lfeatures_class ::  feature_05(Point3D_container *laserfeat_cluster, Real *o
 		ret = 0;
 
 	*out = s_sum;
-	
+
 	return(ret);
 }
 
@@ -328,13 +382,13 @@ int lfeatures_class ::  feature_07(Point3D_container *laserfeat_cluster, Real *o
 			//~ disregard z
 			laserfeat_cluster->pts[i].z = 0;
 			laserfeat_cluster->pts[i+1].z = 0;
- 			s_sum += distance_L2_XY (&laserfeat_cluster->pts[i] , &laserfeat_cluster->pts[i+1]);
+			s_sum += distance_L2_XY (&laserfeat_cluster->pts[i] , &laserfeat_cluster->pts[i+1]);
 		}
 	}
 	else
 		ret = 0;
 
-    *out =s_sum;
+	*out =s_sum;
 	return(ret);
 }
 
@@ -350,7 +404,7 @@ int lfeatures_class ::  feature_08(Point3D_container *laserfeat_cluster, Real *o
 	if(laserfeat_cluster->pts.size() > 2)
 	{
 		std::vector <double> dist ( laserfeat_cluster->pts.size() - 1);
-		
+
 		int c = 0;
 		for(unsigned int i = 0; i <laserfeat_cluster->pts.size() - 1; i++,c++)
 			dist[c] = distance_L2_XY (&laserfeat_cluster->pts[i] , &laserfeat_cluster->pts[i + 1]);
@@ -380,23 +434,23 @@ int lfeatures_class ::  feature_09(Point3D_container *laserfeat_cluster, Real *o
 		std::vector <double> d (3);
 		for(unsigned int i = 1; i <laserfeat_cluster->pts.size() -1; i++)
 		{
-				d[0] =  distance_L2_XY (&laserfeat_cluster->pts[i - 1], &laserfeat_cluster->pts[i]);
-       		 	d[1] =  distance_L2_XY (&laserfeat_cluster->pts[i], &laserfeat_cluster->pts[i+1]);
-       		 	d[2] =  distance_L2_XY (&laserfeat_cluster->pts[i - 1], &laserfeat_cluster->pts[i + 1]);
-				std::sort(d.begin(), d.end());
+			d[0] =  distance_L2_XY (&laserfeat_cluster->pts[i - 1], &laserfeat_cluster->pts[i]);
+			d[1] =  distance_L2_XY (&laserfeat_cluster->pts[i], &laserfeat_cluster->pts[i+1]);
+			d[2] =  distance_L2_XY (&laserfeat_cluster->pts[i - 1], &laserfeat_cluster->pts[i + 1]);
+			std::sort(d.begin(), d.end());
 
-				//~ numerically stable Hero's formula
-      			area = (d[0] + d[1] + d[2]) * (d[2] - (d[0] - d[1])) * (d[2] + (d[0] - d[1])) * (d[0] + (d[1] - d[2])) + L_EPSNUM;
+			//~ numerically stable Hero's formula
+			area = (d[0] + d[1] + d[2]) * (d[2] - (d[0] - d[1])) * (d[2] + (d[0] - d[1])) * (d[0] + (d[1] - d[2])) + L_EPSNUM;
 
-       			//~ no curvature
-       			if(area <0)
-					area = 0;
-       			area = 0.25 * sqrt(area);
-       			double denom = d[0]*d[1]*d[2] + L_EPSNUM;
-       			k_sum += (4.0 * area) / denom;
-       			
-    	}
- 		*out =  k_sum / ((double)laserfeat_cluster->pts.size());
+			//~ no curvature
+			if(area <0)
+				area = 0;
+			area = 0.25 * sqrt(area);
+			double denom = d[0]*d[1]*d[2] + L_EPSNUM;
+			k_sum += (4.0 * area) / denom;
+
+		}
+		*out =  k_sum / ((double)laserfeat_cluster->pts.size());
 	}
 	else
 		ret = 0;
@@ -416,59 +470,59 @@ int lfeatures_class ::  feature_10(Point3D_container *laserfeat_cluster, Real *o
 	double ang_sum = 0;
 	Point3D_str pt0, pt1;
 	Point3D_str origin;	
-	
+
 	origin.x = 0;
 	origin.y = 0;
 	origin.z = 0;
-				
- 	if(laserfeat_cluster->pts.size() > 2)
+
+	if(laserfeat_cluster->pts.size() > 2)
 	{
 		for(unsigned int i = 1; i <laserfeat_cluster->pts.size()-1; i++)
 		{
- 			 // the CW or CCW sense eis not important since  they're consecutive
-			
-		       	 pt0.x = laserfeat_cluster->pts[i].x - laserfeat_cluster->pts[i-1].x;
-	       		 pt0.y = laserfeat_cluster->pts[i].y - laserfeat_cluster->pts[i-1].y;
-	       		 
-	       		 pt1.x = laserfeat_cluster->pts[i + 1].x - laserfeat_cluster->pts[i].x;
-	       		 pt1.y = laserfeat_cluster->pts[i + 1].y - laserfeat_cluster->pts[i].y;
-	       		 
-	     		 n0 =  distance_L2_XY(&pt0, &origin);
-	     		 n1 =  distance_L2_XY(&pt1, &origin);
-	     		 
-	     		 div = n0 * n1;
-	     		
-	     		// very small curvature if points collide: do not sum ang 
-	     		 if(div > 0)
-	     		 {
-		       		 // scalar product
-	       			 sc_prd = pt0.x * pt1.x + pt0.y * pt1.y;
-					 res = sc_prd / div;
-					
-					 //~ numerical instabilities
-					 if( res > 0.0 )
-					 	res-=L_EPSNUM;
+			// the CW or CCW sense eis not important since  they're consecutive
 
-					 if(res < 0.0)
-					 	res+=L_EPSNUM;
-					 
-					 if(fabs(res) > 1.0)
-					 {
-					 	printf("ERROR: memory corruption in feature10\n") ;
-					 	exit(1);
-					 }	
+			pt0.x = laserfeat_cluster->pts[i].x - laserfeat_cluster->pts[i-1].x;
+			pt0.y = laserfeat_cluster->pts[i].y - laserfeat_cluster->pts[i-1].y;
 
-					 ang_sum += acos(  res );
-	       		  }
+			pt1.x = laserfeat_cluster->pts[i + 1].x - laserfeat_cluster->pts[i].x;
+			pt1.y = laserfeat_cluster->pts[i + 1].y - laserfeat_cluster->pts[i].y;
+
+			n0 =  distance_L2_XY(&pt0, &origin);
+			n1 =  distance_L2_XY(&pt1, &origin);
+
+			div = n0 * n1;
+
+			// very small curvature if points collide: do not sum ang
+			if(div > 0)
+			{
+				// scalar product
+				sc_prd = pt0.x * pt1.x + pt0.y * pt1.y;
+				res = sc_prd / div;
+
+				//~ numerical instabilities
+				if( res > 0.0 )
+					res-=L_EPSNUM;
+
+				if(res < 0.0)
+					res+=L_EPSNUM;
+
+				if(fabs(res) > 1.0)
+				{
+					printf("ERROR: memory corruption in feature10\n") ;
+					exit(1);
+				}
+
+				ang_sum += acos(  res );
+			}
 		}
-		
+
 		*out = ang_sum / (double)(laserfeat_cluster->pts.size() - 2);
-    }   	
-    else
+	}
+	else
 		ret = 0;
 
 	return(ret);
-	
+
 }
 
 ////-------------------------------------------------------------------------------------------------------------------
@@ -476,23 +530,23 @@ int lfeatures_class ::  feature_10(Point3D_container *laserfeat_cluster, Real *o
 /** feature 11:  aspect ratio1: GEOMETRY_MAX(std_x,std_y) / GEOMETRY_MIN(std_x,std_y)
     This initially had a problem due to the call to get_coords(pts, coord) . Fixed.
     @see LSL_Point3D_container::get_coords (std::vector< double > &pts_coord, char coord_sel)
-*/
+ */
 int lfeatures_class ::  feature_11(Point3D_container *laserfeat_cluster, Real *out)
 {
 	char ret = 1;
-	
+
 	double GEOMETRY_MIN_v, GEOMETRY_MAX_v, std1, std2;
 	std::vector <double> pts_coordx,pts_coordy;
-	
+
 	laserfeat_cluster -> get_coords(pts_coordx, GEOMETRY_COORD_X);
-        //printf("feature 11 size: cluster %d pts_coord %d\n",  laserfeat_cluster->pts.size() , pts_coord.size());
+	//printf("feature 11 size: cluster %d pts_coord %d\n",  laserfeat_cluster->pts.size() , pts_coord.size());
 
 	std1 = gsl_stats_sd (&pts_coordx[0], 1, laserfeat_cluster->pts.size() -1) ;
-        //printf("std1 %f\n", std1);
+	//printf("std1 %f\n", std1);
 
 	laserfeat_cluster -> get_coords(pts_coordy, GEOMETRY_COORD_Y);
 	std2 = gsl_stats_sd (&pts_coordy[0], 1, laserfeat_cluster->pts.size() -1) ;
-        //printf("std2 %f\n", std2);
+	//printf("std2 %f\n", std2);
 
 
 	GEOMETRY_MAX_v = GEOMETRY_MAX(std1, std2);	
@@ -515,7 +569,7 @@ int lfeatures_class ::  feature_12(Point3D_container *laserfeat_cluster, Real *o
 	//~ at least 2pt
 	if(	laserfeat_cluster -> pts.size() < 2)
 		return(0);
-			
+
 	// get COG
 	laserfeat_cluster->compute_cog(&pts_cog);
 
@@ -525,11 +579,11 @@ int lfeatures_class ::  feature_12(Point3D_container *laserfeat_cluster, Real *o
 		double val = distance_L2_XY (&laserfeat_cluster -> pts[i], &pts_cog);
 		s_sum += val*val*val*val;
 	}
-	
+
 	// compute 2D std
 	Real out1;
 	feature_02(laserfeat_cluster,  &out1);
-	
+
 	double num = s_sum / (double)laserfeat_cluster -> pts.size();
 	double denom = out1 * out1 + L_EPSNUM;
 	*out =  num / denom;
@@ -544,7 +598,7 @@ int lfeatures_class ::  feature_13(Point3D_container *laserfeat_cluster, Real *o
 {
 	char ret = 1;	
 	double s_sum = 0;
-		
+
 	if(laserfeat_cluster-> pts.size() > 1)
 	{
 		Point3D_str line_param, pts_cog;
@@ -554,7 +608,7 @@ int lfeatures_class ::  feature_13(Point3D_container *laserfeat_cluster, Real *o
 
 		double m = line_param.x;
 		double q = line_param.y;
-		
+
 		//~ vertical line
 		if(fabs(m) > L_HUGENUM)
 		{
@@ -623,7 +677,7 @@ int lfeatures_class ::  feature_16(Point3D_container *laserfeat_cluster, Real *o
 {
 	// origin
 	Point3D_str origin, pts_cog;	
-	
+
 	origin.x = 0;
 	origin.y = 0;
 	origin.z = 0;
@@ -633,7 +687,7 @@ int lfeatures_class ::  feature_16(Point3D_container *laserfeat_cluster, Real *o
 
 	// compute distance
 	double dist = distance_L2_XY(&pts_cog, &origin);
-	
+
 	*out = dist;
 	return(1);
 }
@@ -656,7 +710,7 @@ int lfeatures_class ::  feature_01_comparative(std::vector <Point3D_container> &
 			Point3D_str pts_curcog;	
 			all_laserfeat_cluster[i].compute_cog(&pts_curcog);
 			double curdist = distance_L2_XY(&pts_cog, &pts_curcog);
-			
+
 			if(curdist < bestdist)
 				bestdist = curdist;
 		}
@@ -664,4 +718,4 @@ int lfeatures_class ::  feature_01_comparative(std::vector <Point3D_container> &
 	*out = bestdist;
 	return(1);
 }
- 
+

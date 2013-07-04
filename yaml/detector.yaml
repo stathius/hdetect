@@ -1,14 +1,13 @@
-hog_threshold: -10000
-no_features: 17
-tf_timeout: 30
-laserA: -2.0
-laserB: 0.0
-cameraA: -4.0
-cameraB: 0.0
-m_to_pixels: 1000.0
-body_ratio: 2.0
-jumpdist: 0.20
-feature_set: 0
-laser_range: 30
-
-
+jumpdist: 0.20 # laser segmentation distance
+feature_set: 0 # 0 = 17, 1 = 63
+hog_hit_threshold: 0.0 # hog svm bias
+hog_group_threshold : 2 # hog grouping threshold
+hog_meanshift: 1 # if meanshift grouping is used
+body_ratio: 2.0 # upper/lower body ratio
+tf_timeout: 30 # how long to wait tf
+laserA: -2.0 # probability sigmoid
+laserB: 0.0 # parameters for laser
+cameraA: -4.0 # probability sigmoid
+cameraB: 0.0 # parameters for camera
+m_to_pixels: 1000.0 # ROI meter to pixel ratio
+laser_range: 30.0 # accepted laser range

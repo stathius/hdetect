@@ -17,9 +17,6 @@
  * PURPOSE.  
  *
  *****************************************************************/
-
-
-
 #ifndef LIBFEATURES_H
 #define LIBFEATURES_H
 
@@ -32,6 +29,10 @@
 #define L_MINCLUSTERSZ 3
 #define L_EPSNUM 1e-10
 #define L_HUGENUM 1e10
+
+#define FEATURE_SET_0 17
+#define FEATURE_SET_1 63
+#define FEATURE_BASIS 13
 
 typedef float Real;
 
@@ -58,16 +59,19 @@ class lfeatures_class
 		int feature_16(Point3D_container *laserfeat_cluster, Real *out);		
 		int feature_01_comparative(std::vector <Point3D_container> &all_laserfeat_cluster, unsigned int curidx, Real *out);
 		
+		int feature_size;
+		int feature_set;
+
 		#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
-		typedef int  (lfeatures_class::*ptr_ezfeature1)(Point3D_container*, Real*);
-		std::vector <ptr_ezfeature1> ptr_ezfeature_vec_1D;
+		typedef int  (lfeatures_class::*ptr_feature)(Point3D_container*, Real*);
+		std::vector <ptr_feature> ptr_feature_vector;
 		
 		#define CALL_MEMBER_FN_CMP(object,ptrToMember)  ((object).*(ptrToMember))
-		typedef int  (lfeatures_class::*ptr_ezfeature2)(std::vector <Point3D_container> &, unsigned int, Real*);
-		std::vector <ptr_ezfeature2> ptr_ezfeature_vec_1D_cmp;
+		typedef int  (lfeatures_class::*ptr_feature_cmp)(std::vector <Point3D_container> &, unsigned int, Real*);
+		std::vector <ptr_feature_cmp> ptr_feature_vector_cmp;
 
 	public:
-		lfeatures_class(const std::vector <int> &featnum, const std::vector <int> &featnum_comparative);
+		lfeatures_class(int feature_set);
 		void compute_descriptor(std::vector <Point3D_container> &all_laserfeat_cluster, std::vector < std::vector <Real> > &descriptor);
 
 };

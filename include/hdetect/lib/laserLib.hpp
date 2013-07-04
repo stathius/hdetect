@@ -15,7 +15,7 @@ class laserLib {
 private:
 
   /// Needed by getClusters()
-  Point3D_str cogLSL;
+  Point3D_str cogL;
   Point3D_str origin;
   geometry_msgs::Point32 pt;
   geometry_msgs::Point32 cogROS;
@@ -26,17 +26,18 @@ private:
   sensor_msgs::LaserScan filtScan;
 
   /// This is a people2d_engine class to hold the laser scan data for it.
-  laserscan_data libScan;
+  laserscan_data libScanData;
 
   /// people2d_engine object used to make the segmentation and compute the features.
-  lengine libEngine;
+  lengine *libEngine;
+
   /// Parameters of the libEngine. Initialized in constructor.
-  sw_param_str libEngineParams;
+  lengine_params libEngineParams;
 
   ///  Vector to hold the clusters of each scan in people2d_engine format
   std::vector<Point3D_container> clusters;  // lgeometry.hpp
 
-  /// The feature vector
+  /// The feature vector of the lengine format
   std::vector < std::vector <float> > descriptor;
   float angle_min;
   float angle_max;
@@ -50,8 +51,9 @@ private:
   /**
    *
    * @param ls[in] The input scan to be converted
+   * @param libScan [out] The laserscan_data variable to hold the lengine compatible data
    */
-  void scan2lib(sensor_msgs::LaserScan &ls);
+  void scan2lib(sensor_msgs::LaserScan &ls, laserscan_data &libScan);
 
   /**
    *

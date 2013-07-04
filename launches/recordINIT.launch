@@ -1,13 +1,13 @@
 <launch>
 	<param name="use_sim_time" value="false" />
-	<param name="pkg_path" value="$(find upm)"/>
+	<param name="pkg_path" value="$(find hdetect)"/>
 	
 
 	<node name="camera" pkg="camera1394" type="camera1394_node" output="screen" cwd="node" required="true">
 		<param name="frame_id" value="/camera"/>
 		<param name="video_mode" value="format7_mode0"/>
 		<param name="frame_rate" value="60"/>
-		<param name="camera_info_url" value="file://$(find upm)/yaml/camera_calib.yaml" />
+		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib.yaml" />
 	</node>
 
 	<node pkg="iri_hokuyo_laser"
@@ -17,8 +17,8 @@
     		<param name="frame_id"     value="/laser" />
     		<param name="use_ethernet" value="true"         />
     		<param name="ip_address"   value="192.168.0.11" /> <!-- default IP address -->
-    		<param name="angle_min"    value="-1.57080"      /> <!-- -pi/2 -->
-    		<param name="angle_max"    value="1.57080"       /> <!-- pi/2 -->
+    		<param name="angle_min"    value="-2.35619449019"      /> <!--  -135  -->
+    		<param name="angle_max"    value="2.35619449019"       /> <!--  +135  -->
     		<param name="interval"     value="0"            /> <!-- changes the hz rate -->
 	</node>
  

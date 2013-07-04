@@ -20,6 +20,8 @@ visualizer::visualizer() {
 
 	pub = nh.advertise<std_msgs::Byte>("visualizer", 5);
 	dummy.data=1;
+
+	ROS_INFO("[VISUALIZER] Visualizer running OK.");
 }
 
 visualizer::~visualizer() {
@@ -34,20 +36,20 @@ visualizer::~visualizer() {
 void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-
 	extractData(image, lScan);
 
 	// Convert image to RGB
 	cvtColor(cv_ptr->image, colorImage , CV_GRAY2RGB);
 
 	// Iterate through every cog of the scanClusters
-	for (int i=0; i < scanData.cogs.size() ;i++)
+	for (int i=0; i < clusterData.cogs.size() ;i++)
 	{
+
 		// If the cog is in the image save its features and then plot the cluster
-		if (scanData.projected[i]==1)
+		if (clusterData.projected[i]==1)
 		{
 			// Get the color index
-			color = getColor(scanData.cogs[i]);
+			color = getColor(clusterData.cogs[i]);
 
 			// Draw a rectangle around each crop
 			//rectangle(colorImage, upleft, downright, color, 2, 8, 0);
@@ -65,20 +67,15 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			cv::putText(colorImage, boost::lexical_cast<string>(i), prPixel, 1, 1, color, 1, 1);
 
 			// This is the code to superimpose the clusters on the image
-			for (uint j = 0; j < scanData.clusters[i].points.size(); j++)
+			for (uint j = 0; j < clusterData.clusters[i].points.size(); j++)
 			{
 				// Convert each cluster point to image coordinates
-				projectPoint(scanData.clusters[i].points[j], prPixel, params.cInfo, transform);
+				projectPoint(clusterData.clusters[i].points[j], prPixel, params.cInfo, transform);
 
 				// Draw the point to the image
 				if (prPixel.x >= 0 && prPixel.x < colorImage.cols && prPixel.y >= 0 && prPixel.y < colorImage.rows)
 				{
 					circle(colorImage, prPixel, 2, color);
-					/*
-          	  	  	  colorImage.at<Vec3b>(pt2D.y, pt2D.x)[0] = color.val[0]; //b
-          	  	  	  colorImage.at<Vec3b>(pt2D.y, pt2D.x)[1] = color.val[1]; //g
-           	  	  	  colorImage.at<Vec3b>(pt2D.y, pt2D.x)[2] = color.val[2]; //r
-					 */
 				}
 			}
 
@@ -92,7 +89,8 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
   	  ROS_INFO("[ANNOTATOR] size features %d", scanClusters.features.size());
   	  ROS_INFO("[ANNOTATOR] size labels %d", scanClusters.labels.size());
   	  ROS_INFO("[ANNOTATOR] size fusion %d", scanClusters.fusion.size());
-	 */
+  	  /*/
+
 	plotLaser<visualizer>(zoom, this);
 	cv::imshow(L_WINDOW, laserPlane);
 	waitKey(3);
@@ -101,6 +99,7 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 
 	//waitKey();
 	pub.publish(dummy);
+	//*/
 }
 
 /// Returns a color from the pallete, based on its position

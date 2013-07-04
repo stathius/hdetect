@@ -2,7 +2,6 @@
 
 detector::detector() : nh("~")
 {
-
 	//string s = nh.getNamespace();
 	//ROS_INFO("[DETECTOR] my namespace %s ", s.c_str());
 
@@ -26,39 +25,32 @@ detector::detector() : nh("~")
 	}
 	else ROS_WARN("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
 
-	if(nh.hasParam("hog_threshold") && nh.hasParam("no_features") && nh.hasParam("tf_timeout")
+	if(nh.hasParam("hog_hit_threshold") && nh.hasParam("hog_group_threshold")
+			&& nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout")
+			//&& nh.hasParam("no_features")
 			&& nh.hasParam("cameraA") && nh.hasParam("cameraB") && nh.hasParam("laserA")
 			&& nh.hasParam("laserB") && nh.hasParam("m_to_pixels") && nh.hasParam("body_ratio")
 			&& nh.hasParam("jumpdist") && nh.hasParam("feature_set") && nh.hasParam("laser_range")) {
 
-		nh.getParam("no_features", params.no_features);
-
-		nh.getParam("hog_threshold", params.hog_threshold);
-
+		//nh.getParam("no_features", params.no_features);
+		nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
+		nh.getParam("hog_group_threshold", params.hog_group_threshold);
+		nh.getParam("hog_meanshift", params.hog_meanshift);
 		nh.getParam("tf_timeout", params.tf_timeout);
-
 		nh.getParam("tf_timeout", params.tf_timeout);
-
 		nh.getParam("cameraA", params.cameraA);
-
 		nh.getParam("cameraB", params.cameraB);
-
 		nh.getParam("laserA", params.laserA);
-
 		nh.getParam("laserB", params.laserB);
-
 		nh.getParam("m_to_pixels", params.m_to_pixels);
-
 		nh.getParam("body_ratio", params.body_ratio);
-
 		nh.getParam("jumpdist", params.jumpdist);
-
 		nh.getParam("feature_set", params.feature_set);
-
 		nh.getParam("laser_range", params.laser_range);
-
-		ROS_INFO("[DETECTOR] Parameters loaded");
+		ROS_INFO("[DETECTOR] Parameters loaded.");
 	}
+	else
+		ROS_ERROR("[DETECTOR] Wrong parameters loaded.");
 
 	// Initiates the laserLib with the parameters read from the server
 	laserProcessor = new laserLib(params.jumpdist, params.feature_set, params.laser_range);
@@ -67,20 +59,31 @@ detector::detector() : nh("~")
 	hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 
 	scanNo = 0;
-	clusterNo = 0;
 
-	// It might need change to 1,17
+	switch(params.feature_set) {
+	case 0:
+		params.no_features = FEATURE_SET_0;
+		break;
+	case 1:
+		params.no_features = FEATURE_SET_1;
+		break;
+	default:
+		params.no_features = FEATURE_SET_1;
+		break;
+	}
 	lFeatures = cv::Mat::zeros(params.no_features,1,CV_64F);
+
+	ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
 }
 
 void detector::setClusters(hdetect::ClusteredScan sd)
 {
-	scanData=sd;
+	clusterData=sd;
 }
 
 hdetect::ClusteredScan detector::getClusters()
 {
-	return scanData;
+	return clusterData;
 }
 
 void detector::getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan) {
@@ -116,31 +119,37 @@ void detector::getLaser(const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
 	// Load the scan to the processor
 	laserProcessor->loadScan(*lScan);
+
 	// Segment the laser scan
-	laserProcessor->getClusters(scanData);
+	laserProcessor->getClusters(clusterData);
 
 	// Only process scans with valid data
-	if(scanData.clusters.size()>0) {
-		laserProcessor->getFeatures(scanData);
+	if(clusterData.clusters.size()>0) {
+		laserProcessor->getFeatures(clusterData);
 	}
 	else
 		ROS_WARN("[DETECTOR] No valid clusters. Scan %04d", scanNo);
+
+	projectLaser();
 }
 
-void detector::extractLaser()
+void detector::projectLaser()
 {
+
+	int clusterNo = 0;
 	// Iterate through every cog of the scanClusters
-	for (std::vector<geometry_msgs::Point32>::iterator it = scanData.cogs.begin();
-			it != scanData.cogs.end();
+	for (std::vector<geometry_msgs::Point32>::iterator it = clusterData.cogs.begin();
+			it != clusterData.cogs.end();
 			it++)
 	{
+
 		// Convert the cog to image coordinates
 		projectPoint(*it, prPixel, params.cInfo, transform);
 
 		/// If the pixel is projected within the image limits
 		if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols && prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
 		{
-			scanData.projected[clusterNo]=1;
+			clusterData.projected[clusterNo]=1;
 
 			// Get the box size and corners
 			getBox(*it, prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
@@ -149,7 +158,7 @@ void detector::extractLaser()
 			if (checkBox(params.cInfo, upleft, downright))
 			{
 				// Flag the cluster as 'fusable'. Meaning they appear with a valid box on the image.
-				scanData.fusion[clusterNo] = 1;
+				clusterData.fusion[clusterNo] = 1;
 			}
 
 		}
@@ -160,7 +169,7 @@ void detector::extractLaser()
 
 void detector::detectLaser(std_msgs::Float32MultiArray &features)
 {
-	uint i;
+	int i;
 	for (i = 0; i < features.data.size() ; i++)
 	{
 		lFeatures.at<double>(i,0) = features.data[i];
@@ -196,8 +205,7 @@ void detector::detectCamera(geometry_msgs::Point32 &cog)
 	vector<double> weightM;
 
 	// We don't really care about the class so we put the threshold really low to even negative predictions
-	hog.detectMultiScale(crop, foundM, weightM, params.hog_threshold, cv::Size(8,8), cv::Size(0,0), 1.05 , 0, 1);
-
+	hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold, cv::Size(8,8), cv::Size(0,0), 1.05 , params.hog_group_threshold, params.hog_meanshift);
 	/// TODO HOW TO ACCEPT A POSITIVE (mean shift)
 	float pred = *max_element( weightM.begin(), weightM.end() );
 	pred = 1 / ( 1 + exp(params.cameraA * pred + params.cameraB));
@@ -206,13 +214,13 @@ void detector::detectCamera(geometry_msgs::Point32 &cog)
 
 void detector::detectFusion() {
 
-	for (uint i = 0; i < scanData.clusters.size(); i++)
+	for (uint i = 0; i < clusterData.clusters.size(); i++)
 	{
-		detectLaser(scanData.features[i]);
+		detectLaser(clusterData.features[i]);
 
-		if (scanData.fusion[i] == 1)
+		if (clusterData.fusion[i] == 1)
 		{
-			detectCamera(scanData.cogs[i]);
+			detectCamera(clusterData.cogs[i]);
 			// Bayesian fusion
 			fusionProb.push_back( ( laserProb[i] * cameraProb[i] ) /
 					( ( laserProb[i] * cameraProb[i] ) + ( 1.0 - laserProb[i] ) * ( 1.0 - cameraProb[i] ) ) ); //
@@ -231,6 +239,5 @@ void detector::extractData(const sensor_msgs::Image::ConstPtr &image,
 	getImage(image);
 	getLaser(lScan);
 
-	extractLaser();
 	//detectPedestrian();
 }

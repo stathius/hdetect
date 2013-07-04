@@ -31,72 +31,73 @@
 
 typedef struct
 {
-  double jumpdist, laser_range;
-  int feature_set;
-  char segonly, sanity, verbosity;
-} sw_param_str;
+	double jumpdist, laser_range;
+	int feature_set;
+	char segonly, sanity, verbosity;
+} lengine_params;
 
 
 class laserscan_data
 {
 public:
 
-  Point3D_container data;
-  double timestamp;
+	Point3D_container data;
+	double timestamp;
 
-  laserscan_data() { }
-  laserscan_data(int num)
-  {
-    data = Point3D_container(num);
-  }
+	laserscan_data() { }
+	laserscan_data(int num)
+	{
+		data = Point3D_container(num);
+	}
 };
 
 class lengine
 {
 private:
-  sw_param_str params;
-  std::vector<laserscan_data> laserscan;int get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx
-                                                                );int sanity_check(
-  std::vector<std::vector<Real> > & descriptor);
 
-  unsigned int fsz;
+	lengine_params params;
+	std::vector<laserscan_data> laserscan;int get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx
+	);int sanity_check(
+			std::vector<std::vector<Real> > & descriptor);
 
-  // made it public
-  lfeatures_class *lfeatures;
+	// made it public
+	lfeatures_class *lfeatures;
 
-  // UPM
-  // instead of using the vector laserscan we will be using a
-  // signle laserscan_data object
-  laserscan_data laserscan_single;
+	// UPM
+	// instead of using the vector laserscan we will be using a
+	// single laserscan_data object
+	laserscan_data laserscan_single;
 
 public:
-  int load_scandata(std::string fname);
 
-  lengine(sw_param_str param_in)
-  {
-    fsz = 0;
-    params = param_in;
-  }
+	const static int feature_set_size[];
 
-  void set_featureset();
+	int load_scandata(std::string fname);
 
-  // UPM functions
-  // Null constructor
-  lengine() { }
+	lengine(lengine_params param_in)
+	{
+		params = param_in;
+	}
 
-  void load_scandata(laserscan_data laserscan_input)
-  {
-    laserscan_single = laserscan_input;
-  }
+	void set_featureset();
 
-  int getScanSize()
-  {
-    return laserscan_single.data.pts.size();
-  }
+	// UPM functions
+	// Null constructor
+	// lengine() { }
 
-  int segmentscanJDC(std::vector<Point3D_container> &clusters);
+	void load_scandata(laserscan_data laserscan_input)
+	{
+		laserscan_single = laserscan_input;
+	}
 
-  void computeFeatures(std::vector<Point3D_container> &clusters, std::vector<std::vector<float> > &descriptor);
+	int getScanSize()
+	{
+		return laserscan_single.data.pts.size();
+	}
+
+	int segmentscanJDC(std::vector<Point3D_container> &clusters);
+
+	void computeFeatures(std::vector<Point3D_container> &clusters, std::vector<std::vector<float> > &descriptor);
 
 };
 #endif

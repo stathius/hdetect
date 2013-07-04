@@ -22,9 +22,9 @@
 		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib.yaml" />
 	</node>
 
-  	<node pkg="tf" type="static_transform_publisher" name="world_to_laser"
+  	<node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
     	args="0.055360992904849 -0.0311190557844302 -0.0198410310814696 
-    	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /camera /laser 10">
+    	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /laser /camera 10">
 	</node>
 
 	<node pkg="hdetect" type="visualizeRT" name="visualizeRT" output="screen" cwd="node"

@@ -53,7 +53,7 @@ public:
 	Scalar getColor(geometry_msgs::Point32 &point);
 
 	/// Returns the ClusteredScan from the object
-	hdetect::ClusteredScan getClusteredScan() { return scanData; };
+	hdetect::ClusteredScan getClusteredScan() { return clusterData; };
 
 	/// Set the laserplane for visualizing purposes
 	/// @param lp The computed laser plane image.

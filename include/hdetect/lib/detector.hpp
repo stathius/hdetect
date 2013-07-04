@@ -20,8 +20,14 @@ struct detectorParameters {
 	/// Also used in laserLib for defining the feature set
 	int no_features;
 
-	/// The HoG clustering threshold is defined as a parameter
-	int hog_threshold;
+	/// The HoG group threshold is defined as a parameter (normally 2)
+	int hog_group_threshold;
+
+	/// Defines if HoG multiscale detection uses meanshift clustering (default 1)
+	int hog_meanshift;
+
+	/// The HoG SVM classifier bias (normally 0)
+	int hog_hit_threshold;
 
 	/// The camera info is loaded from the file "yaml/camera_calib.yaml"
 	sensor_msgs::CameraInfo cInfo;
@@ -60,7 +66,7 @@ protected:
 	ros::NodeHandle nh;
 
 	/// Contains the laser clusters, annotation, features, cogs, annotation, if it should be fused etc.
-	hdetect::ClusteredScan scanData;
+	hdetect::ClusteredScan clusterData;
 
 	/// Used to listen the transform between the laser and the camera.
 	tf::TransformListener tf_listener_;
@@ -69,8 +75,7 @@ protected:
 	///  When the image was captured.
 	ros::Time acquisition_time;
 
-	/// Curent cluster and scan number
-	int clusterNo;
+	/// Curent scan number
 	int scanNo;
 
 	/// Crop box corners
@@ -100,7 +105,8 @@ protected:
 	std::vector<int> fusionClass;
 
 	// The adaboost detector for the laser
-	CvBoost::CvBoost boost;
+	CvBoost boost;
+
 	// The laser feature matrix
 	cv::Mat lFeatures;
 
@@ -126,7 +132,7 @@ protected:
 	/// Does the rest of the laser processing, find projected and fused segments
 	/// Uses directly scanClusters
 	/// Must be run after getTF and getImage
-	void extractLaser();
+	void projectLaser();
 
 	/// Detects if there is a pedestrian in the cluster and or ROI
 	/// Gives the probabilities and the class output of each detector

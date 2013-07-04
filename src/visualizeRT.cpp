@@ -77,7 +77,7 @@ visualizeRT::visualizeRT(std::string laserTopic, std::string cameraTopic) : nh("
 
   // Sleep to give time to other nodes (tf) to start
   sleep(2);
-  ROS_INFO("[VISUALIZE_LIVE] Start OK");
+  ROS_INFO("[VISUALIZE_RT] VisualizeRT running OK.");
 }
 
 int main(int argc, char* argv[])
