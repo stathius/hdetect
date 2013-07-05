@@ -9,6 +9,11 @@
 #define HEIGHT 700 // the laser window height
 #define WIDTH 1000 // and width
 
+#define NO_RECT 0
+#define RECT 1
+
+#define HOG_WIDTH 64
+
 using namespace std;
 using namespace cv;
 
@@ -39,106 +44,122 @@ void getCrop (cv::Mat &roi, cv::Mat &image, cv::Point &upleft, int &boxSize);
  * @param[in] BODY_RATIO The ratio of the upper body part to the lower body part
  */
 void getBox(geometry_msgs::Point32 &it, cv::Point2d &pt2D, int &boxSize,
-         cv::Point &upleft, cv::Point &downright, double &M_TO_PIXELS, double &BODY_RATIO);
+		cv::Point &upleft, cv::Point &downright, double &M_TO_PIXELS, double &BODY_RATIO);
 
- /**
-  *
-  * @param cInfo The camera info
-  * @param upleft Upper left corner of the box in pixel coords.
-  * @param downright Lower right corner of the box in pixel coords.
-  * @return TRUE if the box lies into image, FALSE if not
-  */
- bool checkBox(sensor_msgs::CameraInfo &cInfo, cv::Point &upleft, cv::Point &downright);
+/**
+ *
+ * @param cInfo The camera info
+ * @param upleft Upper left corner of the box in pixel coords.
+ * @param downright Lower right corner of the box in pixel coords.
+ * @return TRUE if the box lies into image, FALSE if not
+ */
+bool checkBox(sensor_msgs::CameraInfo &cInfo, cv::Point &upleft, cv::Point &downright);
 
- /**
-  *
-  * @param[in] pointIn Input point in cartesian x,y coords.
-  * @param[out] pointOut Point projected to pixel coords.
-  * @param[in] cam_info The camera info variable. Contains focal length and distortion coeffs.
-  * @param[in] transform The transformation between the camera and the laser
-  */
- void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, sensor_msgs::CameraInfo &cam_info,
-                   tf::StampedTransform &transform);
+/**
+ *
+ * @param[in] pointIn Input point in cartesian x,y coords.
+ * @param[out] pointOut Point projected to pixel coords.
+ * @param[in] cam_info The camera info variable. Contains focal length and distortion coeffs.
+ * @param[in] transform The transformation between the camera and the laser
+ * @param[in] rect Set to RECT or NO_RECT if using the rectified image or not.
+ *
+ */
+void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Mat &K, cv::Mat &D,
+		tf::StampedTransform &transform);
 
- void pointToPlane(geometry_msgs::Point32 &ptIn, cv::Point &ptOut, int &zoom);
+/**
+ * Converts a point to the laser plane image coordinates
+ * @param ptIn
+ * @param ptOut
+ * @param zoom
+ */
+void pointToPlane(geometry_msgs::Point32 &ptIn, cv::Point &ptOut, int &zoom);
 
- /**
-  * Draw the laser scan in a 2d plane
-  * It's a callback function for the zoom trackbar handler that's why it's a bit fuzzy.
-  * The obj_class class must be a visualizer or a derived class.
-  * @param zoom The zoom factor
-  * @param obj The object where to get the ClusteredScan data
-  */
- template <class obj_class> void plotLaser(int zoom, void * obj)
- {
-   // dereferencing the void object pointer
-   obj_class * newObj = (obj_class*)obj; //recasted
+/**
+ * Converts the camera info to opencv ready mats.
+ * @param[in] cInfo
+ * @param[out] K
+ * @param[out] D
+ */
+void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &rect);
 
-   hdetect::ClusteredScan scanClusters = newObj->getClusteredScan();
+/**
+ * Draw the laser scan in a 2d plane
+ * It's a callback function for the zoom trackbar handler that's why it's a bit fuzzy.
+ * The obj_class class must be a visualizer or a derived class.
+ * @param zoom The zoom factor
+ * @param obj The object where to get the ClusteredScan data
+ */
+template <class obj_class> void plotLaser(int zoom, void * obj)
+{
+	// dereferencing the void object pointer
+	obj_class * newObj = (obj_class*)obj; //recasted
 
-   Mat laserPlane;
-   laserPlane.create(HEIGHT, WIDTH, CV_8UC3);
-   laserPlane.setTo(Scalar(255, 255, 255));
+	hdetect::ClusteredScan scanClusters = newObj->getClusteredScan();
 
-   Point pt;
-   Scalar color;
-   // The mat will be 1000(X)x500(Y) pixels
-   // The values are computed according to the zoom value
-   // The default zoom corresponds to 500 pixels = 30000 mm
+	Mat laserPlane;
+	laserPlane.create(HEIGHT, WIDTH, CV_8UC3);
+	laserPlane.setTo(Scalar(255, 255, 255));
 
-   for (uint cNo = 0; cNo < scanClusters.nclusters; cNo++)
-   {
+	Point pt;
+	Scalar color;
+	// The mat will be 1000(X)x500(Y) pixels
+	// The values are computed according to the zoom value
+	// The default zoom corresponds to 500 pixels = 30000 mm
 
-     if (1) //scanClusters.fusion[clusterNo] == TRUE)
-     {
-       pointToPlane(scanClusters.cogs[cNo],pt,zoom);
+	for (uint cNo = 0; cNo < scanClusters.nclusters; cNo++)
+	{
 
-       color = newObj->getColor(scanClusters.cogs[cNo]);
+		if (1) //scanClusters.fusion[clusterNo] == TRUE)
+		{
+			pointToPlane(scanClusters.cogs[cNo],pt,zoom);
 
-       // Number of cluster
-       //cv::putText(laserPlane, boost::lexical_cast<string>(clusterNo),
-       //            pt, 1, 2, color,2, 8);
-       //pt.x+=30;
+			color = newObj->getColor(scanClusters.cogs[cNo]);
 
-       // Number of points
-       Scalar black(0,0,0);
-       cv::putText(laserPlane, boost::lexical_cast<string>(scanClusters.clusters[cNo].points.size()),
-                   pt, 1, 2, black, 2, 8);
+			// Number of cluster
+			//cv::putText(laserPlane, boost::lexical_cast<string>(clusterNo),
+			//            pt, 1, 2, color,2, 8);
+			//pt.x+=30;
 
-       // Distance to cog
-       pt.x+=45;
-       cv::putText(laserPlane, boost::lexical_cast<string>( uint( sqrt( pow(scanClusters.cogs[cNo].x,2)
-                                                                  + pow(scanClusters.cogs[cNo].y,2) ) *100) ),
-                   pt, 1, 1.3, black, 1.3, 8);
+			// Number of points
+			Scalar black(0,0,0);
+			cv::putText(laserPlane, boost::lexical_cast<string>(scanClusters.clusters[cNo].points.size()),
+					pt, 1, 2, black, 2, 8);
 
-       for (uint pointNo = 0; pointNo < scanClusters.clusters[cNo].points.size(); pointNo++)
-       {
-         // Transform x,y point to pixels
-         pointToPlane(scanClusters.clusters[cNo].points[pointNo],pt,zoom);
-         circle(laserPlane, pt, 2, color);
-       }
+			// Distance to cog
+			pt.x+=45;
+			cv::putText(laserPlane, boost::lexical_cast<string>( uint( sqrt( pow(scanClusters.cogs[cNo].x,2)
+					+ pow(scanClusters.cogs[cNo].y,2) ) *100) ),
+					pt, 1, 1.3, black, 1.3, 8);
 
-       if(scanClusters.labels[cNo]==1)
-       {
-			//cv::circle(laserPlane, 1 , 2, Scalar(0,0,0));
-       }
+			for (uint pointNo = 0; pointNo < scanClusters.clusters[cNo].points.size(); pointNo++)
+			{
+				// Transform x,y point to pixels
+				pointToPlane(scanClusters.clusters[cNo].points[pointNo],pt,zoom);
+				circle(laserPlane, pt, 2, color);
+			}
+
+			if(scanClusters.labels[cNo]==1)
+			{
+				//cv::circle(laserPlane, 1 , 2, Scalar(0,0,0));
+			}
 
 
-     }
-   }
+		}
+	}
 
-   color.val[0]=0;
-   color.val[1]=255;
-   color.val[2]=0;
+	color.val[0]=0;
+	color.val[1]=255;
+	color.val[2]=0;
 
-   geometry_msgs::Point32 org;
-   org.x=0;
-   org.y=0;
+	geometry_msgs::Point32 org;
+	org.x=0;
+	org.y=0;
 
-   pointToPlane(org, pt, zoom);
-   cv::putText(laserPlane, "Laser", pt, 1, 1, color, 1, 1);
-   circle(laserPlane, pt, 2, color);
+	pointToPlane(org, pt, zoom);
+	cv::putText(laserPlane, "Laser", pt, 1, 1, color, 1, 1);
+	circle(laserPlane, pt, 2, color);
 
-   newObj->setLaserPlane(laserPlane);
- }
+	newObj->setLaserPlane(laserPlane);
+}
 #endif

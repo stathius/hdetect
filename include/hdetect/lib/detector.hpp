@@ -16,6 +16,10 @@
 
 /// A structure to hold all the parameters needed by the detector
 struct detectorParameters {
+
+	/// If the rectified image is used or not. For projection purposes.
+	int rect;
+
 	/// The number of features is loaded as a parameter
 	/// Also used in laserLib for defining the feature set
 	int no_features;
@@ -55,9 +59,14 @@ struct detectorParameters {
 	double laser_range;
 };
 
-
 class detector {
 protected:
+
+	/// The projection matrices in openv format
+	/// Camera matrix
+	cv::Mat K;
+	/// Distortion coeffs
+	cv::Mat D;
 
 	/// Detector parameters
 	detectorParameters params;
@@ -93,11 +102,11 @@ protected:
 	///  A pointer to the opencv converted image.
 	cv_bridge::CvImagePtr cv_ptr;
 
-	// Vectors where the probabilities of the detectors are stored
-	std::vector<float> laserProb;
+	// Variables where the probabilities of the detectors are stored
+	float laserProb;
 	// If there is no fusion the probability of the laser is taken
-	std::vector<float> cameraProb;
-	std::vector<float> fusionProb;
+	float cameraProb;
+	float fusionProb;
 
 	// Vectors where the class of the detector are stored
 	std::vector<int> laserClass;
@@ -131,18 +140,17 @@ protected:
 
 	/// Does the rest of the laser processing, find projected and fused segments
 	/// Uses directly scanClusters
-	/// Must be run after getTF and getImage
-	void projectLaser();
+	void findProjectedClusters();
 
 	/// Detects if there is a pedestrian in the cluster and or ROI
 	/// Gives the probabilities and the class output of each detector
 	void detectFusion();
 
 	/// Finds the class and the probability for a given sample of laser features
-	void detectLaser(std_msgs::Float32MultiArray &features);
+	void classifyLaser(std_msgs::Float32MultiArray &features);
 
 	/// Finds the class and the probability for a given crop of the image
-	void detectCamera(geometry_msgs::Point32 &cog);
+	void classifyCamera(geometry_msgs::Point32 &cog);
 
 	void saveDetection() {};
 
@@ -158,10 +166,14 @@ public:
 	 * @param image Image message
 	 * @param lScan LaserScan message
 	 */
-	void extractData(const sensor_msgs::Image::ConstPtr &image,
+	void detectHumans(const sensor_msgs::Image::ConstPtr &image,
 			const sensor_msgs::LaserScan::ConstPtr &lScan);
 
-	void setClusters(hdetect::ClusteredScan cs);
-	hdetect::ClusteredScan getClusters();
+	/**
+	 * Used only for annotation purposes
+	 * @param cs
+	 */
+	//void setClusters(hdetect::ClusteredScan cs);
+	//hdetect::ClusteredScan getClusters();
 };
 #endif

@@ -70,7 +70,7 @@ private:
 
 public:
 
-	const static int feature_set_size[];
+	const static uint feature_set_size[];
 
 	int load_scandata(std::string fname);
 

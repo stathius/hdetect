@@ -18,7 +18,7 @@ visualizer::visualizer() {
 	// Trackbar to control the zoom
 	createTrackbar("Zoom:", L_WINDOW, &zoom, 30, &plotLaser<visualizer>, this);
 
-	pub = nh.advertise<std_msgs::Byte>("visualizer", 5);
+	pub = nh.advertise<std_msgs::Byte>("/visualizer/Hz", 5);
 	dummy.data=1;
 
 	ROS_INFO("[VISUALIZER] Visualizer running OK.");
@@ -36,13 +36,13 @@ visualizer::~visualizer() {
 void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-	extractData(image, lScan);
+	detector::detectHumans(image, lScan);
 
 	// Convert image to RGB
 	cvtColor(cv_ptr->image, colorImage , CV_GRAY2RGB);
 
 	// Iterate through every cog of the scanClusters
-	for (int i=0; i < clusterData.cogs.size() ;i++)
+	for (uint i=0; i < clusterData.cogs.size() ;i++)
 	{
 
 		// If the cog is in the image save its features and then plot the cluster
@@ -64,13 +64,21 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			/// add an if below so it draws something in either case
 
 			// Draw the cluster number
+			projectPoint(clusterData.cogs[i], prPixel, K , D, transform);
 			cv::putText(colorImage, boost::lexical_cast<string>(i), prPixel, 1, 1, color, 1, 1);
+			circle(colorImage, prPixel, 4, color);
+
+			// Draw the rectangle around the ROI
+			if (clusterData.fusion[i] == 1) {
+				getBox(clusterData.cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
+				rectangle(colorImage, upleft, downright, color);
+			}
 
 			// This is the code to superimpose the clusters on the image
 			for (uint j = 0; j < clusterData.clusters[i].points.size(); j++)
 			{
 				// Convert each cluster point to image coordinates
-				projectPoint(clusterData.clusters[i].points[j], prPixel, params.cInfo, transform);
+				projectPoint(clusterData.clusters[i].points[j], prPixel, K , D, transform);
 
 				// Draw the point to the image
 				if (prPixel.x >= 0 && prPixel.x < colorImage.cols && prPixel.y >= 0 && prPixel.y < colorImage.rows)
@@ -78,7 +86,6 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 					circle(colorImage, prPixel, 2, color);
 				}
 			}
-
 		}
 	}
 	/*

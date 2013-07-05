@@ -7,6 +7,8 @@
 #include "lengine.hpp"
 #include <hdetect/ClusteredScan.h>
 
+#define NO_HUMAN -1
+#define HUMAN 1
 
 /**
  * A class used as a ROS wrapper for the lengine class.

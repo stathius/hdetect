@@ -20,7 +20,7 @@
 
 #include "hdetect/lib/lengine.hpp"
 
-const int lengine::feature_set_size[] = {FEATURE_SET_0, FEATURE_SET_1};
+const uint lengine::feature_set_size[] = {FEATURE_SET_0, FEATURE_SET_1};
 
 int lengine::sanity_check(std::vector<std::vector<Real> > &descriptor)
 {

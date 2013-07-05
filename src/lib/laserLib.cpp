@@ -113,7 +113,7 @@ void laserLib::features2ROS(hdetect::ClusteredScan &features)
 			it = descriptor.begin(); it!=descriptor.end(); it++)
 	{
 		// initialize the label to -1
-		features.labels.push_back(-1);
+		features.labels.push_back(NO_HUMAN);
 		features.fusion.push_back(0);
 		features.projected.push_back(0);
 		for (std::vector<float>::iterator it2 = it->begin();

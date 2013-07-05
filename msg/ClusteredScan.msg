@@ -15,8 +15,10 @@ sensor_msgs/Image image
 sensor_msgs/PointCloud[] clusters
 geometry_msgs/Point32[] cogs
 std_msgs/Float32MultiArray[] features
-int8[] labels
+int8[] labels #annotation labels
 bool[] fusion
 bool[] projected
 uint16 nclusters
 uint16 nfeatures
+int8[] detection_labels 
+float32[] detection_probs

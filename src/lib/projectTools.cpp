@@ -30,7 +30,7 @@ bool checkBox(sensor_msgs::CameraInfo &cInfo, cv::Point &upleft, cv::Point &down
 			(upleft.y > 0 && upleft.y < (int) cInfo.height) &&
 			(downright.x > 0 && downright.x < (int) cInfo.width) && // downright inbounds
 			(downright.y > 0 && downright.y < (int) cInfo.height &&
-					abs(upleft.x-downright.x) >=64  ); // boxsize check
+					abs(upleft.x-downright.x) >= HOG_WIDTH  ); // boxsize check
 }
 
 /// Finds the right bounding box size according to the distance
@@ -49,24 +49,20 @@ bool checkBox(sensor_msgs::CameraInfo &cInfo, cv::Point &upleft, cv::Point &down
 void getBox(geometry_msgs::Point32 &it, cv::Point2d &pt2D, int &boxWidth,
 		cv::Point &upleft, cv::Point &downright, double &M_TO_PIXELS, double &BODY_RATIO)
 {
-	boxWidth = (int)(M_TO_PIXELS / sqrt(pow(double(it.x)*M_TO_PIXELS, 2.0) + pow(double(it.y)*M_TO_PIXELS, 2.0)));
+	//boxWidth = (int)(M_TO_PIXELS / sqrt(pow(double(it.x)*M_TO_PIXELS, 2.0) + pow(double(it.y)*M_TO_PIXELS, 2.0)));
+	double dist = sqrt(pow(it.x, 2.0) + pow(it.y, 2.0));
+	boxWidth = M_TO_PIXELS / dist;
 
 	// Compute the upper left and down right corners of the rectangle
-	upleft.x = (int)(pt2D.x - boxWidth / 2);
-	upleft.y = (int)(pt2D.y - BODY_RATIO * 2 * boxWidth);
+	upleft.x = (int)(pt2D.x - (boxWidth / 2) );
+	upleft.y = (int)(pt2D.y - BODY_RATIO * boxWidth);
 	downright.x = upleft.x + boxWidth;
-	downright.y = upleft.y + 2 * boxWidth;
+	downright.y = upleft.y + (2 * boxWidth);
 }
 
-
-/// Finds the projection of a single laser point to image pixel coordinates
-void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut,  sensor_msgs::CameraInfo &cam_info,
-		tf::StampedTransform &transform)
-{
-	/*
-	 * METHOD: calib3d::projectPoints
-	 */
-	cv::Mat K(3, 3, CV_64FC1);
+void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &rect) {
+	// K Camera Matrix for Distorted images
+	K = Mat::zeros(3, 3, CV_64FC1);
 
 	int i, j;
 	//printf("\nCamera Matrix\n");
@@ -74,11 +70,29 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut,  senso
 	{
 		for (j = 0; j < 3; j++)
 		{
-			K.at<double>(i, j) = cam_info.K[3 * i + j];
+			K.at<double>(i, j) = cInfo.K[3 * i + j];
 			//printf("%f\t",cam_info->K[3*i+j]);
 		}
 		//printf("\n");
 	}
+
+	D = Mat::zeros(1,5,CV_64FC1);
+
+	if (rect == 0) {
+		for (i = 0; i < 5; i++) {
+			D.at<double>(i) = cInfo.D[i];
+		}
+	}
+}
+
+
+void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Mat &K, cv::Mat &D,
+		tf::StampedTransform &transform)
+{
+	/*
+	 * METHOD: calib3d::projectPoints
+	 *
+	 */
 
 	cv::Mat pIn(1, 3, CV_64FC1);
 	cv::Mat pOut(1, 3, CV_64FC1);
@@ -116,9 +130,9 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut,  senso
 	phi.getRPY(roll, pitch, yaw);
 
 	//printf("\nPHI\n");
-	for (i = 0; i < 3; i++)
+	for (uint i = 0; i < 3; i++)
 	{
-		for (j = 0; j < 3; j++)
+		for (uint j = 0; j < 3; j++)
 		{
 			cvPhi.at<double>(i, j) = phi.getRow(i)[j];
 			//printf("%f\t", cvPhi.at<double>(i,j));
@@ -147,7 +161,8 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut,  senso
 	//printf("\nTvec %f %f %f",tvec.at<double>(0,0),tvec.at<double>(0,1),tvec.at<double>(0,2));
 	//printf("\nD (kc) %f %f %f %f %f",cam_info->D[0], cam_info->D[1],cam_info->D[2],cam_info->D[3],cam_info->D[4]);
 
-	cv::projectPoints(pIn, rvec, tvec, K, cam_info.D, pOut);
+
+	cv::projectPoints(pIn, rvec, tvec, K, D, pOut);
 
 	//      printf("Computed rotation\n");
 	//      printf("Rotation  vector = %f %f %f\n",rvec.at<double>(0,0),rvec.at<double>(0,1),rvec.at<double>(0,2));

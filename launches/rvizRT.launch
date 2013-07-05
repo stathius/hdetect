@@ -47,7 +47,7 @@
     	args="0 0 0 0 0 0 /world /laser 10" />
 
 	<!--node pkg="tf" type="static_transform_publisher" name="world_to_camera"
-    	args="0.0786 0.0975 0.0217 0.0732311946572738 0.0333604679197683          0.01477220848831 /laser /camera 10" /-->
+    	args="0.0786 0.0975 0.0217 0.0732311946572738 0.0333604679197683 0.01477220848831 /laser /camera 10" /-->
 
 	<node pkg="tf" type="static_transform_publisher" name="camera_to_sensor"
     	args="0 0 0 -1.57 0 -1.57 /camera /camera_sensor 10" />

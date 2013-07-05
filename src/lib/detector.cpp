@@ -26,13 +26,12 @@ detector::detector() : nh("~")
 	else ROS_WARN("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
 
 	if(nh.hasParam("hog_hit_threshold") && nh.hasParam("hog_group_threshold")
-			&& nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout")
-			//&& nh.hasParam("no_features")
+			&& nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout") && nh.hasParam("rect")
 			&& nh.hasParam("cameraA") && nh.hasParam("cameraB") && nh.hasParam("laserA")
 			&& nh.hasParam("laserB") && nh.hasParam("m_to_pixels") && nh.hasParam("body_ratio")
 			&& nh.hasParam("jumpdist") && nh.hasParam("feature_set") && nh.hasParam("laser_range")) {
 
-		//nh.getParam("no_features", params.no_features);
+		nh.getParam("rect", params.rect);
 		nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
 		nh.getParam("hog_group_threshold", params.hog_group_threshold);
 		nh.getParam("hog_meanshift", params.hog_meanshift);
@@ -73,9 +72,15 @@ detector::detector() : nh("~")
 	}
 	lFeatures = cv::Mat::zeros(params.no_features,1,CV_64F);
 
+	// Convert camera info (cInfo) to actual needed camera matrix K and distortion coefficient D
+	// ready to be used by opencv functions
+	CameraInfo2CV(params.cInfo, K, D, params.rect);
+
 	ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
 }
 
+/// TODO NOT SURE IF NEEDED
+/*
 void detector::setClusters(hdetect::ClusteredScan sd)
 {
 	clusterData=sd;
@@ -85,6 +90,7 @@ hdetect::ClusteredScan detector::getClusters()
 {
 	return clusterData;
 }
+ */
 
 void detector::getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan) {
 	// Read the transform between the laser and the camera
@@ -130,26 +136,25 @@ void detector::getLaser(const sensor_msgs::LaserScan::ConstPtr &lScan)
 	else
 		ROS_WARN("[DETECTOR] No valid clusters. Scan %04d", scanNo);
 
-	projectLaser();
+	findProjectedClusters();
 }
 
-void detector::projectLaser()
+void detector::findProjectedClusters()
 {
 
 	int clusterNo = 0;
 	// Iterate through every cog of the scanClusters
 	for (std::vector<geometry_msgs::Point32>::iterator it = clusterData.cogs.begin();
-			it != clusterData.cogs.end();
-			it++)
+			it != clusterData.cogs.end(); it++)
 	{
 
 		// Convert the cog to image coordinates
-		projectPoint(*it, prPixel, params.cInfo, transform);
+		projectPoint(*it, prPixel, K, D, transform);
 
 		/// If the pixel is projected within the image limits
 		if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols && prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
 		{
-			clusterData.projected[clusterNo]=1;
+			clusterData.projected[clusterNo] = 1;
 
 			// Get the box size and corners
 			getBox(*it, prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
@@ -162,15 +167,19 @@ void detector::projectLaser()
 			}
 
 		}
+
+		//double dist = sqrt(pow(it->x, 2.0) + pow(it->y, 2.0));
+		//printf("CLUSTER %d | DIST %2.4f | LU %d %d - DR %d %d | WIDTH %d | PROJECTION %d | FUSION = %d\n", clusterNo, dist, upleft.x, upleft.y, downright.x, downright.y, abs(downright.x - upleft.x), clusterData.projected[clusterNo], clusterData.fusion[clusterNo]);
+
 		clusterNo++;
 	}
 }
 
 
-void detector::detectLaser(std_msgs::Float32MultiArray &features)
+void detector::classifyLaser(std_msgs::Float32MultiArray &features)
 {
 	int i;
-	for (i = 0; i < features.data.size() ; i++)
+	for (i = 0; i < (int) features.data.size() ; i++)
 	{
 		lFeatures.at<double>(i,0) = features.data[i];
 	}
@@ -186,13 +195,13 @@ void detector::detectLaser(std_msgs::Float32MultiArray &features)
 
 	// Convert prediction to probabilty
 	pred = 1 / ( 1 + exp(params.laserA * pred + params.laserB) );
-	laserProb.push_back(pred);
+	//laserProb.push_back(pred);
 }
 
-void detector::detectCamera(geometry_msgs::Point32 &cog)
+void detector::classifyCamera(geometry_msgs::Point32 &cog)
 {
 	// Convert the cog to image coordinates
-	projectPoint(cog, prPixel, params.cInfo, transform);
+	projectPoint(cog, prPixel, K, D, transform);
 
 	// Get the box size and corners
 	getBox(cog, prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
@@ -206,38 +215,51 @@ void detector::detectCamera(geometry_msgs::Point32 &cog)
 
 	// We don't really care about the class so we put the threshold really low to even negative predictions
 	hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold, cv::Size(8,8), cv::Size(0,0), 1.05 , params.hog_group_threshold, params.hog_meanshift);
+
 	/// TODO HOW TO ACCEPT A POSITIVE (mean shift)
 	float pred = *max_element( weightM.begin(), weightM.end() );
 	pred = 1 / ( 1 + exp(params.cameraA * pred + params.cameraB));
-	cameraProb.push_back(pred);
+	//cameraProb.push_back(pred);
 }
 
 void detector::detectFusion() {
 
 	for (uint i = 0; i < clusterData.clusters.size(); i++)
 	{
-		detectLaser(clusterData.features[i]);
+		//detectLaser(clusterData.features[i]);
+		// ONLY with camera
+		laserProb =  0.499;
+		cameraProb = 0.8;
 
 		if (clusterData.fusion[i] == 1)
 		{
-			detectCamera(clusterData.cogs[i]);
+			classifyCamera(clusterData.cogs[i]);
 			// Bayesian fusion
-			fusionProb.push_back( ( laserProb[i] * cameraProb[i] ) /
-					( ( laserProb[i] * cameraProb[i] ) + ( 1.0 - laserProb[i] ) * ( 1.0 - cameraProb[i] ) ) ); //
+			fusionProb = (laserProb * cameraProb) /
+					( (laserProb * cameraProb) + (1.0 - laserProb) * (1.0 - cameraProb) );
 		} else
 		{
-			fusionProb.push_back(laserProb[i]);
+			fusionProb = laserProb;
 		}
+
+		clusterData.detection_probs.push_back( fusionProb );
+		if ( fusionProb >= 0.50 )
+			clusterData.detection_labels.push_back(HUMAN);
+		else
+			clusterData.detection_labels.push_back(NO_HUMAN);
+
+
+		printf("detectFusion || cluster %d: projection %d fusion %d prob %2.2f label %d\n",i+1, clusterData.projected[i], clusterData.fusion[i], clusterData.detection_probs[i], clusterData.detection_labels[i]);
 	}
 }
 
 
-void detector::extractData(const sensor_msgs::Image::ConstPtr &image,
+void detector::detectHumans(const sensor_msgs::Image::ConstPtr &image,
 		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
 	getTF(image, lScan);
 	getImage(image);
 	getLaser(lScan);
 
-	//detectPedestrian();
+	//detectFusion();
 }

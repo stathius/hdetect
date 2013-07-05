@@ -1,9 +1,10 @@
+rect: 0 # 0 for original, 1 if rectified image is used. for projection purposes.
 jumpdist: 0.20 # laser segmentation distance
 feature_set: 0 # 0 = 17, 1 = 63
 hog_hit_threshold: 0.0 # hog svm bias
 hog_group_threshold : 2 # hog grouping threshold
 hog_meanshift: 1 # if meanshift grouping is used
-body_ratio: 2.0 # upper/lower body ratio
+body_ratio: 1.2 # upper/lower body ratio
 tf_timeout: 30 # how long to wait tf
 laserA: -2.0 # probability sigmoid
 laserB: 0.0 # parameters for laser

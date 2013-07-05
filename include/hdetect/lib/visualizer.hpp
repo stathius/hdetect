@@ -13,8 +13,8 @@
 
 #define INITIAL_ZOOM 25
 
-static const char C_WINDOW[] = "Annotation: Camera + Laser";
-static const char L_WINDOW[] = "Annotation: Laser";
+static const char C_WINDOW[] = "Visualizer: Camera + Laser";
+static const char L_WINDOW[] = "Visualizer: Laser";
 
 using namespace std;
 using namespace cv;

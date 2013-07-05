@@ -105,7 +105,7 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
   {
 
     if (clusterData.fusion[i] == 1) {
-      projectPoint(clusterData.cogs[i], prPixel, params.cInfo, transform);
+      projectPoint(clusterData.cogs[i], prPixel, K, D, transform);
       getBox(clusterData.cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
 
         getCrop (crop, cv_ptr->image, upleft, boxSize);
