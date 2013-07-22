@@ -7,7 +7,7 @@
 		<param name="frame_id" value="/camera"/>
 		<param name="video_mode" value="format7_mode0"/>
 		<param name="frame_rate" value="60"/>
-		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib.yaml" />
+		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib_yellow.yaml" />
 	</node>
 
 	<node pkg="iri_hokuyo_laser"

@@ -2,6 +2,7 @@
 #define PROJECTTOOLS_HPP
 
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "tf/transform_listener.h"
 #include "sensor_msgs/CameraInfo.h"
 #include <hdetect/ClusteredScan.h>

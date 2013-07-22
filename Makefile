@@ -219,19 +219,6 @@ clean-test-results/fast:
 .PHONY : clean-test-results/fast
 
 #=============================================================================
-# Target rules for targets named detectTest
-
-# Build rule for target.
-detectTest: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 detectTest
-.PHONY : detectTest
-
-# fast build rule for target.
-detectTest/fast:
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/build
-.PHONY : detectTest/fast
-
-#=============================================================================
 # Target rules for targets named detector
 
 # Build rule for target.
@@ -453,19 +440,6 @@ tests/fast:
 .PHONY : tests/fast
 
 #=============================================================================
-# Target rules for targets named trainLaser
-
-# Build rule for target.
-trainLaser: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 trainLaser
-.PHONY : trainLaser
-
-# fast build rule for target.
-trainLaser/fast:
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/build
-.PHONY : trainLaser/fast
-
-#=============================================================================
 # Target rules for targets named visualizeRT
 
 # Build rule for target.
@@ -505,21 +479,6 @@ src/annotateData.i:
 src/annotateData.s:
 	$(MAKE) -f CMakeFiles/annotateData.dir/build.make CMakeFiles/annotateData.dir/src/annotateData.s
 .PHONY : src/annotateData.s
-
-# target to build an object file
-src/detectTest.o:
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/src/detectTest.o
-.PHONY : src/detectTest.o
-
-# target to preprocess a source file
-src/detectTest.i:
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/src/detectTest.i
-.PHONY : src/detectTest.i
-
-# target to generate assembly for a file
-src/detectTest.s:
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/src/detectTest.s
-.PHONY : src/detectTest.s
 
 # target to build an object file
 src/lib/annotator.o:
@@ -657,21 +616,6 @@ src/lib/visualizer.s:
 .PHONY : src/lib/visualizer.s
 
 # target to build an object file
-src/trainLaser.o:
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/src/trainLaser.o
-.PHONY : src/trainLaser.o
-
-# target to preprocess a source file
-src/trainLaser.i:
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/src/trainLaser.i
-.PHONY : src/trainLaser.i
-
-# target to generate assembly for a file
-src/trainLaser.s:
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/src/trainLaser.s
-.PHONY : src/trainLaser.s
-
-# target to build an object file
 src/visualizeRT.o:
 	$(MAKE) -f CMakeFiles/visualizeRT.dir/build.make CMakeFiles/visualizeRT.dir/src/visualizeRT.o
 .PHONY : src/visualizeRT.o
@@ -701,7 +645,6 @@ help:
 	@echo "... annotator"
 	@echo "... bagReader"
 	@echo "... clean-test-results"
-	@echo "... detectTest"
 	@echo "... detector"
 	@echo "... edit_cache"
 	@echo "... laserLib"
@@ -721,15 +664,11 @@ help:
 	@echo "... test-results"
 	@echo "... test-results-run"
 	@echo "... tests"
-	@echo "... trainLaser"
 	@echo "... visualizeRT"
 	@echo "... visualizer"
 	@echo "... src/annotateData.o"
 	@echo "... src/annotateData.i"
 	@echo "... src/annotateData.s"
-	@echo "... src/detectTest.o"
-	@echo "... src/detectTest.i"
-	@echo "... src/detectTest.s"
 	@echo "... src/lib/annotator.o"
 	@echo "... src/lib/annotator.i"
 	@echo "... src/lib/annotator.s"
@@ -757,9 +696,6 @@ help:
 	@echo "... src/lib/visualizer.o"
 	@echo "... src/lib/visualizer.i"
 	@echo "... src/lib/visualizer.s"
-	@echo "... src/trainLaser.o"
-	@echo "... src/trainLaser.i"
-	@echo "... src/trainLaser.s"
 	@echo "... src/visualizeRT.o"
 	@echo "... src/visualizeRT.i"
 	@echo "... src/visualizeRT.s"

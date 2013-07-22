@@ -99,8 +99,8 @@ void detector::getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msg
 	{
 		acquisition_time = image->header.stamp; /// Maybe need to change to ros::Time::now()
 		ros::Duration timeout(1.0 / params.tf_timeout);
-		tf_listener_.waitForTransform(image->header.frame_id, lScan->header.frame_id, acquisition_time, timeout);
-		tf_listener_.lookupTransform(image->header.frame_id, lScan->header.frame_id, acquisition_time, transform);
+		tf_listener_.waitForTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, timeout);
+		tf_listener_.lookupTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, transform);
 	}
 	catch (tf::TransformException& ex)
 	{

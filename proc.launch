@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="image_proc" type="image_proc" name="image_proc" ns="/camera" output="screen">
+	</node>
+</launch> 

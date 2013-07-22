@@ -134,9 +134,9 @@ lib/libdetector.so: CMakeFiles/detector.dir/src/lib/detector.o
 lib/libdetector.so: CMakeFiles/detector.dir/build.make
 lib/libdetector.so: lib/liblaserLib.so
 lib/libdetector.so: lib/libprojectTools.so
+lib/libdetector.so: lib/liblengine.so
 lib/libdetector.so: lib/liblgeometry.so
 lib/libdetector.so: lib/liblfeatures.so
-lib/libdetector.so: lib/liblengine.so
 lib/libdetector.so: CMakeFiles/detector.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library lib/libdetector.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/detector.dir/link.txt --verbose=$(VERBOSE)

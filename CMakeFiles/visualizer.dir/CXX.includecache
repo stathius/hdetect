@@ -2679,6 +2679,8 @@ gsl/gsl_eigen.h
 include/hdetect/lib/projectTools.hpp
 opencv2/calib3d/calib3d.hpp
 -
+opencv2/imgproc/imgproc.hpp
+-
 tf/transform_listener.h
 include/hdetect/lib/tf/transform_listener.h
 sensor_msgs/CameraInfo.h

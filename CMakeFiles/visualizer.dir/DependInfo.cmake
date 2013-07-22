@@ -8,13 +8,19 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   )
 SET(CMAKE_CXX_COMPILER_ID "GNU")
 
+# Preprocessor definitions for this target.
+SET(CMAKE_TARGET_DEFINITIONS
+  "BOOST_CB_DISABLE_DEBUG"
+  "BOOST_CB_DISABLE_DEBUG"
+  )
+
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES
   "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/detector.dir/DependInfo.cmake"
   "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/laserLib.dir/DependInfo.cmake"
+  "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/lengine.dir/DependInfo.cmake"
   "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/lgeometry.dir/DependInfo.cmake"
   "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/lfeatures.dir/DependInfo.cmake"
-  "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/lengine.dir/DependInfo.cmake"
   "/home/kabamaru/ros_workspace/hdetect/CMakeFiles/projectTools.dir/DependInfo.cmake"
   )
 

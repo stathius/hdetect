@@ -10,7 +10,7 @@
     	args="0.055360992904849 -0.0311190557844302 -0.0198410310814696 
     	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /laser /camera 20" /-->
 
-	<!-- yellow base -->
+	<!-- yellow base inv phi-->
   	<node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
     	args="0.01070505651962671764 -0.06722345284252317921 -0.03089017107345514920 
 	3.12148546397231552163 -0.01876295705026196844 0.10236192367415890281
@@ -20,14 +20,13 @@
 	args="$(find hdetect)/bag/UTMFF__2013-07-03-13-47-01.bag --loop --clock --pause"/> 
 
 	<node pkg="hdetect" type="visualizeRT" name="visualizeRT" output="screen" cwd="node"
-	args="/laser/scan /camera/image_raw">
+	args="/laser/scan /camera/image_rect">
 	<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>
 	<param name="/camera_name" value="00b09d0100aa73bb"/>
 	<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 	</node>
 
-	<node pkg="image_proc" type="image_proc" name="image_proc">
-	<env name="ROS_NAMESPACE" value="/camera"/>
+	<node pkg="image_proc" type="image_proc" name="image_proc" ns="/camera" output="screen">
 	</node>
 </launch> 

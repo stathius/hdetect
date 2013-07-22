@@ -132,6 +132,8 @@ lengine_EXTERNAL_OBJECTS =
 
 lib/liblengine.so: CMakeFiles/lengine.dir/src/lib/lengine.o
 lib/liblengine.so: CMakeFiles/lengine.dir/build.make
+lib/liblengine.so: lib/liblgeometry.so
+lib/liblengine.so: lib/liblfeatures.so
 lib/liblengine.so: CMakeFiles/lengine.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library lib/liblengine.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lengine.dir/link.txt --verbose=$(VERBOSE)

@@ -133,11 +133,12 @@ visualizeRT_EXTERNAL_OBJECTS =
 bin/visualizeRT: CMakeFiles/visualizeRT.dir/src/visualizeRT.o
 bin/visualizeRT: CMakeFiles/visualizeRT.dir/build.make
 bin/visualizeRT: lib/libvisualizer.so
+bin/visualizeRT: lib/liblgeometry.so
 bin/visualizeRT: lib/libdetector.so
 bin/visualizeRT: lib/liblaserLib.so
+bin/visualizeRT: lib/liblengine.so
 bin/visualizeRT: lib/liblgeometry.so
 bin/visualizeRT: lib/liblfeatures.so
-bin/visualizeRT: lib/liblengine.so
 bin/visualizeRT: lib/libprojectTools.so
 bin/visualizeRT: CMakeFiles/visualizeRT.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable bin/visualizeRT"

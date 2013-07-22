@@ -134,9 +134,9 @@ lib/libvisualizer.so: CMakeFiles/visualizer.dir/src/lib/visualizer.o
 lib/libvisualizer.so: CMakeFiles/visualizer.dir/build.make
 lib/libvisualizer.so: lib/libdetector.so
 lib/libvisualizer.so: lib/liblaserLib.so
+lib/libvisualizer.so: lib/liblengine.so
 lib/libvisualizer.so: lib/liblgeometry.so
 lib/libvisualizer.so: lib/liblfeatures.so
-lib/libvisualizer.so: lib/liblengine.so
 lib/libvisualizer.so: lib/libprojectTools.so
 lib/libvisualizer.so: CMakeFiles/visualizer.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library lib/libvisualizer.so"

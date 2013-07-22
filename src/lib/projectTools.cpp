@@ -65,22 +65,43 @@ void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &
 	K = Mat::zeros(3, 3, CV_64FC1);
 
 	int i, j;
-	//printf("\nCamera Matrix\n");
+	printf("\nCamera Matrix K\n");
 	for (i = 0; i < 3; i++)
 	{
 		for (j = 0; j < 3; j++)
 		{
 			K.at<double>(i, j) = cInfo.K[3 * i + j];
-			//printf("%f\t",cam_info->K[3*i+j]);
+			printf("%f\t",cInfo.K[3*i+j]);
 		}
-		//printf("\n");
+		printf("\n");
+	}
+
+	printf("\nRectification Matrix R\n");
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			printf("%f\t",cInfo.R[3*i+j]);
+		}
+		printf("\n");
+	}
+	printf("\nProjection Matrix P\n");
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			printf("%f\t",cInfo.P[4*i+j]);
+		}
+		printf("\n");
 	}
 
 	D = Mat::zeros(1,5,CV_64FC1);
 
+	printf("\nDistortion coefficients D\n");
 	if (rect == 0) {
 		for (i = 0; i < 5; i++) {
 			D.at<double>(i) = cInfo.D[i];
+			printf("%f ",D.at<double>(i));
 		}
 	}
 }
@@ -109,7 +130,11 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Ma
 	//q = transform.getRotation();
 	tf::Matrix3x3 phi(transform.getRotation());
 
+	// ***********************************
+	// ***********************************
 	// NOTICE WE EXCHANGE X --> Z, y --> X
+	// ***********************************
+	// ***********************************
 	pIn.at<double>(0, 0) = pointIn.y;
 	pIn.at<double>(0, 1) = pointIn.z;
 	pIn.at<double>(0, 2) = pointIn.x;
@@ -156,13 +181,37 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Ma
 
 	 */
 	cv::Rodrigues(cvPhi, rvec);
-	//printf("\nPin %f %f %f\n",pIn.at<double>(0,0),pIn.at<double>(0,1),pIn.at<double>(0,2));
+
 	//printf("\nRvec %f %f %f",rvec.at<double>(0,0),rvec.at<double>(0,1),rvec.at<double>(0,2));
 	//printf("\nTvec %f %f %f",tvec.at<double>(0,0),tvec.at<double>(0,1),tvec.at<double>(0,2));
-	//printf("\nD (kc) %f %f %f %f %f",cam_info->D[0], cam_info->D[1],cam_info->D[2],cam_info->D[3],cam_info->D[4]);
 
+	/*
+	int i, j;
+	printf("\nCamera Matrix K\n");
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			//K.at<double>(i, j) = cInfo.K[3 * i + j];
+			printf("%f\t",K.at<double>(i,j));
+		}
+		printf("\n");
+	}
 
+	printf("\nD (kc) ");
+	for (int i = 0; i < 5; i++) {
+		//D.at<double>(0,i) = 0;
+		printf("%f ",D.at<double>(0,i));
+	}
+	 */
+
+	//pIn.at<double>(0,0)=5;
+	//pIn.at<double>(0,1)=0;
+	//pIn.at<double>(0,2)=10;
+	//printf("\n\nPoint in  %f %f %f\n",pIn.at<double>(0,0),pIn.at<double>(0,1),pIn.at<double>(0,2));
 	cv::projectPoints(pIn, rvec, tvec, K, D, pOut);
+	//printf("After projectPoints");
+	//printf("\nPoint out %f %f %f\n",pOut.at<double>(0,0),pOut.at<double>(0,1),pOut.at<double>(0,2));
 
 	//      printf("Computed rotation\n");
 	//      printf("Rotation  vector = %f %f %f\n",rvec.at<double>(0,0),rvec.at<double>(0,1),rvec.at<double>(0,2));

@@ -19,6 +19,7 @@ CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/geom
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/geometry_msgs/Vector3Stamped.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/calib3d/calib3d.hpp
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/core/core.hpp
+CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/core/core_c.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/core/mat.hpp
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/core/operations.hpp
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/core/types_c.h
@@ -27,6 +28,8 @@ CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/open
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/flann/config.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/flann/defines.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/flann/miniflann.hpp
+CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/imgproc/imgproc.hpp
+CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/opencv2/imgproc/types_c.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/ros/advertise_options.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/ros/advertise_service_options.h
 CMakeFiles/projectTools.dir/src/lib/projectTools.o: /opt/ros/fuerte/include/ros/assert.h

@@ -7,7 +7,6 @@
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/annotator.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/bagReader.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/clean-test-results.dir
-/home/kabamaru/ros_workspace/hdetect/CMakeFiles/detectTest.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/detector.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/laserLib.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/lengine.dir
@@ -25,6 +24,5 @@
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/test-results.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/test-results-run.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/tests.dir
-/home/kabamaru/ros_workspace/hdetect/CMakeFiles/trainLaser.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/visualizeRT.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/visualizer.dir

@@ -16,17 +16,19 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
+rosbuild_add_boost_directories()
+
 
 # MESSAGES
 rosbuild_genmsg() 
 
 # EXECUTABLE NODES
 rosbuild_add_executable(annotateData src/annotateData.cpp)
+rosbuild_link_boost(annotateData signals)
 rosbuild_add_executable(visualizeRT src/visualizeRT.cpp)
-rosbuild_add_executable(trainLaser src/trainLaser.cpp)
-rosbuild_add_executable(detectTest src/detectTest.cpp)
+rosbuild_link_boost(visualizeRT signals)
+#rosbuild_add_executable(trainLaser src/trainLaser.cpp)
+#rosbuild_add_executable(detectTest src/detectTest.cpp)
 #rosbuild_add_executable(Calib_Matlab2ROS src/other/Calib_Matlab2ROS.cpp)
 
 # LIBRARIES
@@ -48,11 +50,13 @@ include_directories(${GSL_INCLUDE_DIRS})
 link_directories(${GLS_LIBRARY_DIRS})
 
 # LINK THE LIBRARIES
-target_link_libraries(laserLib ${GSL_LIBRARIES})
-target_link_libraries(laserLib lgeometry lfeatures lengine)
+target_link_libraries(lgeometry ${GSL_LIBRARIES})
+target_link_libraries(lfeatures ${GSL_LIBRARIES})
+target_link_libraries(lengine lgeometry lfeatures)
+target_link_libraries(laserLib lengine)
 target_link_libraries(detector laserLib projectTools)
 target_link_libraries(visualizer detector)
 target_link_libraries(annotator visualizer)
 target_link_libraries(annotateData bagReader annotator)
-target_link_libraries(visualizeRT visualizer)
-target_link_libraries(detectTest visualizer)
+target_link_libraries(visualizeRT visualizer lgeometry)
+#target_link_libraries(detectTest visualizer)

@@ -135,9 +135,9 @@ lib/libannotator.so: CMakeFiles/annotator.dir/build.make
 lib/libannotator.so: lib/libvisualizer.so
 lib/libannotator.so: lib/libdetector.so
 lib/libannotator.so: lib/liblaserLib.so
+lib/libannotator.so: lib/liblengine.so
 lib/libannotator.so: lib/liblgeometry.so
 lib/libannotator.so: lib/liblfeatures.so
-lib/libannotator.so: lib/liblengine.so
 lib/libannotator.so: lib/libprojectTools.so
 lib/libannotator.so: CMakeFiles/annotator.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library lib/libannotator.so"

@@ -14,9 +14,6 @@
 # EXTERNAL cache entries
 ########################
 
-//Path to a program.
-CMAKE_AR:FILEPATH=/usr/bin/ar
-
 //For backwards compatibility, what version of CMake commands and
 // syntax should this version of CMake try to support.
 CMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4
@@ -90,9 +87,6 @@ CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/usr/bin/ld
-
-//Path to a program.
 CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/make
 
 //Flags used by the linker during the creation of modules.
@@ -110,20 +104,8 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//Path to a program.
-CMAKE_NM:FILEPATH=/usr/bin/nm
-
-//Path to a program.
-CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
-
-//Path to a program.
-CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
-
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=hdetect
-
-//Path to a program.
-CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=' '
@@ -146,9 +128,6 @@ CMAKE_SKIP_INSTALL_RPATH:BOOL=NO
 
 //If set, runtime paths are not added when using shared libraries.
 CMAKE_SKIP_RPATH:BOOL=NO
-
-//Path to a program.
-CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
 //If true, cmake will use relative paths in makefiles and projects.
 CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
@@ -208,16 +187,16 @@ hdetect_BINARY_DIR:STATIC=/home/kabamaru/ros_workspace/hdetect
 hdetect_SOURCE_DIR:STATIC=/home/kabamaru/ros_workspace/hdetect
 
 //Dependencies for the target
-laserLib_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;general;gsl;general;gslcblas;general;m;general;lgeometry;general;lfeatures;general;lengine;
+laserLib_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;general;lengine;
 
 //Dependencies for the target
-lengine_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;
+lengine_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;general;lgeometry;general;lfeatures;
 
 //Dependencies for the target
-lfeatures_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;
+lfeatures_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;general;gsl;general;gslcblas;general;m;
 
 //Dependencies for the target
-lgeometry_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;
+lgeometry_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;general;gsl;general;gslcblas;general;m;
 
 //Dependencies for the target
 projectTools_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;image_transport;general;poco_lite;general;boost_fs_wrapper;general;tinyxml;general;cv_bridge;general;camera_info_manager;general;camera_calibration_parsers;general;boost_thread-mt;general;dynamic_reconfigure_config_init_mutex;general;nodeletlib;general;uuid;general;bondcpp;general;laser_geometry;general;pcl_keypoints;general;pcl_registration;general;pcl_features;general;pcl_segmentation;general;pcl_surface;general;pcl_tracking;general;pcl_filters;general;pcl_sample_consensus;general;pcl_search;general;pcl_visualization;general;pcl_io;general;pcl_kdtree;general;pcl_octree;general;flann_cpp;general;flann_cpp-gd;general;pcl_common;general;mysqlclient;general;pcl_ros_filters;general;pcl_ros_io;general;pcl_ros_tests;general;pcl_ros_tf;general;rosbag;general;topic_tools;general;roscpp;general;rostime;general;rosconsole;general;roscpp_serialization;general;xmlrpcpp;general;opencv_calib3d;general;opencv_contrib;general;opencv_core;general;opencv_features2d;general;opencv_flann;general;opencv_gpu;general;opencv_highgui;general;opencv_imgproc;general;opencv_legacy;general;opencv_ml;general;opencv_nonfree;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_ts;general;opencv_video;general;opencv_videostab;general;image_geometry;
@@ -230,8 +209,6 @@ visualizer_LIB_DEPENDS:STATIC=general;roslib;general;tf;general;BulletDynamics;g
 # INTERNAL cache entries
 ########################
 
-//ADVANCED property for variable: CMAKE_AR
-CMAKE_AR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_BUILD_TOOL
 CMAKE_BUILD_TOOL-ADVANCED:INTERNAL=1
 //What is the target build tool cmake is generating for.
@@ -252,8 +229,6 @@ CMAKE_COMMAND:INTERNAL=/usr/local/bin/cmake
 CMAKE_CPACK_COMMAND:INTERNAL=/usr/local/bin/cpack
 //Path to ctest program executable.
 CMAKE_CTEST_COMMAND:INTERNAL=/usr/local/bin/ctest
-//ADVANCED property for variable: CMAKE_CXX_COMPILER
-CMAKE_CXX_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS
 CMAKE_CXX_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_DEBUG
@@ -264,8 +239,6 @@ CMAKE_CXX_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_RELWITHDEBINFO
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_C_COMPILER
-CMAKE_C_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS
 CMAKE_C_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_DEBUG
@@ -278,8 +251,6 @@ CMAKE_C_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_C_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //Path to cache edit program executable.
 CMAKE_EDIT_COMMAND:INTERNAL=/usr/local/bin/ccmake
-//Executable file format
-CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
 CMAKE_EXE_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS_DEBUG
@@ -299,8 +270,6 @@ CMAKE_GENERATOR:INTERNAL=Unix Makefiles
 CMAKE_HOME_DIRECTORY:INTERNAL=/home/kabamaru/ros_workspace/hdetect
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
-//ADVANCED property for variable: CMAKE_LINKER
-CMAKE_LINKER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM
 CMAKE_MAKE_PROGRAM-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS
@@ -313,16 +282,8 @@ CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_NM
-CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
 CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=1
-//ADVANCED property for variable: CMAKE_OBJCOPY
-CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_OBJDUMP
-CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_RANLIB
-CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //Path to CMake installation.
 CMAKE_ROOT:INTERNAL=/usr/local/share/cmake-2.8
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
@@ -339,10 +300,6 @@ CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 CMAKE_SKIP_INSTALL_RPATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SKIP_RPATH
 CMAKE_SKIP_RPATH-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_STRIP
-CMAKE_STRIP-ADVANCED:INTERNAL=1
-//uname command
-CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_USE_RELATIVE_PATHS
 CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
@@ -389,7 +346,7 @@ PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
 __pkg_config_checked_GSL:INTERNAL=1
 _rosbuild_EXPORTS:INTERNAL=
-_rosbuild_cached_flag_time:INTERNAL=1372846318.86
+_rosbuild_cached_flag_time:INTERNAL=1373462981.15
 _roslang_LANGS:INTERNAL=rospy;roscpp;roslisp
 _rospack_deps_manifests_invoke_result:INTERNAL=/opt/ros/fuerte/share/roslib/manifest.xml;/opt/ros/fuerte/stacks/bullet/manifest.xml;/opt/ros/fuerte/share/geometry_msgs/manifest.xml;/opt/ros/fuerte/share/sensor_msgs/manifest.xml;/opt/ros/fuerte/share/roslang/manifest.xml;/opt/ros/fuerte/share/roscpp/manifest.xml;/opt/ros/fuerte/share/rosconsole/manifest.xml;/opt/ros/fuerte/stacks/geometry/angles/manifest.xml;/opt/ros/fuerte/share/rospy/manifest.xml;/opt/ros/fuerte/share/rostest/manifest.xml;/opt/ros/fuerte/share/roswtf/manifest.xml;/opt/ros/fuerte/share/message_filters/manifest.xml;/opt/ros/fuerte/stacks/geometry/tf/manifest.xml;/opt/ros/fuerte/share/ros/core/rosbuild/manifest.xml;/opt/ros/fuerte/stacks/pluginlib/manifest.xml;/opt/ros/fuerte/stacks/image_common/image_transport/manifest.xml;/opt/ros/fuerte/share/std_msgs/manifest.xml;/opt/ros/fuerte/stacks/vision_opencv/opencv2/manifest.xml;/opt/ros/fuerte/stacks/vision_opencv/cv_bridge/manifest.xml;/opt/ros/fuerte/stacks/common_rosdeps/manifest.xml;/opt/ros/fuerte/stacks/image_common/camera_calibration_parsers/manifest.xml;/opt/ros/fuerte/stacks/image_common/camera_info_manager/manifest.xml;/opt/ros/fuerte/share/diagnostic_msgs/manifest.xml;/opt/ros/fuerte/stacks/diagnostics/diagnostic_updater/manifest.xml;/opt/ros/fuerte/stacks/diagnostics/self_test/manifest.xml;/opt/ros/fuerte/share/rosservice/manifest.xml;/opt/ros/fuerte/stacks/dynamic_reconfigure/manifest.xml;/opt/ros/fuerte/stacks/driver_common/driver_base/manifest.xml;/opt/ros/fuerte/stacks/bond_core/bond/manifest.xml;/opt/ros/fuerte/stacks/bond_core/smclib/manifest.xml;/opt/ros/fuerte/stacks/bond_core/bondcpp/manifest.xml;/opt/ros/fuerte/stacks/nodelet_core/nodelet/manifest.xml;/home/kabamaru/ros_workspace/camera1394/manifest.xml;/opt/ros/fuerte/stacks/laser_pipeline/laser_geometry/manifest.xml;/opt/ros/fuerte/stacks/filters/manifest.xml;/opt/ros/fuerte/share/rosbag/manifest.xml;/opt/ros/fuerte/stacks/nodelet_core/nodelet_topic_tools/manifest.xml;/opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml;/opt/ros/fuerte/stacks/laser_pipeline/laser_filters/manifest.xml;/opt/ros/fuerte/stacks/vision_opencv/image_geometry/manifest.xml
 _rospack_msgsrv_gen_invoke_result:INTERNAL=/opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated;/opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated;/opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated;/opt/ros/fuerte/stacks/dynamic_reconfigure/srv_gen/generated;/opt/ros/fuerte/stacks/driver_common/driver_base/msg_gen/generated;/opt/ros/fuerte/stacks/bond_core/bond/msg_gen/generated;/opt/ros/fuerte/stacks/nodelet_core/nodelet/srv_gen/generated

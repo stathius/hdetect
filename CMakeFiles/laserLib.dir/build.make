@@ -132,9 +132,9 @@ laserLib_EXTERNAL_OBJECTS =
 
 lib/liblaserLib.so: CMakeFiles/laserLib.dir/src/lib/laserLib.o
 lib/liblaserLib.so: CMakeFiles/laserLib.dir/build.make
+lib/liblaserLib.so: lib/liblengine.so
 lib/liblaserLib.so: lib/liblgeometry.so
 lib/liblaserLib.so: lib/liblfeatures.so
-lib/liblaserLib.so: lib/liblengine.so
 lib/liblaserLib.so: CMakeFiles/laserLib.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library lib/liblaserLib.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/laserLib.dir/link.txt --verbose=$(VERBOSE)

@@ -137,9 +137,9 @@ bin/annotateData: lib/libannotator.so
 bin/annotateData: lib/libvisualizer.so
 bin/annotateData: lib/libdetector.so
 bin/annotateData: lib/liblaserLib.so
+bin/annotateData: lib/liblengine.so
 bin/annotateData: lib/liblgeometry.so
 bin/annotateData: lib/liblfeatures.so
-bin/annotateData: lib/liblengine.so
 bin/annotateData: lib/libprojectTools.so
 bin/annotateData: CMakeFiles/annotateData.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable bin/annotateData"

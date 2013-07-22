@@ -350,51 +350,15 @@ clean: CMakeFiles/clean-test-results.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/detectTest.dir
-
-# All Build rule for target.
-CMakeFiles/detectTest.dir/all: CMakeFiles/rosbuild_precompile.dir/all
-CMakeFiles/detectTest.dir/all: CMakeFiles/visualizer.dir/all
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/depend
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  8
-	@echo "Built target detectTest"
-.PHONY : CMakeFiles/detectTest.dir/all
-
-# Include target in all.
-all: CMakeFiles/detectTest.dir/all
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/detectTest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 12
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/detectTest.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 0
-.PHONY : CMakeFiles/detectTest.dir/rule
-
-# Convenience name for target.
-detectTest: CMakeFiles/detectTest.dir/rule
-.PHONY : detectTest
-
-# clean rule for target.
-CMakeFiles/detectTest.dir/clean:
-	$(MAKE) -f CMakeFiles/detectTest.dir/build.make CMakeFiles/detectTest.dir/clean
-.PHONY : CMakeFiles/detectTest.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/detectTest.dir/clean
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/detector.dir
 
 # All Build rule for target.
-CMakeFiles/detector.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 CMakeFiles/detector.dir/all: CMakeFiles/laserLib.dir/all
+CMakeFiles/detector.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 CMakeFiles/detector.dir/all: CMakeFiles/projectTools.dir/all
 	$(MAKE) -f CMakeFiles/detector.dir/build.make CMakeFiles/detector.dir/depend
 	$(MAKE) -f CMakeFiles/detector.dir/build.make CMakeFiles/detector.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  9
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  8
 	@echo "Built target detector"
 .PHONY : CMakeFiles/detector.dir/all
 
@@ -427,12 +391,10 @@ clean: CMakeFiles/detector.dir/clean
 
 # All Build rule for target.
 CMakeFiles/laserLib.dir/all: CMakeFiles/rosbuild_precompile.dir/all
-CMakeFiles/laserLib.dir/all: CMakeFiles/lgeometry.dir/all
-CMakeFiles/laserLib.dir/all: CMakeFiles/lfeatures.dir/all
 CMakeFiles/laserLib.dir/all: CMakeFiles/lengine.dir/all
 	$(MAKE) -f CMakeFiles/laserLib.dir/build.make CMakeFiles/laserLib.dir/depend
 	$(MAKE) -f CMakeFiles/laserLib.dir/build.make CMakeFiles/laserLib.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  10
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  9
 	@echo "Built target laserLib"
 .PHONY : CMakeFiles/laserLib.dir/all
 
@@ -465,9 +427,11 @@ clean: CMakeFiles/laserLib.dir/clean
 
 # All Build rule for target.
 CMakeFiles/lengine.dir/all: CMakeFiles/rosbuild_precompile.dir/all
+CMakeFiles/lengine.dir/all: CMakeFiles/lgeometry.dir/all
+CMakeFiles/lengine.dir/all: CMakeFiles/lfeatures.dir/all
 	$(MAKE) -f CMakeFiles/lengine.dir/build.make CMakeFiles/lengine.dir/depend
 	$(MAKE) -f CMakeFiles/lengine.dir/build.make CMakeFiles/lengine.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  11
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  10
 	@echo "Built target lengine"
 .PHONY : CMakeFiles/lengine.dir/all
 
@@ -477,7 +441,7 @@ all: CMakeFiles/lengine.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/lengine.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 7
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/lengine.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 0
 .PHONY : CMakeFiles/lengine.dir/rule
@@ -502,7 +466,7 @@ clean: CMakeFiles/lengine.dir/clean
 CMakeFiles/lfeatures.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 	$(MAKE) -f CMakeFiles/lfeatures.dir/build.make CMakeFiles/lfeatures.dir/depend
 	$(MAKE) -f CMakeFiles/lfeatures.dir/build.make CMakeFiles/lfeatures.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  12
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  11
 	@echo "Built target lfeatures"
 .PHONY : CMakeFiles/lfeatures.dir/all
 
@@ -537,7 +501,7 @@ clean: CMakeFiles/lfeatures.dir/clean
 CMakeFiles/lgeometry.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 	$(MAKE) -f CMakeFiles/lgeometry.dir/build.make CMakeFiles/lgeometry.dir/depend
 	$(MAKE) -f CMakeFiles/lgeometry.dir/build.make CMakeFiles/lgeometry.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  13
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  12
 	@echo "Built target lgeometry"
 .PHONY : CMakeFiles/lgeometry.dir/all
 
@@ -572,7 +536,7 @@ clean: CMakeFiles/lgeometry.dir/clean
 CMakeFiles/projectTools.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 	$(MAKE) -f CMakeFiles/projectTools.dir/build.make CMakeFiles/projectTools.dir/depend
 	$(MAKE) -f CMakeFiles/projectTools.dir/build.make CMakeFiles/projectTools.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  14
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  13
 	@echo "Built target projectTools"
 .PHONY : CMakeFiles/projectTools.dir/all
 
@@ -950,49 +914,15 @@ clean: CMakeFiles/tests.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/trainLaser.dir
-
-# All Build rule for target.
-CMakeFiles/trainLaser.dir/all: CMakeFiles/rosbuild_precompile.dir/all
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/depend
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  15
-	@echo "Built target trainLaser"
-.PHONY : CMakeFiles/trainLaser.dir/all
-
-# Include target in all.
-all: CMakeFiles/trainLaser.dir/all
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/trainLaser.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 5
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/trainLaser.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kabamaru/ros_workspace/hdetect/CMakeFiles 0
-.PHONY : CMakeFiles/trainLaser.dir/rule
-
-# Convenience name for target.
-trainLaser: CMakeFiles/trainLaser.dir/rule
-.PHONY : trainLaser
-
-# clean rule for target.
-CMakeFiles/trainLaser.dir/clean:
-	$(MAKE) -f CMakeFiles/trainLaser.dir/build.make CMakeFiles/trainLaser.dir/clean
-.PHONY : CMakeFiles/trainLaser.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/trainLaser.dir/clean
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/visualizeRT.dir
 
 # All Build rule for target.
 CMakeFiles/visualizeRT.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 CMakeFiles/visualizeRT.dir/all: CMakeFiles/visualizer.dir/all
+CMakeFiles/visualizeRT.dir/all: CMakeFiles/lgeometry.dir/all
 	$(MAKE) -f CMakeFiles/visualizeRT.dir/build.make CMakeFiles/visualizeRT.dir/depend
 	$(MAKE) -f CMakeFiles/visualizeRT.dir/build.make CMakeFiles/visualizeRT.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  16
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  14
 	@echo "Built target visualizeRT"
 .PHONY : CMakeFiles/visualizeRT.dir/all
 
@@ -1028,7 +958,7 @@ CMakeFiles/visualizer.dir/all: CMakeFiles/rosbuild_precompile.dir/all
 CMakeFiles/visualizer.dir/all: CMakeFiles/detector.dir/all
 	$(MAKE) -f CMakeFiles/visualizer.dir/build.make CMakeFiles/visualizer.dir/depend
 	$(MAKE) -f CMakeFiles/visualizer.dir/build.make CMakeFiles/visualizer.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  17
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kabamaru/ros_workspace/hdetect/CMakeFiles  15
 	@echo "Built target visualizer"
 .PHONY : CMakeFiles/visualizer.dir/all
 

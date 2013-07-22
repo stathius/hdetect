@@ -1,4 +1,4 @@
-rect: 0 # 0 for original, 1 if rectified image is used. for projection purposes.
+rect: 1 # 0 for original, 1 if rectified image is used. for projection purposes.
 jumpdist: 0.20 # laser segmentation distance
 feature_set: 0 # 0 = 17, 1 = 63
 hog_hit_threshold: 0.0 # hog svm bias
