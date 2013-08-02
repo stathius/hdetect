@@ -8,6 +8,7 @@ Project website: http://robcib.etsii.upm.es/index.php/en/projects-28/rotos
 
 Youtube video: http://youtu.be/W84ERQ0LYjM
 
+
 v0.4
 
 Detection is done only by the HoG detector. The laser is only used for localization and restricting the search space.
