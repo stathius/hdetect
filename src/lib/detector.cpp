@@ -108,6 +108,24 @@ void detector::getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msg
 	}
 }
 
+void detector::processLaser(const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan *clusterData)
+{
+	// Load the scan to the processor
+	laserProcessor->loadScan(*lScan);
+
+	// Segment the laser scan
+	laserProcessor->getClusters(clusterData);
+
+	// Only process scans with valid data
+	if(clusterData->clusters.size()>0) {
+		laserProcessor->getFeatures(clusterData);
+	}
+	else
+		ROS_WARN("[DETECTOR] No valid clusters. Scan %04d", scanNo);
+
+	findProjectedClusters(clusterData);
+}
+
 void detector::getImage(const sensor_msgs::Image::ConstPtr &image) {
 	// Copy img to openCV format
 	try
@@ -121,31 +139,14 @@ void detector::getImage(const sensor_msgs::Image::ConstPtr &image) {
 	}
 }
 
-void detector::getLaser(const sensor_msgs::LaserScan::ConstPtr &lScan)
-{
-	// Load the scan to the processor
-	laserProcessor->loadScan(*lScan);
 
-	// Segment the laser scan
-	laserProcessor->getClusters(clusterData);
-
-	// Only process scans with valid data
-	if(clusterData.clusters.size()>0) {
-		laserProcessor->getFeatures(clusterData);
-	}
-	else
-		ROS_WARN("[DETECTOR] No valid clusters. Scan %04d", scanNo);
-
-	findProjectedClusters();
-}
-
-void detector::findProjectedClusters()
+void detector::findProjectedClusters(hdetect::ClusteredScan *clusterData)
 {
 
 	int clusterNo = 0;
 	// Iterate through every cog of the scanClusters
-	for (std::vector<geometry_msgs::Point32>::iterator it = clusterData.cogs.begin();
-			it != clusterData.cogs.end(); it++)
+	for (std::vector<geometry_msgs::Point32>::iterator it = clusterData->cogs.begin();
+			it != clusterData->cogs.end(); it++)
 	{
 
 		// Convert the cog to image coordinates
@@ -154,7 +155,7 @@ void detector::findProjectedClusters()
 		/// If the pixel is projected within the image limits
 		if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols && prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
 		{
-			clusterData.projected[clusterNo] = 1;
+			clusterData->projected[clusterNo] = 1;
 
 			// Get the box size and corners
 			getBox(*it, prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
@@ -163,13 +164,13 @@ void detector::findProjectedClusters()
 			if (checkBox(params.cInfo, upleft, downright))
 			{
 				// Flag the cluster as 'fusable'. Meaning they appear with a valid box on the image.
-				clusterData.fusion[clusterNo] = 1;
+				clusterData->fusion[clusterNo] = 1;
 			}
 
 		}
 
 		//double dist = sqrt(pow(it->x, 2.0) + pow(it->y, 2.0));
-		//printf("CLUSTER %d | DIST %2.4f | LU %d %d - DR %d %d | WIDTH %d | PROJECTION %d | FUSION = %d\n", clusterNo, dist, upleft.x, upleft.y, downright.x, downright.y, abs(downright.x - upleft.x), clusterData.projected[clusterNo], clusterData.fusion[clusterNo]);
+		//printf("CLUSTER %d | DIST %2.4f | LU %d %d - DR %d %d | WIDTH %d | PROJECTION %d | FUSION = %d\n", clusterNo, dist, upleft.x, upleft.y, downright.x, downright.y, abs(downright.x - upleft.x), clusterData->projected[clusterNo], clusterData->fusion[clusterNo]);
 
 		clusterNo++;
 	}
@@ -192,13 +193,12 @@ void detector::classifyLaser(std_msgs::Float32MultiArray &features)
 		laserClass.push_back(1);
 	else
 		laserClass.push_back(-1);
-
 	// Convert prediction to probabilty
 	pred = 1 / ( 1 + exp(params.laserA * pred + params.laserB) );
 	//laserProb.push_back(pred);
 }
 
-void detector::classifyCamera(geometry_msgs::Point32 &cog)
+void detector::classifyCamera(geometry_msgs::Point32 &cog, double &prob)
 {
 	// Convert the cog to image coordinates
 	projectPoint(cog, prPixel, K, D, transform);
@@ -214,52 +214,71 @@ void detector::classifyCamera(geometry_msgs::Point32 &cog)
 	vector<double> weightM;
 
 	// We don't really care about the class so we put the threshold really low to even negative predictions
-	hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold, cv::Size(8,8), cv::Size(0,0), 1.05 , params.hog_group_threshold, params.hog_meanshift);
+	hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold, cv::Size(8,8), cv::Size(0,0), 1.05, params.hog_group_threshold, params.hog_meanshift);
+
+	//ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", weightM.size(), foundM.size());
 
 	/// TODO HOW TO ACCEPT A POSITIVE (mean shift)
-	float pred = *max_element( weightM.begin(), weightM.end() );
-	pred = 1 / ( 1 + exp(params.cameraA * pred + params.cameraB));
+	if(weightM.size() > 0) {
+		//ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", weightM.size(), foundM.size());
+		prob = *max_element( weightM.begin(), weightM.end() );
+		//ROS_INFO("[DETECTOR] max element %f", prob);
+	}
+
+	//pred = 1 / ( 1 + exp(params.cameraA * pred + params.cameraB));
 	//cameraProb.push_back(pred);
 }
 
-void detector::detectFusion() {
+void detector::detectFusion(hdetect::ClusteredScan *clusterData) {
 
-	for (uint i = 0; i < clusterData.clusters.size(); i++)
+	ROS_INFO("[DETECTOR] clusters size %d", clusterData->clusters.size());
+
+	// Variables where the probabilities of the detectors are stored
+	// If there is no fusion the probability of the laser is taken
+	float laserProb;
+	double cameraProb;
+	float fusionProb;
+
+	for (uint i = 0; i < clusterData->clusters.size(); i++)
 	{
-		//detectLaser(clusterData.features[i]);
+		//ROS_INFO("i %d",i);
+		//detectLaser(clusterData->features[i]);
 		// ONLY with camera
-		laserProb =  0.499;
-		cameraProb = 0.8;
+		laserProb = 0.0;
+		cameraProb = 0.0;
 
-		if (clusterData.fusion[i] == 1)
+		if (clusterData->fusion[i] == 1)
 		{
-			classifyCamera(clusterData.cogs[i]);
+			classifyCamera(clusterData->cogs[i], cameraProb);
+			fusionProb = cameraProb;
 			// Bayesian fusion
-			fusionProb = (laserProb * cameraProb) /
-					( (laserProb * cameraProb) + (1.0 - laserProb) * (1.0 - cameraProb) );
+			//fusionProb = (laserProb * cameraProb) /
+			//		( (laserProb * cameraProb) + (1.0 - laserProb) * (1.0 - cameraProb) );
 		} else
 		{
 			fusionProb = laserProb;
 		}
 
-		clusterData.detection_probs.push_back( fusionProb );
-		if ( fusionProb >= 0.50 )
-			clusterData.detection_labels.push_back(HUMAN);
+		clusterData->detection_probs.push_back( fusionProb );
+		if ( fusionProb > 0.0 )
+			clusterData->detection_labels.push_back(HUMAN);
 		else
-			clusterData.detection_labels.push_back(NO_HUMAN);
+			clusterData->detection_labels.push_back(NO_HUMAN);
 
-
-		printf("detectFusion || cluster %d: projection %d fusion %d prob %2.2f label %d\n",i+1, clusterData.projected[i], clusterData.fusion[i], clusterData.detection_probs[i], clusterData.detection_labels[i]);
+//		ROS_INFO("[DETECTOR] cluster %d: projection %d fusion %d prob %3.3f label %d",i+1,
+//				clusterData->projected[i], clusterData->fusion[i], clusterData->detection_probs[i], clusterData->detection_labels[i]);
 	}
 }
 
 
 void detector::detectHumans(const sensor_msgs::Image::ConstPtr &image,
-		const sensor_msgs::LaserScan::ConstPtr &lScan)
+		const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan **clusterData)
 {
+	*clusterData = new hdetect::ClusteredScan;
+
 	getTF(image, lScan);
 	getImage(image);
-	getLaser(lScan);
+	processLaser(lScan, *clusterData);
 
-	//detectFusion();
+	detectFusion(*clusterData);
 }

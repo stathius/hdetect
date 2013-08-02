@@ -74,9 +74,6 @@ protected:
 	/// Local node handle, used to get the file parameters, subscribers, publishers etc.
 	ros::NodeHandle nh;
 
-	/// Contains the laser clusters, annotation, features, cogs, annotation, if it should be fused etc.
-	hdetect::ClusteredScan clusterData;
-
 	/// Used to listen the transform between the laser and the camera.
 	tf::TransformListener tf_listener_;
 	tf::StampedTransform transform;
@@ -102,12 +99,6 @@ protected:
 	///  A pointer to the opencv converted image.
 	cv_bridge::CvImagePtr cv_ptr;
 
-	// Variables where the probabilities of the detectors are stored
-	float laserProb;
-	// If there is no fusion the probability of the laser is taken
-	float cameraProb;
-	float fusionProb;
-
 	// Vectors where the class of the detector are stored
 	std::vector<int> laserClass;
 	std::vector<int> cameraClass;
@@ -130,7 +121,7 @@ protected:
 	std::vector<double> hogPred;
 
 	/// Does the laser segmentation, feature extraction etc into scanClusters
-	void getLaser(const sensor_msgs::LaserScan::ConstPtr &lScan);
+	void processLaser(const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan *clusterData);
 
 	/// Brings sensor_msgs::Image to an opencv accesible pointer.
 	void getImage(const sensor_msgs::Image::ConstPtr &image);
@@ -140,17 +131,17 @@ protected:
 
 	/// Does the rest of the laser processing, find projected and fused segments
 	/// Uses directly scanClusters
-	void findProjectedClusters();
+	void findProjectedClusters(hdetect::ClusteredScan *clusterData);
 
 	/// Detects if there is a pedestrian in the cluster and or ROI
 	/// Gives the probabilities and the class output of each detector
-	void detectFusion();
+	void detectFusion(hdetect::ClusteredScan *clusterData);
 
 	/// Finds the class and the probability for a given sample of laser features
 	void classifyLaser(std_msgs::Float32MultiArray &features);
 
 	/// Finds the class and the probability for a given crop of the image
-	void classifyCamera(geometry_msgs::Point32 &cog);
+	void classifyCamera(geometry_msgs::Point32 &cog, double &prob);
 
 	void saveDetection() {};
 
@@ -167,7 +158,7 @@ public:
 	 * @param lScan LaserScan message
 	 */
 	void detectHumans(const sensor_msgs::Image::ConstPtr &image,
-			const sensor_msgs::LaserScan::ConstPtr &lScan);
+			const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan **clusterData);
 
 	/**
 	 * Used only for annotation purposes

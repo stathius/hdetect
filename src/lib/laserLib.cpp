@@ -69,7 +69,7 @@ void laserLib::loadScan(sensor_msgs::LaserScan ls) {
  *  Computes the features and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getFeatures(hdetect::ClusteredScan &features) {
+void laserLib::getFeatures(hdetect::ClusteredScan *features) {
 
 	// Compute the features
 	libEngine->computeFeatures(clusters, descriptor);
@@ -96,16 +96,13 @@ void laserLib::getFeatures(hdetect::ClusteredScan &features) {
  *  Each cluster's annotation initialised to FALSE (0)
  *  Each cluster's fusion attribute initialised to FALSE (0)
  * */
-void laserLib::features2ROS(hdetect::ClusteredScan &features)
+void laserLib::features2ROS(hdetect::ClusteredScan *features)
 {
-	features.features.clear();
-	features.features.resize(descriptor.size());
-	features.labels.clear();
-	features.fusion.clear();
-	features.projected.clear();
+	features->features.resize(descriptor.size());
+
 	//features.features.resize( descriptor.size() );
-	features.nclusters=descriptor.size();
-	features.nfeatures=descriptor[0].size();
+	features->nclusters=descriptor.size();
+	features->nfeatures=descriptor[0].size();
 
 	int i=0;
 
@@ -113,13 +110,13 @@ void laserLib::features2ROS(hdetect::ClusteredScan &features)
 			it = descriptor.begin(); it!=descriptor.end(); it++)
 	{
 		// initialize the label to -1
-		features.labels.push_back(NO_HUMAN);
-		features.fusion.push_back(0);
-		features.projected.push_back(0);
+		features->labels.push_back(NO_HUMAN);
+		features->fusion.push_back(0);
+		features->projected.push_back(0);
 		for (std::vector<float>::iterator it2 = it->begin();
 				it2!=it->end(); it2++)
 		{
-			features.features[i].data.push_back(*it2);
+			features->features[i].data.push_back(*it2);
 		}
 		i++;
 	}
@@ -191,18 +188,16 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls, laserscan_data &libScan) {
  *  Computes the individual clusters and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getClusters(hdetect::ClusteredScan &laserClusters) {
+void laserLib::getClusters(hdetect::ClusteredScan *laserClusters) {
 
 	// Set the header
-	laserClusters.header.seq=seq;
-	laserClusters.header.stamp=stamp;
-	laserClusters.header.frame_id=frame_id;	
+	laserClusters->header.seq=seq;
+	laserClusters->header.stamp=stamp;
+	laserClusters->header.frame_id=frame_id;
 
 
 	// Clear the data for clusters and cogs
-	laserClusters.clusters.clear();	
-	laserClusters.clusters.resize( clusters.size() );
-	laserClusters.cogs.clear();
+	laserClusters->clusters.resize( clusters.size() );
 
 	int i=0;
 	for (std::vector<Point3D_container>::iterator 
@@ -220,7 +215,7 @@ void laserLib::getClusters(hdetect::ClusteredScan &laserClusters) {
 		cogROS.y=cogL.y;
 		cogROS.z=cogL.z;
 
-		laserClusters.cogs.push_back(cogROS);
+		laserClusters->cogs.push_back(cogROS);
 
 		for (std::vector<Point3D_str>::iterator it2 = it->pts.begin();
 				it2!=it->pts.end(); it2++)
@@ -229,7 +224,7 @@ void laserLib::getClusters(hdetect::ClusteredScan &laserClusters) {
 			pt.y=it2->y;
 			pt.z=it2->z;
 			//if( sqrt( pow(pt.x,2) + pow(pt.y,2) ) > libEngineParams.laser_range )
-				laserClusters.clusters[i].points.push_back(pt);
+				laserClusters->clusters[i].points.push_back(pt);
 		}
 		i++;
 		//}

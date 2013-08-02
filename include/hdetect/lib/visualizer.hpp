@@ -23,6 +23,10 @@ using namespace cv;
 class visualizer : public detector
 {
 protected:
+
+	/// Contains the laser clusters, annotation, features, cogs, annotation, if it should be fused etc.
+	hdetect::ClusteredScan *clusterData;
+
 	/// Publisher used to count the hz rate of the node
 	ros::Publisher pub;
 	std_msgs::Byte dummy;
@@ -45,6 +49,9 @@ protected:
 	/// Based on where it is located so we have less variation in color appereance.
 	Scalar color;
 
+	/// Output string stream for visualization purposes.
+    std::ostringstream ss;
+
 public:
 	visualizer();
 	~visualizer();
@@ -53,7 +60,7 @@ public:
 	Scalar getColor(geometry_msgs::Point32 &point);
 
 	/// Returns the ClusteredScan from the object
-	hdetect::ClusteredScan getClusteredScan() { return clusterData; };
+	hdetect::ClusteredScan* getClusteredScan() { return clusterData; };
 
 	/// Set the laserplane for visualizing purposes
 	/// @param lp The computed laser plane image.

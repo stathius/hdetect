@@ -65,12 +65,29 @@ void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &
 	K = Mat::zeros(3, 3, CV_64FC1);
 
 	int i, j;
-	printf("\nCamera Matrix K\n");
 	for (i = 0; i < 3; i++)
 	{
 		for (j = 0; j < 3; j++)
 		{
 			K.at<double>(i, j) = cInfo.K[3 * i + j];
+		}
+	}
+
+	D = Mat::zeros(1,5,CV_64FC1);
+
+	if (rect == 0) {
+		for (i = 0; i < 5; i++) {
+			D.at<double>(i) = cInfo.D[i];
+		}
+	}
+
+
+	/* Print the camera calibration parameters.
+	printf("\nCamera Matrix K\n");
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
 			printf("%f\t",cInfo.K[3*i+j]);
 		}
 		printf("\n");
@@ -95,15 +112,14 @@ void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &
 		printf("\n");
 	}
 
-	D = Mat::zeros(1,5,CV_64FC1);
 
 	printf("\nDistortion coefficients D\n");
 	if (rect == 0) {
 		for (i = 0; i < 5; i++) {
-			D.at<double>(i) = cInfo.D[i];
 			printf("%f ",D.at<double>(i));
 		}
 	}
+	*/
 }
 
 

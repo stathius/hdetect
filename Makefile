@@ -167,45 +167,6 @@ ROSBUILD_gensrv_lisp/fast:
 .PHONY : ROSBUILD_gensrv_lisp/fast
 
 #=============================================================================
-# Target rules for targets named annotateData
-
-# Build rule for target.
-annotateData: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 annotateData
-.PHONY : annotateData
-
-# fast build rule for target.
-annotateData/fast:
-	$(MAKE) -f CMakeFiles/annotateData.dir/build.make CMakeFiles/annotateData.dir/build
-.PHONY : annotateData/fast
-
-#=============================================================================
-# Target rules for targets named annotator
-
-# Build rule for target.
-annotator: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 annotator
-.PHONY : annotator
-
-# fast build rule for target.
-annotator/fast:
-	$(MAKE) -f CMakeFiles/annotator.dir/build.make CMakeFiles/annotator.dir/build
-.PHONY : annotator/fast
-
-#=============================================================================
-# Target rules for targets named bagReader
-
-# Build rule for target.
-bagReader: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 bagReader
-.PHONY : bagReader
-
-# fast build rule for target.
-bagReader/fast:
-	$(MAKE) -f CMakeFiles/bagReader.dir/build.make CMakeFiles/bagReader.dir/build
-.PHONY : bagReader/fast
-
-#=============================================================================
 # Target rules for targets named clean-test-results
 
 # Build rule for target.
@@ -466,51 +427,6 @@ visualizer/fast:
 .PHONY : visualizer/fast
 
 # target to build an object file
-src/annotateData.o:
-	$(MAKE) -f CMakeFiles/annotateData.dir/build.make CMakeFiles/annotateData.dir/src/annotateData.o
-.PHONY : src/annotateData.o
-
-# target to preprocess a source file
-src/annotateData.i:
-	$(MAKE) -f CMakeFiles/annotateData.dir/build.make CMakeFiles/annotateData.dir/src/annotateData.i
-.PHONY : src/annotateData.i
-
-# target to generate assembly for a file
-src/annotateData.s:
-	$(MAKE) -f CMakeFiles/annotateData.dir/build.make CMakeFiles/annotateData.dir/src/annotateData.s
-.PHONY : src/annotateData.s
-
-# target to build an object file
-src/lib/annotator.o:
-	$(MAKE) -f CMakeFiles/annotator.dir/build.make CMakeFiles/annotator.dir/src/lib/annotator.o
-.PHONY : src/lib/annotator.o
-
-# target to preprocess a source file
-src/lib/annotator.i:
-	$(MAKE) -f CMakeFiles/annotator.dir/build.make CMakeFiles/annotator.dir/src/lib/annotator.i
-.PHONY : src/lib/annotator.i
-
-# target to generate assembly for a file
-src/lib/annotator.s:
-	$(MAKE) -f CMakeFiles/annotator.dir/build.make CMakeFiles/annotator.dir/src/lib/annotator.s
-.PHONY : src/lib/annotator.s
-
-# target to build an object file
-src/lib/bagReader.o:
-	$(MAKE) -f CMakeFiles/bagReader.dir/build.make CMakeFiles/bagReader.dir/src/lib/bagReader.o
-.PHONY : src/lib/bagReader.o
-
-# target to preprocess a source file
-src/lib/bagReader.i:
-	$(MAKE) -f CMakeFiles/bagReader.dir/build.make CMakeFiles/bagReader.dir/src/lib/bagReader.i
-.PHONY : src/lib/bagReader.i
-
-# target to generate assembly for a file
-src/lib/bagReader.s:
-	$(MAKE) -f CMakeFiles/bagReader.dir/build.make CMakeFiles/bagReader.dir/src/lib/bagReader.s
-.PHONY : src/lib/bagReader.s
-
-# target to build an object file
 src/lib/detector.o:
 	$(MAKE) -f CMakeFiles/detector.dir/build.make CMakeFiles/detector.dir/src/lib/detector.o
 .PHONY : src/lib/detector.o
@@ -641,9 +557,6 @@ help:
 	@echo "... ROSBUILD_genmsg_py"
 	@echo "... ROSBUILD_gensrv_cpp"
 	@echo "... ROSBUILD_gensrv_lisp"
-	@echo "... annotateData"
-	@echo "... annotator"
-	@echo "... bagReader"
 	@echo "... clean-test-results"
 	@echo "... detector"
 	@echo "... edit_cache"
@@ -666,15 +579,6 @@ help:
 	@echo "... tests"
 	@echo "... visualizeRT"
 	@echo "... visualizer"
-	@echo "... src/annotateData.o"
-	@echo "... src/annotateData.i"
-	@echo "... src/annotateData.s"
-	@echo "... src/lib/annotator.o"
-	@echo "... src/lib/annotator.i"
-	@echo "... src/lib/annotator.s"
-	@echo "... src/lib/bagReader.o"
-	@echo "... src/lib/bagReader.i"
-	@echo "... src/lib/bagReader.s"
 	@echo "... src/lib/detector.o"
 	@echo "... src/lib/detector.i"
 	@echo "... src/lib/detector.s"

@@ -61,7 +61,7 @@ private:
    *
    * @param features[out] Exported cluster features.
    */
-  void features2ROS(hdetect::ClusteredScan &features);
+  void features2ROS(hdetect::ClusteredScan *features);
 
 public:
   /// Null constructor
@@ -80,13 +80,13 @@ public:
    *
    * @param features[out] Exported cluster features
    */
-  void getFeatures(hdetect::ClusteredScan &features);
+  void getFeatures(hdetect::ClusteredScan *features);
 
   /**
    *
    * @param features[out] Where the clusters are going to be exported.
    */
-  void getClusters(hdetect::ClusteredScan &laserClusters);
+  void getClusters(hdetect::ClusteredScan *laserClusters);
 
   /**
    *

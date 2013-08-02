@@ -96,7 +96,7 @@ template <class obj_class> void plotLaser(int zoom, void * obj)
 	// dereferencing the void object pointer
 	obj_class * newObj = (obj_class*)obj; //recasted
 
-	hdetect::ClusteredScan scanClusters = newObj->getClusteredScan();
+	hdetect::ClusteredScan* scanClusters = newObj->getClusteredScan();
 
 	Mat laserPlane;
 	laserPlane.create(HEIGHT, WIDTH, CV_8UC3);
@@ -108,14 +108,14 @@ template <class obj_class> void plotLaser(int zoom, void * obj)
 	// The values are computed according to the zoom value
 	// The default zoom corresponds to 500 pixels = 30000 mm
 
-	for (uint cNo = 0; cNo < scanClusters.nclusters; cNo++)
+	for (uint cNo = 0; cNo < scanClusters->nclusters; cNo++)
 	{
 
 		if (1) //scanClusters.fusion[clusterNo] == TRUE)
 		{
-			pointToPlane(scanClusters.cogs[cNo],pt,zoom);
+			pointToPlane(scanClusters->cogs[cNo],pt,zoom);
 
-			color = newObj->getColor(scanClusters.cogs[cNo]);
+			color = newObj->getColor(scanClusters->cogs[cNo]);
 
 			// Number of cluster
 			//cv::putText(laserPlane, boost::lexical_cast<string>(clusterNo),
@@ -124,23 +124,23 @@ template <class obj_class> void plotLaser(int zoom, void * obj)
 
 			// Number of points
 			Scalar black(0,0,0);
-			cv::putText(laserPlane, boost::lexical_cast<string>(scanClusters.clusters[cNo].points.size()),
+			cv::putText(laserPlane, boost::lexical_cast<string>(scanClusters->clusters[cNo].points.size()),
 					pt, 1, 2, black, 2, 8);
 
 			// Distance to cog
 			pt.x+=45;
-			cv::putText(laserPlane, boost::lexical_cast<string>( uint( sqrt( pow(scanClusters.cogs[cNo].x,2)
-					+ pow(scanClusters.cogs[cNo].y,2) ) *100) ),
+			cv::putText(laserPlane, boost::lexical_cast<string>( uint( sqrt( pow(scanClusters->cogs[cNo].x,2)
+					+ pow(scanClusters->cogs[cNo].y,2) ) *100) ),
 					pt, 1, 1.3, black, 1.3, 8);
 
-			for (uint pointNo = 0; pointNo < scanClusters.clusters[cNo].points.size(); pointNo++)
+			for (uint pointNo = 0; pointNo < scanClusters->clusters[cNo].points.size(); pointNo++)
 			{
 				// Transform x,y point to pixels
-				pointToPlane(scanClusters.clusters[cNo].points[pointNo],pt,zoom);
+				pointToPlane(scanClusters->clusters[cNo].points[pointNo],pt,zoom);
 				circle(laserPlane, pt, 2, color);
 			}
 
-			if(scanClusters.labels[cNo]==1)
+			if(scanClusters->labels[cNo]==1)
 			{
 				//cv::circle(laserPlane, 1 , 2, Scalar(0,0,0));
 			}

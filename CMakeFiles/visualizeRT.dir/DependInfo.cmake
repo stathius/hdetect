@@ -65,7 +65,7 @@ SET(CMAKE_C_TARGET_INCLUDE_PATH
   "/opt/ros/fuerte/stacks/perception_pcl/pcl_ros/include"
   "/opt/ros/fuerte/stacks/perception_pcl/pcl_ros/cfg/cpp"
   "/opt/ros/fuerte/stacks/nodelet_core/nodelet_topic_tools/include"
-  "/opt/ros/fuerte/stacks/vision_opencv/image_geometry/include"
+  "/home/kabamaru/ros_workspace/image_geometry/include"
   "msg_gen/cpp/include"
   "/usr/local/include"
   )

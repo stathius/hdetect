@@ -3,9 +3,6 @@
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/ROSBUILD_genmsg_py.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/ROSBUILD_gensrv_cpp.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/ROSBUILD_gensrv_lisp.dir
-/home/kabamaru/ros_workspace/hdetect/CMakeFiles/annotateData.dir
-/home/kabamaru/ros_workspace/hdetect/CMakeFiles/annotator.dir
-/home/kabamaru/ros_workspace/hdetect/CMakeFiles/bagReader.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/clean-test-results.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/detector.dir
 /home/kabamaru/ros_workspace/hdetect/CMakeFiles/laserLib.dir

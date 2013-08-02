@@ -94,7 +94,7 @@ CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/share/rosbag/manif
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet_topic_tools/manifest.xml
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/laser_pipeline/laser_filters/manifest.xml
-CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/vision_opencv/image_geometry/manifest.xml
+CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /home/kabamaru/ros_workspace/image_geometry/manifest.xml
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
 CMakeFiles/lgeometry.dir/src/lib/lgeometry.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated

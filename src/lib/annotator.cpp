@@ -10,7 +10,7 @@ annotator::annotator(string bagFile)
   std::string abs_path;
   ros::NodeHandle nh;
   if(nh.hasParam("pkg_path")) {
-    ros::param::get("/pkg_path",abs_path);
+  ros::param::get("/pkg_path",abs_path);
   }
   else ROS_ERROR("[ANNOTATOR] Parameter pkg_path (absolute package path) not found.");
 
@@ -88,11 +88,11 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
 
     // if it's an accurate integer change the cluster name
     if (stringstream(input) >> annot)
-      if (annot > 0 && annot < clusterData.labels.size()) // && projectedClusters[annot] == 1)
-        clusterData.labels[annot] = 1;
+      if (annot > 0 && annot < clusterData->labels.size()) // && projectedClusters[annot] == 1)
+        clusterData->labels[annot] = 1;
       else
         //printf("\nInput should be between 0 and %d and it should be a projected cluster\n", scanClusters.labels.size());
-        printf("\nInput should be between 0 and %d\n", clusterData.labels.size());
+        printf("\nInput should be between 0 and %d\n", clusterData->labels.size());
     else if (!input.compare(""))
       printf("\nMoving to the next scan\n");
     else
@@ -101,18 +101,18 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
   } while (input.compare(""));
 
 
-  for(uint i = 0; i < clusterData.fusion.size() ; i++)
+  for(uint i = 0; i < clusterData->fusion.size() ; i++)
   {
 
-    if (clusterData.fusion[i] == 1) {
-      projectPoint(clusterData.cogs[i], prPixel, K, D, transform);
-      getBox(clusterData.cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
+    if (clusterData->fusion[i] == 1) {
+      projectPoint(clusterData->cogs[i], prPixel, K, D, transform);
+      getBox(clusterData->cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
 
         getCrop (crop, cv_ptr->image, upleft, boxSize);
 
 
         char cropID[30];
-        if(clusterData.labels[i] == 1)
+        if(clusterData->labels[i] == 1)
         	sprintf(cropID,"S%04d_C_%03d_1.pgm", scanNo, i);
         else
         	sprintf(cropID,"S%04d_C_%03d_0.pgm", scanNo, i);
@@ -128,9 +128,9 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
     }
   }
 
-  for (uint i = 0; i < clusterData.labels.size(); i++)
-    printf("cluster %03d\tannotation %1d\tprojected %1d\tfusion %1d\n", i, clusterData.labels[i], clusterData.projected[i],
-           clusterData.fusion[i]);
+  for (uint i = 0; i < clusterData->labels.size(); i++)
+    printf("cluster %03d\tannotation %1d\tprojected %1d\tfusion %1d\n", i, clusterData->labels[i], clusterData->projected[i],
+           clusterData->fusion[i]);
 
   saveBag(image, lScan);
 
@@ -148,7 +148,7 @@ void annotator::saveBag(const sensor_msgs::Image::ConstPtr &image,
 //  sensor_msgs::LaserScan new_lScan = *lScan;
 
   // Set all the timestamps to the acquisition time (camera)
-  clusterData.header.stamp = acquisition_time;
+  clusterData->header.stamp = acquisition_time;
   /*
   new_image.header.stamp= acquisition_time;
   new_lScan.header.stamp= acquisition_time;
@@ -156,9 +156,9 @@ void annotator::saveBag(const sensor_msgs::Image::ConstPtr &image,
   bag.write("/camera/image", acquisition_time, new_image );
   bag.write("/laser/scan", acquisition_time, new_lScan );
   */
-  clusterData.scan = *lScan;
-  clusterData.image = *image;
-  bag.write("/ClusteredScan", acquisition_time, clusterData );
+  clusterData->scan = *lScan;
+  clusterData->image = *image;
+  bag.write("/ClusteredScan", acquisition_time, *clusterData );
 
 }
 
@@ -166,13 +166,13 @@ void annotator::saveBag(const sensor_msgs::Image::ConstPtr &image,
 void annotator::saveCSV() {
 
   int i,j;
-  for (i = 0; i < clusterData.nclusters; i++)
+  for (i = 0; i < clusterData->nclusters; i++)
   {
     //if (projectedClusters[i] == 1) { // IF THIS IS UNCOMMENTED IT ONLY SAVES VISIBLE CLUSTERS
-    fprintf(f,"%04d %d %d", scanNo, clusterData.fusion[i], clusterData.labels[i]);
+    fprintf(f,"%04d %d %d", scanNo, clusterData->fusion[i], clusterData->labels[i]);
 
-    for (j = 0; j < clusterData.nfeatures; j++) {
-      fprintf(f,", %3.20f", clusterData.features[i].data[j]);
+    for (j = 0; j < clusterData->nfeatures; j++) {
+      fprintf(f,", %3.20f", clusterData->features[i].data[j]);
     }
 
     fprintf(f,"\n");

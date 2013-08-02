@@ -102,7 +102,7 @@ msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/share/rosbag/manife
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/nodelet_core/nodelet_topic_tools/manifest.xml
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/laser_pipeline/laser_filters/manifest.xml
-msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/vision_opencv/image_geometry/manifest.xml
+msg_gen/cpp/include/hdetect/ClusteredScan.h: /home/kabamaru/ros_workspace/image_geometry/manifest.xml
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
 msg_gen/cpp/include/hdetect/ClusteredScan.h: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated

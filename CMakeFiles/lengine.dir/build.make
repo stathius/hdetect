@@ -94,7 +94,7 @@ CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/share/rosbag/manifest.
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/nodelet_core/nodelet_topic_tools/manifest.xml
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/perception_pcl/pcl_ros/manifest.xml
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/laser_pipeline/laser_filters/manifest.xml
-CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/vision_opencv/image_geometry/manifest.xml
+CMakeFiles/lengine.dir/src/lib/lengine.o: /home/kabamaru/ros_workspace/image_geometry/manifest.xml
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/geometry/tf/msg_gen/generated
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/geometry/tf/srv_gen/generated
 CMakeFiles/lengine.dir/src/lib/lengine.o: /opt/ros/fuerte/stacks/dynamic_reconfigure/msg_gen/generated

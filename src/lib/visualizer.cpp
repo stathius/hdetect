@@ -2,6 +2,8 @@
 
 visualizer::visualizer() {
 
+	ss << std::fixed << std::setprecision(2);
+
 	// Random generator for the random coloring of the clusters
 	RNG rng(0xFFFFFFFF);
 	pallete = randomColors(rng);
@@ -36,20 +38,20 @@ visualizer::~visualizer() {
 void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-	detector::detectHumans(image, lScan);
+	detector::detectHumans(image, lScan, &clusterData);
 
 	// Convert image to RGB
 	cvtColor(cv_ptr->image, colorImage , CV_GRAY2RGB);
 
 	// Iterate through every cog of the scanClusters
-	for (uint i=0; i < clusterData.cogs.size() ;i++)
+	for (uint i=0; i < clusterData->cogs.size() ;i++)
 	{
 
 		// If the cog is in the image save its features and then plot the cluster
-		if (clusterData.projected[i]==1)
+		if (clusterData->projected[i]==1)
 		{
 			// Get the color index
-			color = getColor(clusterData.cogs[i]);
+			color = getColor(clusterData->cogs[i]);
 
 			// Draw a rectangle around each crop
 			//rectangle(colorImage, upleft, downright, color, 2, 8, 0);
@@ -64,21 +66,26 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			/// add an if below so it draws something in either case
 
 			// Draw the cluster number
-			projectPoint(clusterData.cogs[i], prPixel, K , D, transform);
+			projectPoint(clusterData->cogs[i], prPixel, K , D, transform);
 			cv::putText(colorImage, boost::lexical_cast<string>(i), prPixel, 1, 1, color, 1, 1);
 			circle(colorImage, prPixel, 4, color);
 
 			// Draw the rectangle around the ROI
-			if (clusterData.fusion[i] == 1) {
-				getBox(clusterData.cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
-				rectangle(colorImage, upleft, downright, color);
+			if (clusterData->fusion[i] == 1) {
+				if(clusterData->detection_labels[i] == 1) {
+					getBox(clusterData->cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
+					rectangle(colorImage, upleft, downright, color);
+				    ss << clusterData->detection_probs[i];
+					putText(colorImage, ss.str(), upleft, 1, 1, color, 1, 1);
+					ss.str("");
+				}
 			}
 
 			// This is the code to superimpose the clusters on the image
-			for (uint j = 0; j < clusterData.clusters[i].points.size(); j++)
+			for (uint j = 0; j < clusterData->clusters[i].points.size(); j++)
 			{
 				// Convert each cluster point to image coordinates
-				projectPoint(clusterData.clusters[i].points[j], prPixel, K , D, transform);
+				projectPoint(clusterData->clusters[i].points[j], prPixel, K , D, transform);
 
 				// Draw the point to the image
 				if (prPixel.x >= 0 && prPixel.x < colorImage.cols && prPixel.y >= 0 && prPixel.y < colorImage.rows)
