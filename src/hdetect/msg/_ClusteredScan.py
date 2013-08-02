@@ -9,7 +9,7 @@ import sensor_msgs.msg
 import std_msgs.msg
 
 class ClusteredScan(genpy.Message):
-  _md5sum = "8e23d87dccd046de2d18cd70e22c9938"
+  _md5sum = "95e6e3e8660db8a1197cb9c42456ad43"
   _type = "hdetect/ClusteredScan"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """# A message to contain all the info and the points of each laser cluster of the scan
@@ -29,11 +29,14 @@ sensor_msgs/Image image
 sensor_msgs/PointCloud[] clusters
 geometry_msgs/Point32[] cogs
 std_msgs/Float32MultiArray[] features
-int8[] labels
+int8[] labels #annotation labels
 bool[] fusion
 bool[] projected
 uint16 nclusters
 uint16 nfeatures
+int8[] detection_labels 
+float32[] detection_probs
+
 ================================================================================
 MSG: std_msgs/Header
 # Standard metadata for higher-level stamped data types.
@@ -214,8 +217,8 @@ string label   # label of given dimension
 uint32 size    # size of given dimension (in type units)
 uint32 stride  # stride of given dimension
 """
-  __slots__ = ['header','scan','image','clusters','cogs','features','labels','fusion','projected','nclusters','nfeatures']
-  _slot_types = ['std_msgs/Header','sensor_msgs/LaserScan','sensor_msgs/Image','sensor_msgs/PointCloud[]','geometry_msgs/Point32[]','std_msgs/Float32MultiArray[]','int8[]','bool[]','bool[]','uint16','uint16']
+  __slots__ = ['header','scan','image','clusters','cogs','features','labels','fusion','projected','nclusters','nfeatures','detection_labels','detection_probs']
+  _slot_types = ['std_msgs/Header','sensor_msgs/LaserScan','sensor_msgs/Image','sensor_msgs/PointCloud[]','geometry_msgs/Point32[]','std_msgs/Float32MultiArray[]','int8[]','bool[]','bool[]','uint16','uint16','int8[]','float32[]']
 
   def __init__(self, *args, **kwds):
     """
@@ -225,7 +228,7 @@ uint32 stride  # stride of given dimension
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,scan,image,clusters,cogs,features,labels,fusion,projected,nclusters,nfeatures
+       header,scan,image,clusters,cogs,features,labels,fusion,projected,nclusters,nfeatures,detection_labels,detection_probs
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -256,6 +259,10 @@ uint32 stride  # stride of given dimension
         self.nclusters = 0
       if self.nfeatures is None:
         self.nfeatures = 0
+      if self.detection_labels is None:
+        self.detection_labels = []
+      if self.detection_probs is None:
+        self.detection_probs = []
     else:
       self.header = std_msgs.msg.Header()
       self.scan = sensor_msgs.msg.LaserScan()
@@ -268,6 +275,8 @@ uint32 stride  # stride of given dimension
       self.projected = []
       self.nclusters = 0
       self.nfeatures = 0
+      self.detection_labels = []
+      self.detection_probs = []
 
   def _get_types(self):
     """
@@ -403,6 +412,14 @@ uint32 stride  # stride of given dimension
       buff.write(struct.pack(pattern, *self.projected))
       _x = self
       buff.write(_struct_2H.pack(_x.nclusters, _x.nfeatures))
+      length = len(self.detection_labels)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sb'%length
+      buff.write(struct.pack(pattern, *self.detection_labels))
+      length = len(self.detection_probs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(struct.pack(pattern, *self.detection_probs))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -643,6 +660,20 @@ uint32 stride  # stride of given dimension
       start = end
       end += 4
       (_x.nclusters, _x.nfeatures,) = _struct_2H.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sb'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.detection_labels = struct.unpack(pattern, str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.detection_probs = struct.unpack(pattern, str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -777,6 +808,14 @@ uint32 stride  # stride of given dimension
       buff.write(self.projected.tostring())
       _x = self
       buff.write(_struct_2H.pack(_x.nclusters, _x.nfeatures))
+      length = len(self.detection_labels)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sb'%length
+      buff.write(self.detection_labels.tostring())
+      length = len(self.detection_probs)
+      buff.write(_struct_I.pack(length))
+      pattern = '<%sf'%length
+      buff.write(self.detection_probs.tostring())
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -1018,6 +1057,20 @@ uint32 stride  # stride of given dimension
       start = end
       end += 4
       (_x.nclusters, _x.nfeatures,) = _struct_2H.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sb'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.detection_labels = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      pattern = '<%sf'%length
+      start = end
+      end += struct.calcsize(pattern)
+      self.detection_probs = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
