@@ -1,3 +1,5 @@
 /CMakeFiles
-/rviz
 /bag
+/bin
+/lib
+/msg_gen

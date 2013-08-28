@@ -36,7 +36,6 @@ uint16 nclusters
 uint16 nfeatures
 int8[] detection_labels 
 float32[] detection_probs
-
 ================================================================================
 MSG: std_msgs/Header
 # Standard metadata for higher-level stamped data types.

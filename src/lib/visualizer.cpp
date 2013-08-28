@@ -20,7 +20,7 @@ visualizer::visualizer() {
 	// Trackbar to control the zoom
 	createTrackbar("Zoom:", L_WINDOW, &zoom, 30, &plotLaser<visualizer>, this);
 
-	pub = nh.advertise<std_msgs::Byte>("/visualizer/Hz", 5);
+	pub = nh.advertise<std_msgs::Byte>("Hz", 5);
 	dummy.data=1;
 
 	ROS_INFO("[VISUALIZER] Visualizer running OK.");
@@ -38,7 +38,7 @@ visualizer::~visualizer() {
 void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-	detector::detectHumans(image, lScan, &clusterData);
+	detector::detectHumans(image, lScan);
 
 	// Convert image to RGB
 	cvtColor(cv_ptr->image, colorImage , CV_GRAY2RGB);

@@ -26,5 +26,3 @@
   <depend package="image_geometry"/>
   <depend package="camera_calibration_parsers"/>
 </package>
-
-

@@ -24,9 +24,6 @@ class visualizer : public detector
 {
 protected:
 
-	/// Contains the laser clusters, annotation, features, cogs, annotation, if it should be fused etc.
-	hdetect::ClusteredScan *clusterData;
-
 	/// Publisher used to count the hz rate of the node
 	ros::Publisher pub;
 	std_msgs::Byte dummy;

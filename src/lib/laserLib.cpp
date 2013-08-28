@@ -180,7 +180,7 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls, laserscan_data &libScan) {
 		i++;
 
 	}
-	printf("[LASER_LIB] scan2lib: Laser scan Prefiltered = %d - Filtered = %d\n",ls.ranges.size(),libScan.data.pts.size());
+	//printf("[LASER_LIB] scan2lib: Laser scan Prefiltered = %d - Filtered = %d\n",ls.ranges.size(),libScan.data.pts.size());
 
 }
 

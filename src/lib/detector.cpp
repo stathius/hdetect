@@ -76,6 +76,9 @@ detector::detector() : nh("~")
 	// ready to be used by opencv functions
 	CameraInfo2CV(params.cInfo, K, D, params.rect);
 
+	// Initializing the detector publisher
+	detectionPublisher = nh.advertise<hdetect::ClusterClass>("humanDetections",100);
+
 	ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
 }
 
@@ -229,9 +232,12 @@ void detector::classifyCamera(geometry_msgs::Point32 &cog, double &prob)
 	//cameraProb.push_back(pred);
 }
 
-void detector::detectFusion(hdetect::ClusteredScan *clusterData) {
+void detector::detectFusion(hdetect::ClusteredScan *clusterData, hdetect::ClusterClass *detections) {
 
-	ROS_INFO("[DETECTOR] clusters size %d", clusterData->clusters.size());
+	detections->header = clusterData->header;
+	detections->cogs = clusterData->cogs;
+
+	//ROS_INFO("[DETECTOR] clusters size %d", clusterData->clusters.size());
 
 	// Variables where the probabilities of the detectors are stored
 	// If there is no fusion the probability of the laser is taken
@@ -241,8 +247,10 @@ void detector::detectFusion(hdetect::ClusteredScan *clusterData) {
 
 	for (uint i = 0; i < clusterData->clusters.size(); i++)
 	{
+		// put the cog into the ClusterClass
+
 		//ROS_INFO("i %d",i);
-		//detectLaser(clusterData->features[i]);
+		//classifyLaser(clusterData->features[i]);
 		// ONLY with camera
 		laserProb = 0.0;
 		cameraProb = 0.0;
@@ -260,25 +268,33 @@ void detector::detectFusion(hdetect::ClusteredScan *clusterData) {
 		}
 
 		clusterData->detection_probs.push_back( fusionProb );
-		if ( fusionProb > 0.0 )
+		if ( fusionProb > 0.0 ) {
 			clusterData->detection_labels.push_back(HUMAN);
+		}
 		else
 			clusterData->detection_labels.push_back(NO_HUMAN);
 
 //		ROS_INFO("[DETECTOR] cluster %d: projection %d fusion %d prob %3.3f label %d",i+1,
 //				clusterData->projected[i], clusterData->fusion[i], clusterData->detection_probs[i], clusterData->detection_labels[i]);
 	}
+
+	detections->detection_labels = clusterData->detection_labels;
+	detections->detection_probs = clusterData->detection_probs;
+
+	//ROS_INFO("[DETECTOR] Publishing detections");
+	detectionPublisher.publish(*detections);
 }
 
 
 void detector::detectHumans(const sensor_msgs::Image::ConstPtr &image,
-		const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan **clusterData)
+		const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-	*clusterData = new hdetect::ClusteredScan;
+	clusterData = new hdetect::ClusteredScan;
+	detections = new hdetect::ClusterClass;
 
 	getTF(image, lScan);
 	getImage(image);
-	processLaser(lScan, *clusterData);
+	processLaser(lScan, clusterData);
 
-	detectFusion(*clusterData);
+	detectFusion(clusterData, detections);
 }

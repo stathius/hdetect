@@ -12,6 +12,7 @@
 // MY INCLUDES
 #include "laserLib.hpp"
 #include "projectTools.hpp"
+#include <hdetect/ClusterClass.h>
 
 
 /// A structure to hold all the parameters needed by the detector
@@ -120,6 +121,15 @@ protected:
 	std::vector<Rect> hogFound;
 	std::vector<double> hogPred;
 
+	// Publishes the detected humans coordinates and probability
+	ros::Publisher detectionPublisher;
+
+	/// Contains the laser clusters, annotation, features, , annotation, if it should be fused etc.
+	hdetect::ClusteredScan *clusterData;
+
+	/// Contains the coordinates, the labels and the probabilities of the detections
+	hdetect::ClusterClass *detections;
+
 	/// Does the laser segmentation, feature extraction etc into scanClusters
 	void processLaser(const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan *clusterData);
 
@@ -135,7 +145,11 @@ protected:
 
 	/// Detects if there is a pedestrian in the cluster and or ROI
 	/// Gives the probabilities and the class output of each detector
-	void detectFusion(hdetect::ClusteredScan *clusterData);
+	void detectFusion(hdetect::ClusteredScan *clusterData, hdetect::ClusterClass *detections);
+
+	/// Detects if there is a pedestrian using only the camera ROI
+	/// Gives the probabilities and the class output of each detector
+	void detectCamera(hdetect::ClusteredScan *clusterData);
 
 	/// Finds the class and the probability for a given sample of laser features
 	void classifyLaser(std_msgs::Float32MultiArray &features);
@@ -157,8 +171,7 @@ public:
 	 * @param image Image message
 	 * @param lScan LaserScan message
 	 */
-	void detectHumans(const sensor_msgs::Image::ConstPtr &image,
-			const sensor_msgs::LaserScan::ConstPtr &lScan, hdetect::ClusteredScan **clusterData);
+	void detectHumans(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan);
 
 	/**
 	 * Used only for annotation purposes
