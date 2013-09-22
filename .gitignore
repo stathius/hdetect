@@ -3,3 +3,5 @@
 /bin
 /lib
 /msg_gen
+CMakeCache.txt
+/src/hdetect/
