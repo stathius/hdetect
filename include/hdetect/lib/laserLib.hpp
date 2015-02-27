@@ -4,9 +4,9 @@
 //#include "sensor_msgs/LaserScan.h"
 #include <filters/filter_chain.h>
 #include <std_msgs/Header.h>
-#include "sensor_msgs/LaserScan.h"
-#include "lengine.hpp"
-#include "../src/lib/Header.hpp"
+#include <sensor_msgs/LaserScan.h>
+#include <hdetect/lib/lengine.hpp>
+#include <hdetect/lib/header.hpp>
 #include <hdetect/ClusteredScan.h>
 
 /**
