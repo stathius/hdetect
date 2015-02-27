@@ -5,7 +5,7 @@ Uses a combination of laser range finder and a computer vision module for the pe
 
 For pairing observations and tracking it uses a combination of Kalman filters and Mahalanobis distance.
 
-The code was written for the [ROTOS](http://robcib.etsii.upm.es/index.php/en/projects-28/rotos) project in the RobCib research group of the Polytechnic University of Madrid.
+The code was written for the [ROTOS](http://robcib.etsii.upm.es/) project in the RobCib research group of the Polytechnic University of Madrid.
 
 ## Publications
 
