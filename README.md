@@ -88,44 +88,43 @@ It is suggested to run the launch files than to run the bin files
 ## Brief explanation of the code
 
 ####lengine
-segment the laser points into clusters, call the function to compute the 17 features of the laser points
+Segments the laser points into clusters
 
 ####lfeature
-compute the 17 features of the laser points
+Computes the features of the laser clusters
 
 ####lgeometry
 compute the geometry used by the computation of the features
 
 ####laserLib
-load the raw laser point, call the function to compute the clusters and the features
+Loads the raw laser points
 
 ####projectTools
-standard function for projection, used in everywhere
+Standard function for projection
 
-####Header
-contains the enumeration of HUMAN, the static topic name, curTimeStamp and preTimeStamp
+####header
+Contains the enumeration of HUMAN, the static topic name, curTimeStamp and preTimeStamp
 
-
-####Human
+####human
 Structure for storing the value of the human detection and tracking
 
-####Observation
+####observation
 Structure for storing the value casted from detection
 
-####ObjectTracking
+####object_tracking
 Using Kalman filter to track the object, including predict and update
 
-####Detector
-callback function of headlessRT, main function for detection, run the detection of laser and of image, then merge them together
+####detector
+Callback function of headlessRT, main function for detection, run the detection of laser and of image, then merge them together
 
-####Visualizer
-callback function of visualizeRT, run the detector first, then plot them on the window
+####visualizer
+Callback function of visualizeRT, run the detector first, then plot them on the window
 
-####Recognizer
-callback function of recognizeRT, run the detector first, then do the tracking of the human, and stand it to rviz
+####recognizer
+Callback function of recognizeRT, run the detector first, then do the tracking of the human, and stand it to rviz
 
-####Annotator
-callback function of annotateData, main function of the annotation
+####annotator
+Callback function of annotateData, main function of the annotation
 
 ####bagReader
 read the bag for the annotation 
