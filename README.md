@@ -49,6 +49,13 @@ The code compiles only using *rosbuild*. The current version doesn't work with *
 * cd (hdetect folder)
 * rosmake
 
+## Demo the code
+ 1. Download [this rosbag](https://www.dropbox.com/s/szi5szgs12amv99/moving7.bag?dl=0)
+ 2. Change the *recognizeBag.launch* launchfile to point towards the rosbag
+ 3. Run ```roslaunch hdetect recognizeBag.launch```
+ 4. Rviz is going to launch. Enable the image (camera)
+ 5. Wait till everything is launched and hit space to playback
+
 ## Executable files
 
 * headlessRT - human detection without visualization and tracking
@@ -73,57 +80,49 @@ It is suggested to run the launch files than to run the bin files
 * annotateBAG.launch - annotateData with rosbag. The bag name can be changed inside the launch.
 * trainLaser.launch - trainLaser with csv file. The file name can be changed inside the launch.
 
-
-##  How to see the tracking result with a bag
- 1) “rosrun rviz rviz”. The config of rviz is at rviz/hdetect.rviz
-If you can't see “No Image” on the left or grid on the right, redo the first step
- 2) “roslaunch hdetect recognizeBag.launch”
- 3) “rosbag play directory_of_bag”
-
 ## Brief explanation of the code
 
-###lengine
+####lengine
 segment the laser points into clusters, call the function to compute the 17 features of the laser points
 
-###lfeature
+####lfeature
 compute the 17 features of the laser points
 
-###lgeometry
+####lgeometry
 compute the geometry used by the computation of the features
 
-###laserLib
+####laserLib
 load the raw laser point, call the function to compute the clusters and the features
 
-###projectTools
+####projectTools
 standard function for projection, used in everywhere
 
-###Header
+####Header
 contains the enumeration of HUMAN, the static topic name, curTimeStamp and preTimeStamp
 
 
-###Human
+####Human
 Structure for storing the value of the human detection and tracking
 
-
-###Observation
+####Observation
 Structure for storing the value casted from detection
 
-###ObjectTracking
+####ObjectTracking
 Using Kalman filter to track the object, including predict and update
 
-###Detector
+####Detector
 callback function of headlessRT, main function for detection, run the detection of laser and of image, then merge them together
 
-###Visualizer
+####Visualizer
 callback function of visualizeRT, run the detector first, then plot them on the window
 
-###Recognizer
+####Recognizer
 callback function of recognizeRT, run the detector first, then do the tracking of the human, and stand it to rviz
 
-###Annotator
+####Annotator
 callback function of annotateData, main function of the annotation
 
-###bagReader
+####bagReader
 read the bag for the annotation 
  
 ## Acknowledgements
