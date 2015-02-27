@@ -33,9 +33,14 @@ DOI = {10.3390/s130911603}
 
 ## Videos
 
-[Human Detection with fusion of laser and camera](http://youtu.be/W84ERQ0LYjM)
+Human Detection with fusion of laser and camera
 
-[Autonomous detection tracking and following](http://youtu.be/W2lz9WmkjB0)
+[![Human Detection with fusion of laser and camera](http://img.youtube.com/vi/W84ERQ0LYjM/0.jpg)](http://www.youtube.com/watch?v=W84ERQ0LYjM)
+
+Autonomous detection tracking and following
+
+[![Autonomous detection tracking and following](http://img.youtube.com/vi/gqlUAyLwUE4/0.jpg)](http://www.youtube.com/watch?v=gqlUAyLwUE4)
+
 
 ## Requirements
  1. ROS (groovy)
