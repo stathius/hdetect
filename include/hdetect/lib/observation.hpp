@@ -5,6 +5,7 @@
 #include <geometry_msgs/Point32.h>
 
 #include <newmat/newmat.h>
+#include <stdio.h>
 
 class Observation
 {

@@ -7,9 +7,9 @@
 #include <deque>
 #include <map>
 
-#include "Header.hpp"
-#include "Human.hpp"
-#include "Observation.hpp"
+#include <hdetect/lib/header.hpp>
+#include <hdetect/lib/human.hpp>
+#include <hdetect/lib/observation.hpp>
 
 namespace ObjectTracking
 {

@@ -1,5 +1,5 @@
-#include "Human.hpp"
-#include <stdio.h>
+#include <hdetect/lib/human.hpp>
+
 
 using namespace NEWMAT;
 using namespace geometry_msgs;

@@ -2,11 +2,12 @@
   <description brief="hdetect">
   hdetect
   </description>
-  <author>Stathis Fotiadis</author>
+  <author>Stathis Fotiadis, Bang-Cheng Wang</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/upm</url>
   <depend package="roslib"/>
+  <depend package="rosbag"/>
   <depend package="tf"/>
   <depend package="image_transport"/>
   <depend package="roscpp"/>
@@ -24,5 +25,6 @@
   <depend package="pluginlib"/>
   <depend package="geometry_msgs"/>
   <depend package="image_geometry"/>
+  <depend package="nav_msgs"/>
   <depend package="camera_calibration_parsers"/>
 </package>

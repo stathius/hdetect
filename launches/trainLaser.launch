@@ -3,7 +3,7 @@
 	<param name="pkg_path" value="$(find hdetect)"/>
 
 	<node pkg="hdetect" type="trainLaser" name="trainLaser" output="screen" 
-		args="/data/annotationAll.csv" >
+		args="/data/Annotation.csv" >
 	</node>
 
 </launch>

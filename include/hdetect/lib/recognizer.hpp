@@ -13,7 +13,8 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
-#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <tf/transform_datatypes.h>
 
 // OPENCV
 #include <opencv2/highgui/highgui.hpp>
@@ -22,11 +23,12 @@
 #include <newmat/newmat.h>
 
 // MY INCLUDES
-#include "hdetect/lib/detector.hpp"
-#include "Header.hpp"
-#include "Human.hpp"
-#include "Observation.hpp"
-#include "ObjectTracking.hpp"
+#include <hdetect/lib/detector.hpp>
+#include <hdetect/lib/header.hpp>
+#include <hdetect/lib/human.hpp>
+#include <hdetect/lib/observation.hpp>
+#include <hdetect/lib/object_tracking.hpp>
+#include <hdetect/HumansFeatClass.h>
 
 class Recognizer : public detector
 {
@@ -116,11 +118,11 @@ class Recognizer : public detector
 
         uint getNewId(int category);
 
-        typedef std::deque<Human> HumanDeque;
-
-        //std::deque<geometry_msgs::PointStamped> HumanDeque;
-
-        //geometry_msgs::PointStamped HumanPos;
+        // Publisher variables
+        ros::Publisher Humanpublisher;
+        hdetect::HumansFeat HumansAux;
+        std::vector<hdetect::HumansFeat> HumansVector;
+        hdetect::HumansFeatClass HumansDetected;
 
 };
 

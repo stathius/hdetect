@@ -1,4 +1,4 @@
-#include "ObjectTracking.hpp"
+#include <hdetect/lib/object_tracking.hpp>
 
 using namespace std;
 using namespace NEWMAT;
@@ -15,15 +15,14 @@ namespace ObjectTracking
     float PREDICT_OBJECT_SCORE;
     float UPDATE_OBJECT_SCORE;
 }
-
 void ObjectTracking::loadCfg(string cfg)
 {
-    MAX_MAH_DIS = 3.0;
-    MAX_EUC_DIS = 3.0;
+    MAX_MAH_DIS = 2.3;
+    MAX_EUC_DIS = 3.3;
 
     MAX_ID = 1;
 
-    NEW_OBJECT_SCORE = 6.0;
+    NEW_OBJECT_SCORE = 10.0;
     PREDICT_OBJECT_SCORE = -1.0;
     UPDATE_OBJECT_SCORE = 1.0;
 }
@@ -32,8 +31,11 @@ void ObjectTracking::eliminate(deque<Human> &humans)
 {
     for (int i = 0; i < (int)humans.size(); i++)
     {
+        //if(i==1)
+        //fprintf(stderr, "delete human %d - Score %f\n",i+1,humans[i].score);
         if (humans[i].score < 0.0 || curTimestamp - humans[i].preTimestamp > 5)
         {
+
             humans.erase(humans.begin() + i);
             i--;
         }
@@ -63,7 +65,7 @@ void ObjectTracking::predict(deque<Human> &humans)
         humans[i].state = A * humans[i].state;
         humans[i].cov = A * humans[i].cov * A.t() + Q;
 
-        fprintf(stderr, "predict (ID, score) = (%d, %.2f) \n", humans[i].id, humans[i].score);
+        //fprintf(stderr, "predict (ID, score, deltaT) = (%d, %.2f, %.2f) \n", humans[i].id, humans[i].score, deltaT);
     }
 }
 
@@ -71,6 +73,7 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
 {
     if (humans.size() == 0 || observations.size() == 0)
     {
+        //fprintf(stderr, "No observations");
         return;
     }
 
@@ -85,12 +88,13 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
             // Mahalanobis Distance and Euclidean Distance
             MahDis(i + 1, j + 1) = calculateMahDis(observations[i], humans[j]);
             EucDis(i + 1, j + 1) = calculateEucDis(observations[i], humans[j]);
+            //fprintf(stderr, "observation %d, humans %d, minEuc = %.2f, minMah = %.2f \n",i, j, EucDis(i + 1, j + 1), MahDis(i + 1, j + 1));
         }
     }
 
     int pairNum = 0;
 
-    fprintf(stderr, "---------- Pair Start ----------\n");
+    //fprintf(stderr, "---------- Pair Start ----------\n");
 
     while (1)
     {
@@ -98,9 +102,24 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
         int row = 0;
         int col = 0;
 
-        float minEuc = EucDis.Minimum2(row, col);
-        float minMah = MahDis(row, col);
+       // int rowE = 0;
+       // int colE = 0;
+        //float minEuc = 10;
 
+        float minMah = EucDis.Minimum2(row, col);
+        float minEuc = MahDis(row, col);
+        //float minMah = MahDis(row, col);
+
+        // If the euclidean distance is different from the mahalanobis one
+        // discard the pairing
+//        if (row != rowE || col != colE)
+//        {
+//          if(minEuc > 2.0)
+//            minEuc = 10;
+//        }
+
+
+        //fprintf(stderr, "row %d, col %d, minEuc = %.2f, minMah = %.2f \n",row, col, minEuc, minMah);
         // Observation index
         int i = row - 1;
 
@@ -120,20 +139,20 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
                 MahDis.Row(row) = std::numeric_limits<float>::infinity();
                 MahDis.Column(col) = std::numeric_limits<float>::infinity();
 
-                fprintf(stderr, "Success = %d %d, minEuc = %.2f, minMah = %.2f, cov = %.2f %.2f \n",
-                        i, humans[j].id, minEuc, minMah, humans[j].cov(1, 1), humans[j].cov(2, 2));
+                //fprintf(stderr, "Success = %d %d, minEuc = %.2f, minMah = %.2f, cov = %.2f %.2f \n",
+                //        i, humans[j].id, minEuc, minMah, humans[j].cov(1, 1), humans[j].cov(2, 2));
             }
             else
             {
                 EucDis(row, col) = std::numeric_limits<float>::infinity();
                 MahDis(row, col) = std::numeric_limits<float>::infinity();
 
-                fprintf(stderr, "Mah Fail = %d %d, minMah = %.2f \n", i, humans[j].id, minMah);
+                //fprintf(stderr, "Mah Fail = Obs: %d Hum id: %d, minMah = %.2f \n", i, humans[j].id, minMah);
             }
         }
         else
         {
-            fprintf(stderr, "Euc Fail = %d %d, minEuc = %.2f \n", i, humans[j].id, minEuc);
+            //fprintf(stderr, "Euc Fail = Obs: %d Hum id: %d, minEuc = %.2f \n", i, humans[j].id, minEuc);
             break;
         }
 
@@ -144,7 +163,7 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
         }
     }
 
-    fprintf(stderr, "----------  Pair End  ----------\n");
+    //fprintf(stderr, "----------  Pair End  ----------\n");
 }
 
 void ObjectTracking::update(deque<Human> &humans, deque<Observation> &observations, map<int, int> &pairs)
@@ -184,10 +203,14 @@ void ObjectTracking::update(deque<Human> &humans, deque<Observation> &observatio
 
         Matrix I = IdentityMatrix(K.Ncols());
 
+        // Maintain score if only detected by laser
+        humans[j].score -=  PREDICT_OBJECT_SCORE * deltaT;
+
+        // Increase score if detected by camera
         if (observations[i].camera_detected == true)
         {
-            humans[j].score -= PREDICT_OBJECT_SCORE * deltaT;
-            humans[j].score += ((UPDATE_OBJECT_SCORE - (calculateEucDis(observations[i], humans[j]) / MAX_EUC_DIS)) +
+            // humans[j].score -= 0.01 * PREDICT_OBJECT_SCORE * deltaT;
+             humans[j].score += ((UPDATE_OBJECT_SCORE - (calculateEucDis(observations[i], humans[j]) / MAX_EUC_DIS)) +
                                 (UPDATE_OBJECT_SCORE - (calculateMahDis(observations[i], humans[j]) / MAX_MAH_DIS)) * 2) * deltaT;
         }
 
@@ -195,12 +218,10 @@ void ObjectTracking::update(deque<Human> &humans, deque<Observation> &observatio
         humans[j].cov = (I - K * H) * humans[j].cov;
 
         humans[j].preState = humans[j].state;
-        // Distance calculation for following process
-        humans[j].dist = sqrt(humans[j].state(1)*humans[j].state(1)+humans[j].state(2)*humans[j].state(2));
         humans[j].preTimestamp = curTimestamp;
 
         unpairs[i] = false;
-        fprintf(stderr, "paired (observation, ID) = (%d, %d) \n", i, humans[j].id);
+        //fprintf(stderr, "paired (observation, ID) = (%d, %d) \n", i, humans[j].id);
     }
 
     // For New Observations Result
@@ -213,7 +234,7 @@ void ObjectTracking::update(deque<Human> &humans, deque<Observation> &observatio
             MAX_ID += 1;
 
             pairs[i] = humans.size() - 1;
-            fprintf(stderr, "new (observation, ID) = (%d, %d) \n", i, humans[pairs[i]].id);
+           // fprintf(stderr, "new (observation, ID) = (%d, %d) \n", i, humans[pairs[i]].id);
         }
     }
 }

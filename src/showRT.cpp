@@ -14,8 +14,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/highgui/highgui.hpp>
-#include "lib/Header.hpp"
-#include "hdetect/ClusterClass.h"
+#include <hdetect/lib/header.hpp>
+#include <hdetect/ClusterClass.h>
 
 /**
  * A node to set up all things needed for recognition.

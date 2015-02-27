@@ -196,7 +196,7 @@ void lengine::computeFeatures(std::vector<Point3D_container> &clusters,
 
 	// for now only checking right size
 	if ( !(descriptor[0].size() == feature_set_size[params.feature_set]) ) {
-		printf("[LENGINE] Features computed %d. Correct size %d.\n", descriptor[0].size(), feature_set_size[params.feature_set]);
+		printf("[LENGINE] Features computed %d. Correct size %d.\n", (int) descriptor[0].size(), feature_set_size[params.feature_set]);
 		exit(-1);
 	}
 

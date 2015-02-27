@@ -112,7 +112,6 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
             }
         }
     }
-
     do
     {
         system("clear");

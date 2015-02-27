@@ -10,17 +10,17 @@
 		<param name="camera_info_url" value="file://$(find hdetect)/yaml/camera_calib_yellow.yaml" />
 	</node>
 
-	<node pkg="iri_hokuyo_laser"
+<!--	<node pkg="iri_hokuyo_laser"
         	type="iri_hokuyo_laser"
         	name="laser"
         	output="screen">
     		<param name="frame_id"     value="/laser" />
-    		<param name="use_ethernet" value="true"         />
+    		<param name="use_ethernet" value="true"         /> -->
     		<param name="ip_address"   value="192.168.0.11" /> <!-- default IP address -->
     		<param name="angle_min"    value="-2.35619449019"      /> <!--  -135  -->
     		<param name="angle_max"    value="2.35619449019"       /> <!--  +135  -->
     		<param name="interval"     value="0"            /> <!-- changes the hz rate -->
-	</node>
+<!--	</node> -->
  
 	<node name="firefly_view" pkg="image_view" type="image_view" 
 	args="image:=camera/image_raw" required="true">
