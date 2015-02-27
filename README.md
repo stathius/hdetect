@@ -1,4 +1,4 @@
-A human detection and tracking package for ROS
+Human detection & tracking package for ROS
 =======
 
 Uses a combination of laser range finder and a computer vision module for the pedestrian detection. The vision module works with OpenCV's detector which uses Histogram of Oriented Gradients and Support Vector Machines.
