@@ -5,116 +5,37 @@ import genpy
 import struct
 
 import geometry_msgs.msg
-import sensor_msgs.msg
 import std_msgs.msg
+import sensor_msgs.msg
 
 class ClusteredScan(genpy.Message):
-  _md5sum = "95e6e3e8660db8a1197cb9c42456ad43"
+  _md5sum = "145510923061dc1e57710a8ddf208c5f"
   _type = "hdetect/ClusteredScan"
-  _has_header = True #flag to mark the presence of a Header object
+  _has_header = False #flag to mark the presence of a Header object
   _full_text = """# A message to contain all the info and the points of each laser cluster of the scan
 # clusters : the actual points of the cluster
-# cogs	 : the center of gravity of each cluster
+# cog : the center of gravity of each cluster
 # features: the extracted features for each cluster
+# cog_projected : if image is projected onto image
+# image_projected : if cog is projected onto image
+# detection_laser_prob : the laser scan probability
+# detection_camera_prob : the laser scan probability
+# detection_fusion_prob : the laser scan probability
 # label: annotation for the label
-# fusion : if the cluster can be fused with camera information (if the bounding box is within the image)
-# projected : if cluster is projected onto image
-# laser : the laser scan  --> laser scan and image are saved here to have everything in place 
-#         and send it over network more easily in the future
-# image : the image capture
 
-Header header
-sensor_msgs/LaserScan scan
-sensor_msgs/Image image
-sensor_msgs/PointCloud[] clusters
-geometry_msgs/Point32[] cogs
-std_msgs/Float32MultiArray[] features
-int8[] labels #annotation labels
-bool[] fusion
-bool[] projected
-uint16 nclusters
-uint16 nfeatures
-int8[] detection_labels 
-float32[] detection_probs
-================================================================================
-MSG: std_msgs/Header
-# Standard metadata for higher-level stamped data types.
-# This is generally used to communicate timestamped data 
-# in a particular coordinate frame.
-# 
-# sequence ID: consecutively increasing ID 
-uint32 seq
-#Two-integer timestamp that is expressed as:
-# * stamp.secs: seconds (stamp_secs) since epoch
-# * stamp.nsecs: nanoseconds since stamp_secs
-# time-handling sugar is provided by the client library
-time stamp
-#Frame this data is associated with
-# 0: no frame
-# 1: global frame
-string frame_id
+sensor_msgs/PointCloud clusters
+geometry_msgs/Point32 cog
+std_msgs/Float32MultiArray features
 
-================================================================================
-MSG: sensor_msgs/LaserScan
-# Single scan from a planar laser range-finder
-#
-# If you have another ranging device with different behavior (e.g. a sonar
-# array), please find or create a different message, since applications
-# will make fairly laser-specific assumptions about this data
+bool cog_projected
+bool crop_projected
 
-Header header            # timestamp in the header is the acquisition time of 
-                         # the first ray in the scan.
-                         #
-                         # in frame frame_id, angles are measured around 
-                         # the positive Z axis (counterclockwise, if Z is up)
-                         # with zero angle being forward along the x axis
-                         
-float32 angle_min        # start angle of the scan [rad]
-float32 angle_max        # end angle of the scan [rad]
-float32 angle_increment  # angular distance between measurements [rad]
+int8 detection_label
+float32 detection_laser_prob
+float32 detection_camera_prob
+float32 detection_fusion_prob
 
-float32 time_increment   # time between measurements [seconds] - if your scanner
-                         # is moving, this will be used in interpolating position
-                         # of 3d points
-float32 scan_time        # time between scans [seconds]
-
-float32 range_min        # minimum range value [m]
-float32 range_max        # maximum range value [m]
-
-float32[] ranges         # range data [m] (Note: values < range_min or > range_max should be discarded)
-float32[] intensities    # intensity data [device-specific units].  If your
-                         # device does not provide intensities, please leave
-                         # the array empty.
-
-================================================================================
-MSG: sensor_msgs/Image
-# This message contains an uncompressed image
-# (0, 0) is at top-left corner of image
-#
-
-Header header        # Header timestamp should be acquisition time of image
-                     # Header frame_id should be optical frame of camera
-                     # origin of frame should be optical center of cameara
-                     # +x should point to the right in the image
-                     # +y should point down in the image
-                     # +z should point into to plane of the image
-                     # If the frame_id here and the frame_id of the CameraInfo
-                     # message associated with the image conflict
-                     # the behavior is undefined
-
-uint32 height         # image height, that is, number of rows
-uint32 width          # image width, that is, number of columns
-
-# The legal values for encoding are in file src/image_encodings.cpp
-# If you want to standardize a new string format, join
-# ros-users@lists.sourceforge.net and send an email proposing a new encoding.
-
-string encoding       # Encoding of pixels -- channel meaning, ordering, size
-                      # taken from the list of strings in src/image_encodings.cpp
-
-uint8 is_bigendian    # is this data bigendian?
-uint32 step           # Full row length in bytes
-uint8[] data          # actual matrix data, size is (step * rows)
+int8 label
 
 ================================================================================
 MSG: sensor_msgs/PointCloud
@@ -132,6 +53,24 @@ geometry_msgs/Point32[] points
 # and the data in each channel should correspond 1:1 with each point.
 # Channel names in common practice are listed in ChannelFloat32.msg.
 ChannelFloat32[] channels
+
+================================================================================
+MSG: std_msgs/Header
+# Standard metadata for higher-level stamped data types.
+# This is generally used to communicate timestamped data 
+# in a particular coordinate frame.
+# 
+# sequence ID: consecutively increasing ID 
+uint32 seq
+#Two-integer timestamp that is expressed as:
+# * stamp.secs: seconds (stamp_secs) since epoch
+# * stamp.nsecs: nanoseconds since stamp_secs
+# time-handling sugar is provided by the client library
+time stamp
+#Frame this data is associated with
+# 0: no frame
+# 1: global frame
+string frame_id
 
 ================================================================================
 MSG: geometry_msgs/Point32
@@ -216,8 +155,8 @@ string label   # label of given dimension
 uint32 size    # size of given dimension (in type units)
 uint32 stride  # stride of given dimension
 """
-  __slots__ = ['header','scan','image','clusters','cogs','features','labels','fusion','projected','nclusters','nfeatures','detection_labels','detection_probs']
-  _slot_types = ['std_msgs/Header','sensor_msgs/LaserScan','sensor_msgs/Image','sensor_msgs/PointCloud[]','geometry_msgs/Point32[]','std_msgs/Float32MultiArray[]','int8[]','bool[]','bool[]','uint16','uint16','int8[]','float32[]']
+  __slots__ = ['clusters','cog','features','cog_projected','crop_projected','detection_label','detection_laser_prob','detection_camera_prob','detection_fusion_prob','label']
+  _slot_types = ['sensor_msgs/PointCloud','geometry_msgs/Point32','std_msgs/Float32MultiArray','bool','bool','int8','float32','float32','float32','int8']
 
   def __init__(self, *args, **kwds):
     """
@@ -227,7 +166,7 @@ uint32 stride  # stride of given dimension
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,scan,image,clusters,cogs,features,labels,fusion,projected,nclusters,nfeatures,detection_labels,detection_probs
+       clusters,cog,features,cog_projected,crop_projected,detection_label,detection_laser_prob,detection_camera_prob,detection_fusion_prob,label
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -236,46 +175,37 @@ uint32 stride  # stride of given dimension
     if args or kwds:
       super(ClusteredScan, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
-      if self.header is None:
-        self.header = std_msgs.msg.Header()
-      if self.scan is None:
-        self.scan = sensor_msgs.msg.LaserScan()
-      if self.image is None:
-        self.image = sensor_msgs.msg.Image()
       if self.clusters is None:
-        self.clusters = []
-      if self.cogs is None:
-        self.cogs = []
+        self.clusters = sensor_msgs.msg.PointCloud()
+      if self.cog is None:
+        self.cog = geometry_msgs.msg.Point32()
       if self.features is None:
-        self.features = []
-      if self.labels is None:
-        self.labels = []
-      if self.fusion is None:
-        self.fusion = []
-      if self.projected is None:
-        self.projected = []
-      if self.nclusters is None:
-        self.nclusters = 0
-      if self.nfeatures is None:
-        self.nfeatures = 0
-      if self.detection_labels is None:
-        self.detection_labels = []
-      if self.detection_probs is None:
-        self.detection_probs = []
+        self.features = std_msgs.msg.Float32MultiArray()
+      if self.cog_projected is None:
+        self.cog_projected = False
+      if self.crop_projected is None:
+        self.crop_projected = False
+      if self.detection_label is None:
+        self.detection_label = 0
+      if self.detection_laser_prob is None:
+        self.detection_laser_prob = 0.
+      if self.detection_camera_prob is None:
+        self.detection_camera_prob = 0.
+      if self.detection_fusion_prob is None:
+        self.detection_fusion_prob = 0.
+      if self.label is None:
+        self.label = 0
     else:
-      self.header = std_msgs.msg.Header()
-      self.scan = sensor_msgs.msg.LaserScan()
-      self.image = sensor_msgs.msg.Image()
-      self.clusters = []
-      self.cogs = []
-      self.features = []
-      self.labels = []
-      self.fusion = []
-      self.projected = []
-      self.nclusters = 0
-      self.nfeatures = 0
-      self.detection_labels = []
-      self.detection_probs = []
+      self.clusters = sensor_msgs.msg.PointCloud()
+      self.cog = geometry_msgs.msg.Point32()
+      self.features = std_msgs.msg.Float32MultiArray()
+      self.cog_projected = False
+      self.crop_projected = False
+      self.detection_label = 0
+      self.detection_laser_prob = 0.
+      self.detection_camera_prob = 0.
+      self.detection_fusion_prob = 0.
+      self.label = 0
 
   def _get_types(self):
     """
@@ -290,135 +220,51 @@ uint32 stride  # stride of given dimension
     """
     try:
       _x = self
-      buff.write(_struct_3I.pack(_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs))
-      _x = self.header.frame_id
+      buff.write(_struct_3I.pack(_x.clusters.header.seq, _x.clusters.header.stamp.secs, _x.clusters.header.stamp.nsecs))
+      _x = self.clusters.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_3I.pack(_x.scan.header.seq, _x.scan.header.stamp.secs, _x.scan.header.stamp.nsecs))
-      _x = self.scan.header.frame_id
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_7f.pack(_x.scan.angle_min, _x.scan.angle_max, _x.scan.angle_increment, _x.scan.time_increment, _x.scan.scan_time, _x.scan.range_min, _x.scan.range_max))
-      length = len(self.scan.ranges)
+      length = len(self.clusters.points)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sf'%length
-      buff.write(struct.pack(pattern, *self.scan.ranges))
-      length = len(self.scan.intensities)
+      for val1 in self.clusters.points:
+        _x = val1
+        buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
+      length = len(self.clusters.channels)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sf'%length
-      buff.write(struct.pack(pattern, *self.scan.intensities))
-      _x = self
-      buff.write(_struct_3I.pack(_x.image.header.seq, _x.image.header.stamp.secs, _x.image.header.stamp.nsecs))
-      _x = self.image.header.frame_id
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_2I.pack(_x.image.height, _x.image.width))
-      _x = self.image.encoding
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_BI.pack(_x.image.is_bigendian, _x.image.step))
-      _x = self.image.data
-      length = len(_x)
-      # - if encoded as a list instead, serialize as bytes instead of string
-      if type(_x) in [list, tuple]:
-        buff.write(struct.pack('<I%sB'%length, length, *_x))
-      else:
-        buff.write(struct.pack('<I%ss'%length, length, _x))
-      length = len(self.clusters)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.clusters:
-        _v1 = val1.header
-        buff.write(_struct_I.pack(_v1.seq))
-        _v2 = _v1.stamp
-        _x = _v2
-        buff.write(_struct_2I.pack(_x.secs, _x.nsecs))
-        _x = _v1.frame_id
+      for val1 in self.clusters.channels:
+        _x = val1.name
         length = len(_x)
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
         buff.write(struct.pack('<I%ss'%length, length, _x))
-        length = len(val1.points)
-        buff.write(_struct_I.pack(length))
-        for val2 in val1.points:
-          _x = val2
-          buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
-        length = len(val1.channels)
-        buff.write(_struct_I.pack(length))
-        for val2 in val1.channels:
-          _x = val2.name
-          length = len(_x)
-          if python3 or type(_x) == unicode:
-            _x = _x.encode('utf-8')
-            length = len(_x)
-          buff.write(struct.pack('<I%ss'%length, length, _x))
-          length = len(val2.values)
-          buff.write(_struct_I.pack(length))
-          pattern = '<%sf'%length
-          buff.write(struct.pack(pattern, *val2.values))
-      length = len(self.cogs)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.cogs:
-        _x = val1
-        buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
-      length = len(self.features)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.features:
-        _v3 = val1.layout
-        length = len(_v3.dim)
-        buff.write(_struct_I.pack(length))
-        for val3 in _v3.dim:
-          _x = val3.label
-          length = len(_x)
-          if python3 or type(_x) == unicode:
-            _x = _x.encode('utf-8')
-            length = len(_x)
-          buff.write(struct.pack('<I%ss'%length, length, _x))
-          _x = val3
-          buff.write(_struct_2I.pack(_x.size, _x.stride))
-        buff.write(_struct_I.pack(_v3.data_offset))
-        length = len(val1.data)
+        length = len(val1.values)
         buff.write(_struct_I.pack(length))
         pattern = '<%sf'%length
-        buff.write(struct.pack(pattern, *val1.data))
-      length = len(self.labels)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sb'%length
-      buff.write(struct.pack(pattern, *self.labels))
-      length = len(self.fusion)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sB'%length
-      buff.write(struct.pack(pattern, *self.fusion))
-      length = len(self.projected)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sB'%length
-      buff.write(struct.pack(pattern, *self.projected))
+        buff.write(struct.pack(pattern, *val1.values))
       _x = self
-      buff.write(_struct_2H.pack(_x.nclusters, _x.nfeatures))
-      length = len(self.detection_labels)
+      buff.write(_struct_3f.pack(_x.cog.x, _x.cog.y, _x.cog.z))
+      length = len(self.features.layout.dim)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sb'%length
-      buff.write(struct.pack(pattern, *self.detection_labels))
-      length = len(self.detection_probs)
+      for val1 in self.features.layout.dim:
+        _x = val1.label
+        length = len(_x)
+        if python3 or type(_x) == unicode:
+          _x = _x.encode('utf-8')
+          length = len(_x)
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_2I.pack(_x.size, _x.stride))
+      buff.write(_struct_I.pack(self.features.layout.data_offset))
+      length = len(self.features.data)
       buff.write(_struct_I.pack(length))
       pattern = '<%sf'%length
-      buff.write(struct.pack(pattern, *self.detection_probs))
+      buff.write(struct.pack(pattern, *self.features.data))
+      _x = self
+      buff.write(_struct_2Bb3fb.pack(_x.cog_projected, _x.crop_projected, _x.detection_label, _x.detection_laser_prob, _x.detection_camera_prob, _x.detection_fusion_prob, _x.label))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -428,251 +274,100 @@ uint32 stride  # stride of given dimension
     :param str: byte array of serialized message, ``str``
     """
     try:
-      if self.header is None:
-        self.header = std_msgs.msg.Header()
-      if self.scan is None:
-        self.scan = sensor_msgs.msg.LaserScan()
-      if self.image is None:
-        self.image = sensor_msgs.msg.Image()
       if self.clusters is None:
-        self.clusters = None
-      if self.cogs is None:
-        self.cogs = None
+        self.clusters = sensor_msgs.msg.PointCloud()
+      if self.cog is None:
+        self.cog = geometry_msgs.msg.Point32()
       if self.features is None:
-        self.features = None
+        self.features = std_msgs.msg.Float32MultiArray()
       end = 0
       _x = self
       start = end
       end += 12
-      (_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+      (_x.clusters.header.seq, _x.clusters.header.stamp.secs, _x.clusters.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       start = end
       end += length
       if python3:
-        self.header.frame_id = str[start:end].decode('utf-8')
+        self.clusters.header.frame_id = str[start:end].decode('utf-8')
       else:
-        self.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 12
-      (_x.scan.header.seq, _x.scan.header.stamp.secs, _x.scan.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+        self.clusters.header.frame_id = str[start:end]
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.scan.header.frame_id = str[start:end].decode('utf-8')
-      else:
-        self.scan.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 28
-      (_x.scan.angle_min, _x.scan.angle_max, _x.scan.angle_increment, _x.scan.time_increment, _x.scan.scan_time, _x.scan.range_min, _x.scan.range_max,) = _struct_7f.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sf'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.scan.ranges = struct.unpack(pattern, str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sf'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.scan.intensities = struct.unpack(pattern, str[start:end])
-      _x = self
-      start = end
-      end += 12
-      (_x.image.header.seq, _x.image.header.stamp.secs, _x.image.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.header.frame_id = str[start:end].decode('utf-8')
-      else:
-        self.image.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 8
-      (_x.image.height, _x.image.width,) = _struct_2I.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.encoding = str[start:end].decode('utf-8')
-      else:
-        self.image.encoding = str[start:end]
-      _x = self
-      start = end
-      end += 5
-      (_x.image.is_bigendian, _x.image.step,) = _struct_BI.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.data = str[start:end].decode('utf-8')
-      else:
-        self.image.data = str[start:end]
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      self.clusters = []
-      for i in range(0, length):
-        val1 = sensor_msgs.msg.PointCloud()
-        _v4 = val1.header
-        start = end
-        end += 4
-        (_v4.seq,) = _struct_I.unpack(str[start:end])
-        _v5 = _v4.stamp
-        _x = _v5
-        start = end
-        end += 8
-        (_x.secs, _x.nsecs,) = _struct_2I.unpack(str[start:end])
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        start = end
-        end += length
-        if python3:
-          _v4.frame_id = str[start:end].decode('utf-8')
-        else:
-          _v4.frame_id = str[start:end]
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        val1.points = []
-        for i in range(0, length):
-          val2 = geometry_msgs.msg.Point32()
-          _x = val2
-          start = end
-          end += 12
-          (_x.x, _x.y, _x.z,) = _struct_3f.unpack(str[start:end])
-          val1.points.append(val2)
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        val1.channels = []
-        for i in range(0, length):
-          val2 = sensor_msgs.msg.ChannelFloat32()
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          start = end
-          end += length
-          if python3:
-            val2.name = str[start:end].decode('utf-8')
-          else:
-            val2.name = str[start:end]
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          pattern = '<%sf'%length
-          start = end
-          end += struct.calcsize(pattern)
-          val2.values = struct.unpack(pattern, str[start:end])
-          val1.channels.append(val2)
-        self.clusters.append(val1)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      self.cogs = []
+      self.clusters.points = []
       for i in range(0, length):
         val1 = geometry_msgs.msg.Point32()
         _x = val1
         start = end
         end += 12
         (_x.x, _x.y, _x.z,) = _struct_3f.unpack(str[start:end])
-        self.cogs.append(val1)
+        self.clusters.points.append(val1)
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      self.features = []
+      self.clusters.channels = []
       for i in range(0, length):
-        val1 = std_msgs.msg.Float32MultiArray()
-        _v6 = val1.layout
+        val1 = sensor_msgs.msg.ChannelFloat32()
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
-        _v6.dim = []
-        for i in range(0, length):
-          val3 = std_msgs.msg.MultiArrayDimension()
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          start = end
-          end += length
-          if python3:
-            val3.label = str[start:end].decode('utf-8')
-          else:
-            val3.label = str[start:end]
-          _x = val3
-          start = end
-          end += 8
-          (_x.size, _x.stride,) = _struct_2I.unpack(str[start:end])
-          _v6.dim.append(val3)
         start = end
-        end += 4
-        (_v6.data_offset,) = _struct_I.unpack(str[start:end])
+        end += length
+        if python3:
+          val1.name = str[start:end].decode('utf-8')
+        else:
+          val1.name = str[start:end]
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
         pattern = '<%sf'%length
         start = end
         end += struct.calcsize(pattern)
-        val1.data = struct.unpack(pattern, str[start:end])
-        self.features.append(val1)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sb'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.labels = struct.unpack(pattern, str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sB'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.fusion = struct.unpack(pattern, str[start:end])
-      self.fusion = map(bool, self.fusion)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sB'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.projected = struct.unpack(pattern, str[start:end])
-      self.projected = map(bool, self.projected)
+        val1.values = struct.unpack(pattern, str[start:end])
+        self.clusters.channels.append(val1)
       _x = self
       start = end
-      end += 4
-      (_x.nclusters, _x.nfeatures,) = _struct_2H.unpack(str[start:end])
+      end += 12
+      (_x.cog.x, _x.cog.y, _x.cog.z,) = _struct_3f.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sb'%length
+      self.features.layout.dim = []
+      for i in range(0, length):
+        val1 = std_msgs.msg.MultiArrayDimension()
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1.label = str[start:end].decode('utf-8')
+        else:
+          val1.label = str[start:end]
+        _x = val1
+        start = end
+        end += 8
+        (_x.size, _x.stride,) = _struct_2I.unpack(str[start:end])
+        self.features.layout.dim.append(val1)
       start = end
-      end += struct.calcsize(pattern)
-      self.detection_labels = struct.unpack(pattern, str[start:end])
+      end += 4
+      (self.features.layout.data_offset,) = _struct_I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       pattern = '<%sf'%length
       start = end
       end += struct.calcsize(pattern)
-      self.detection_probs = struct.unpack(pattern, str[start:end])
+      self.features.data = struct.unpack(pattern, str[start:end])
+      _x = self
+      start = end
+      end += 16
+      (_x.cog_projected, _x.crop_projected, _x.detection_label, _x.detection_laser_prob, _x.detection_camera_prob, _x.detection_fusion_prob, _x.label,) = _struct_2Bb3fb.unpack(str[start:end])
+      self.cog_projected = bool(self.cog_projected)
+      self.crop_projected = bool(self.crop_projected)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -686,135 +381,51 @@ uint32 stride  # stride of given dimension
     """
     try:
       _x = self
-      buff.write(_struct_3I.pack(_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs))
-      _x = self.header.frame_id
+      buff.write(_struct_3I.pack(_x.clusters.header.seq, _x.clusters.header.stamp.secs, _x.clusters.header.stamp.nsecs))
+      _x = self.clusters.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
         _x = _x.encode('utf-8')
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_3I.pack(_x.scan.header.seq, _x.scan.header.stamp.secs, _x.scan.header.stamp.nsecs))
-      _x = self.scan.header.frame_id
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_7f.pack(_x.scan.angle_min, _x.scan.angle_max, _x.scan.angle_increment, _x.scan.time_increment, _x.scan.scan_time, _x.scan.range_min, _x.scan.range_max))
-      length = len(self.scan.ranges)
+      length = len(self.clusters.points)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sf'%length
-      buff.write(self.scan.ranges.tostring())
-      length = len(self.scan.intensities)
+      for val1 in self.clusters.points:
+        _x = val1
+        buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
+      length = len(self.clusters.channels)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sf'%length
-      buff.write(self.scan.intensities.tostring())
-      _x = self
-      buff.write(_struct_3I.pack(_x.image.header.seq, _x.image.header.stamp.secs, _x.image.header.stamp.nsecs))
-      _x = self.image.header.frame_id
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_2I.pack(_x.image.height, _x.image.width))
-      _x = self.image.encoding
-      length = len(_x)
-      if python3 or type(_x) == unicode:
-        _x = _x.encode('utf-8')
-        length = len(_x)
-      buff.write(struct.pack('<I%ss'%length, length, _x))
-      _x = self
-      buff.write(_struct_BI.pack(_x.image.is_bigendian, _x.image.step))
-      _x = self.image.data
-      length = len(_x)
-      # - if encoded as a list instead, serialize as bytes instead of string
-      if type(_x) in [list, tuple]:
-        buff.write(struct.pack('<I%sB'%length, length, *_x))
-      else:
-        buff.write(struct.pack('<I%ss'%length, length, _x))
-      length = len(self.clusters)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.clusters:
-        _v7 = val1.header
-        buff.write(_struct_I.pack(_v7.seq))
-        _v8 = _v7.stamp
-        _x = _v8
-        buff.write(_struct_2I.pack(_x.secs, _x.nsecs))
-        _x = _v7.frame_id
+      for val1 in self.clusters.channels:
+        _x = val1.name
         length = len(_x)
         if python3 or type(_x) == unicode:
           _x = _x.encode('utf-8')
           length = len(_x)
         buff.write(struct.pack('<I%ss'%length, length, _x))
-        length = len(val1.points)
-        buff.write(_struct_I.pack(length))
-        for val2 in val1.points:
-          _x = val2
-          buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
-        length = len(val1.channels)
-        buff.write(_struct_I.pack(length))
-        for val2 in val1.channels:
-          _x = val2.name
-          length = len(_x)
-          if python3 or type(_x) == unicode:
-            _x = _x.encode('utf-8')
-            length = len(_x)
-          buff.write(struct.pack('<I%ss'%length, length, _x))
-          length = len(val2.values)
-          buff.write(_struct_I.pack(length))
-          pattern = '<%sf'%length
-          buff.write(val2.values.tostring())
-      length = len(self.cogs)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.cogs:
-        _x = val1
-        buff.write(_struct_3f.pack(_x.x, _x.y, _x.z))
-      length = len(self.features)
-      buff.write(_struct_I.pack(length))
-      for val1 in self.features:
-        _v9 = val1.layout
-        length = len(_v9.dim)
-        buff.write(_struct_I.pack(length))
-        for val3 in _v9.dim:
-          _x = val3.label
-          length = len(_x)
-          if python3 or type(_x) == unicode:
-            _x = _x.encode('utf-8')
-            length = len(_x)
-          buff.write(struct.pack('<I%ss'%length, length, _x))
-          _x = val3
-          buff.write(_struct_2I.pack(_x.size, _x.stride))
-        buff.write(_struct_I.pack(_v9.data_offset))
-        length = len(val1.data)
+        length = len(val1.values)
         buff.write(_struct_I.pack(length))
         pattern = '<%sf'%length
-        buff.write(val1.data.tostring())
-      length = len(self.labels)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sb'%length
-      buff.write(self.labels.tostring())
-      length = len(self.fusion)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sB'%length
-      buff.write(self.fusion.tostring())
-      length = len(self.projected)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sB'%length
-      buff.write(self.projected.tostring())
+        buff.write(val1.values.tostring())
       _x = self
-      buff.write(_struct_2H.pack(_x.nclusters, _x.nfeatures))
-      length = len(self.detection_labels)
+      buff.write(_struct_3f.pack(_x.cog.x, _x.cog.y, _x.cog.z))
+      length = len(self.features.layout.dim)
       buff.write(_struct_I.pack(length))
-      pattern = '<%sb'%length
-      buff.write(self.detection_labels.tostring())
-      length = len(self.detection_probs)
+      for val1 in self.features.layout.dim:
+        _x = val1.label
+        length = len(_x)
+        if python3 or type(_x) == unicode:
+          _x = _x.encode('utf-8')
+          length = len(_x)
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_2I.pack(_x.size, _x.stride))
+      buff.write(_struct_I.pack(self.features.layout.data_offset))
+      length = len(self.features.data)
       buff.write(_struct_I.pack(length))
       pattern = '<%sf'%length
-      buff.write(self.detection_probs.tostring())
+      buff.write(self.features.data.tostring())
+      _x = self
+      buff.write(_struct_2Bb3fb.pack(_x.cog_projected, _x.crop_projected, _x.detection_label, _x.detection_laser_prob, _x.detection_camera_prob, _x.detection_fusion_prob, _x.label))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -825,259 +436,106 @@ uint32 stride  # stride of given dimension
     :param numpy: numpy python module
     """
     try:
-      if self.header is None:
-        self.header = std_msgs.msg.Header()
-      if self.scan is None:
-        self.scan = sensor_msgs.msg.LaserScan()
-      if self.image is None:
-        self.image = sensor_msgs.msg.Image()
       if self.clusters is None:
-        self.clusters = None
-      if self.cogs is None:
-        self.cogs = None
+        self.clusters = sensor_msgs.msg.PointCloud()
+      if self.cog is None:
+        self.cog = geometry_msgs.msg.Point32()
       if self.features is None:
-        self.features = None
+        self.features = std_msgs.msg.Float32MultiArray()
       end = 0
       _x = self
       start = end
       end += 12
-      (_x.header.seq, _x.header.stamp.secs, _x.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+      (_x.clusters.header.seq, _x.clusters.header.stamp.secs, _x.clusters.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       start = end
       end += length
       if python3:
-        self.header.frame_id = str[start:end].decode('utf-8')
+        self.clusters.header.frame_id = str[start:end].decode('utf-8')
       else:
-        self.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 12
-      (_x.scan.header.seq, _x.scan.header.stamp.secs, _x.scan.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+        self.clusters.header.frame_id = str[start:end]
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.scan.header.frame_id = str[start:end].decode('utf-8')
-      else:
-        self.scan.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 28
-      (_x.scan.angle_min, _x.scan.angle_max, _x.scan.angle_increment, _x.scan.time_increment, _x.scan.scan_time, _x.scan.range_min, _x.scan.range_max,) = _struct_7f.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sf'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.scan.ranges = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sf'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.scan.intensities = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
-      _x = self
-      start = end
-      end += 12
-      (_x.image.header.seq, _x.image.header.stamp.secs, _x.image.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.header.frame_id = str[start:end].decode('utf-8')
-      else:
-        self.image.header.frame_id = str[start:end]
-      _x = self
-      start = end
-      end += 8
-      (_x.image.height, _x.image.width,) = _struct_2I.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.encoding = str[start:end].decode('utf-8')
-      else:
-        self.image.encoding = str[start:end]
-      _x = self
-      start = end
-      end += 5
-      (_x.image.is_bigendian, _x.image.step,) = _struct_BI.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      start = end
-      end += length
-      if python3:
-        self.image.data = str[start:end].decode('utf-8')
-      else:
-        self.image.data = str[start:end]
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      self.clusters = []
-      for i in range(0, length):
-        val1 = sensor_msgs.msg.PointCloud()
-        _v10 = val1.header
-        start = end
-        end += 4
-        (_v10.seq,) = _struct_I.unpack(str[start:end])
-        _v11 = _v10.stamp
-        _x = _v11
-        start = end
-        end += 8
-        (_x.secs, _x.nsecs,) = _struct_2I.unpack(str[start:end])
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        start = end
-        end += length
-        if python3:
-          _v10.frame_id = str[start:end].decode('utf-8')
-        else:
-          _v10.frame_id = str[start:end]
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        val1.points = []
-        for i in range(0, length):
-          val2 = geometry_msgs.msg.Point32()
-          _x = val2
-          start = end
-          end += 12
-          (_x.x, _x.y, _x.z,) = _struct_3f.unpack(str[start:end])
-          val1.points.append(val2)
-        start = end
-        end += 4
-        (length,) = _struct_I.unpack(str[start:end])
-        val1.channels = []
-        for i in range(0, length):
-          val2 = sensor_msgs.msg.ChannelFloat32()
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          start = end
-          end += length
-          if python3:
-            val2.name = str[start:end].decode('utf-8')
-          else:
-            val2.name = str[start:end]
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          pattern = '<%sf'%length
-          start = end
-          end += struct.calcsize(pattern)
-          val2.values = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
-          val1.channels.append(val2)
-        self.clusters.append(val1)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      self.cogs = []
+      self.clusters.points = []
       for i in range(0, length):
         val1 = geometry_msgs.msg.Point32()
         _x = val1
         start = end
         end += 12
         (_x.x, _x.y, _x.z,) = _struct_3f.unpack(str[start:end])
-        self.cogs.append(val1)
+        self.clusters.points.append(val1)
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      self.features = []
+      self.clusters.channels = []
       for i in range(0, length):
-        val1 = std_msgs.msg.Float32MultiArray()
-        _v12 = val1.layout
+        val1 = sensor_msgs.msg.ChannelFloat32()
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
-        _v12.dim = []
-        for i in range(0, length):
-          val3 = std_msgs.msg.MultiArrayDimension()
-          start = end
-          end += 4
-          (length,) = _struct_I.unpack(str[start:end])
-          start = end
-          end += length
-          if python3:
-            val3.label = str[start:end].decode('utf-8')
-          else:
-            val3.label = str[start:end]
-          _x = val3
-          start = end
-          end += 8
-          (_x.size, _x.stride,) = _struct_2I.unpack(str[start:end])
-          _v12.dim.append(val3)
         start = end
-        end += 4
-        (_v12.data_offset,) = _struct_I.unpack(str[start:end])
+        end += length
+        if python3:
+          val1.name = str[start:end].decode('utf-8')
+        else:
+          val1.name = str[start:end]
         start = end
         end += 4
         (length,) = _struct_I.unpack(str[start:end])
         pattern = '<%sf'%length
         start = end
         end += struct.calcsize(pattern)
-        val1.data = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
-        self.features.append(val1)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sb'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.labels = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sB'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.fusion = numpy.frombuffer(str[start:end], dtype=numpy.bool, count=length)
-      self.fusion = map(bool, self.fusion)
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sB'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.projected = numpy.frombuffer(str[start:end], dtype=numpy.bool, count=length)
-      self.projected = map(bool, self.projected)
+        val1.values = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
+        self.clusters.channels.append(val1)
       _x = self
       start = end
-      end += 4
-      (_x.nclusters, _x.nfeatures,) = _struct_2H.unpack(str[start:end])
+      end += 12
+      (_x.cog.x, _x.cog.y, _x.cog.z,) = _struct_3f.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sb'%length
+      self.features.layout.dim = []
+      for i in range(0, length):
+        val1 = std_msgs.msg.MultiArrayDimension()
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1.label = str[start:end].decode('utf-8')
+        else:
+          val1.label = str[start:end]
+        _x = val1
+        start = end
+        end += 8
+        (_x.size, _x.stride,) = _struct_2I.unpack(str[start:end])
+        self.features.layout.dim.append(val1)
       start = end
-      end += struct.calcsize(pattern)
-      self.detection_labels = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=length)
+      end += 4
+      (self.features.layout.data_offset,) = _struct_I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
       pattern = '<%sf'%length
       start = end
       end += struct.calcsize(pattern)
-      self.detection_probs = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
+      self.features.data = numpy.frombuffer(str[start:end], dtype=numpy.float32, count=length)
+      _x = self
+      start = end
+      end += 16
+      (_x.cog_projected, _x.crop_projected, _x.detection_label, _x.detection_laser_prob, _x.detection_camera_prob, _x.detection_fusion_prob, _x.label,) = _struct_2Bb3fb.unpack(str[start:end])
+      self.cog_projected = bool(self.cog_projected)
+      self.crop_projected = bool(self.crop_projected)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_7f = struct.Struct("<7f")
-_struct_BI = struct.Struct("<BI")
-_struct_2I = struct.Struct("<2I")
 _struct_3I = struct.Struct("<3I")
-_struct_2H = struct.Struct("<2H")
+_struct_2Bb3fb = struct.Struct("<2Bb3fb")
 _struct_3f = struct.Struct("<3f")
+_struct_2I = struct.Struct("<2I")

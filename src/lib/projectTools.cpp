@@ -1,68 +1,81 @@
 #include "hdetect/lib/projectTools.hpp"
 
+#define HOG_WIDTH 64
+#define HOG_HEIGHT 128
+
+using namespace std;
+using namespace cv;
+
 /// Projects a point from the laser scan to a 2d top-down view plane.
-void pointToPlane(geometry_msgs::Point32 &ptIn, cv::Point &ptOut, int &zoom)
+void pointToPlane(geometry_msgs::Point32 &ptIn, Point &ptOut, Size &windowSize, int &zoom)
 {
-	ptOut.x = (int) ( (ptIn.y * WIDTH / (float) zoom) + WIDTH / 2.0);
-	ptOut.y = (int) ( (ptIn.x * HEIGHT / (float) zoom) + HEIGHT / (float) zoom );
+    int width = windowSize.width;
+    int height = windowSize.height;
+
+    ptOut.x = width - 1 - (int)((ptIn.y * width / (float)zoom) + width / 2.0);
+    ptOut.y = height - 1 - (int)((ptIn.x * height / (float)zoom) + height / (float)zoom);
 }
 
 /// Function to return a selection of random generated colors
-vector<Scalar> randomColors(cv::RNG& rng) {
-	vector<Scalar> colors;
-	int i;
-	for (i = 0; i < 250; i++)
+vector<Scalar> randomColors(cv::RNG& rng)
+{
+    vector<Scalar> colors;
+
+    for (int i = 0; i < 250; i++)
 	{
 		int icolor = (unsigned)rng;
 		colors.push_back(cv::Scalar(icolor & 255, (icolor >> 8) & 255, (icolor >> 16) & 255));
 	}
+
 	return colors;
 }
 
 /// Returns the corresponding crop of an image
-void getCrop (cv::Mat &roi, cv::Mat &image, cv::Point &upleft, int &boxSize) {
-	roi  = image(cv::Rect(upleft.x , upleft.y , boxSize, 2.0 * boxSize));
+void getCrop(cv::Mat &roi, cv::Mat &image, Rect &rect)
+{
+    roi = image(rect);
 }
 
 /// Returns true if the box lies within the image
-bool checkBox(sensor_msgs::CameraInfo &cInfo, cv::Point &upleft, cv::Point &downright) {
-	return  (upleft.x > 0 && upleft.x < (int) cInfo.width) && // upleft inbounds
-			(upleft.y > 0 && upleft.y < (int) cInfo.height) &&
-			(downright.x > 0 && downright.x < (int) cInfo.width) && // downright inbounds
-			(downright.y > 0 && downright.y < (int) cInfo.height &&
-					abs(upleft.x-downright.x) >= HOG_WIDTH  ); // boxsize check
+bool checkBox(sensor_msgs::CameraInfo &cInfo, Rect &rect)
+{
+    bool ret = (rect.x >= 0 && rect.x + rect.width < (int)cInfo.width) && // width inbounds
+               (rect.y >= 0 && rect.y + rect.height < (int)cInfo.height) && // height inbounds
+               (rect.width >= HOG_WIDTH && rect.height >= HOG_HEIGHT); // boxsize check
+
+    return ret;
 }
 
 /// Finds the right bounding box size according to the distance
-///       L
+///     1.0xL
 /// _______________
 /// |<-upleft     |
 /// |             |
 /// |             |
 /// |             |
-/// |             |  2xL
+/// |             |  2.0xL
 /// |             |
 /// |             |
 /// |             |
 /// |_downright->_|
 ///
-void getBox(geometry_msgs::Point32 &it, cv::Point2d &pt2D, int &boxWidth,
-		cv::Point &upleft, cv::Point &downright, double &M_TO_PIXELS, double &BODY_RATIO)
+void getBox(geometry_msgs::Point32 &it, Point2d &pt2D, Rect &rect, double &M_TO_PIXELS, double &BODY_RATIO)
 {
 	//boxWidth = (int)(M_TO_PIXELS / sqrt(pow(double(it.x)*M_TO_PIXELS, 2.0) + pow(double(it.y)*M_TO_PIXELS, 2.0)));
 	double dist = sqrt(pow(it.x, 2.0) + pow(it.y, 2.0));
-	boxWidth = M_TO_PIXELS / dist;
+    float boxWidth = M_TO_PIXELS / dist;
 
-	// Compute the upper left and down right corners of the rectangle
-	upleft.x = (int)(pt2D.x - (boxWidth / 2) );
-	upleft.y = (int)(pt2D.y - BODY_RATIO * boxWidth);
-	downright.x = upleft.x + boxWidth;
-	downright.y = upleft.y + (2 * boxWidth);
+    // Compute the rectangle
+    rect.x = (int)(pt2D.x - (boxWidth / 2));
+    rect.y = (int)(pt2D.y - BODY_RATIO * boxWidth);
+    rect.width = (int)(1.0 * boxWidth);
+    rect.height = (int)(2.0 * boxWidth);
 }
 
-void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &rect) {
+void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, Mat &K, Mat &D, int &rect)
+{
 	// K Camera Matrix for Distorted images
-	K = Mat::zeros(3, 3, CV_64FC1);
+    K = Mat::zeros(3, 3, CV_64FC1);
 
 	int i, j;
 	for (i = 0; i < 3; i++)
@@ -73,10 +86,12 @@ void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &
 		}
 	}
 
-	D = Mat::zeros(1,5,CV_64FC1);
+    D = Mat::zeros(1,5,CV_64FC1);
 
-	if (rect == 0) {
-		for (i = 0; i < 5; i++) {
+    if (rect == 0)
+    {
+        for (i = 0; i < 5; i++)
+        {
 			D.at<double>(i) = cInfo.D[i];
 		}
 	}
@@ -123,20 +138,20 @@ void CameraInfo2CV(sensor_msgs::CameraInfo &cInfo, cv::Mat &K, cv::Mat &D, int &
 }
 
 
-void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Mat &K, cv::Mat &D,
-		tf::StampedTransform &transform)
+void projectPoint(geometry_msgs::Point32 &pointIn, Point2d &pointOut, Mat &K, Mat &D,
+                  tf::StampedTransform &transform)
 {
 	/*
 	 * METHOD: calib3d::projectPoints
 	 *
 	 */
 
-	cv::Mat pIn(1, 3, CV_64FC1);
-	cv::Mat pOut(1, 3, CV_64FC1);
+    Mat pIn(1, 3, CV_64FC1);
+    Mat pOut(1, 3, CV_64FC1);
 
-	cv::Mat cvPhi = cv::Mat::zeros(3, 3, CV_64FC1);
-	cv::Mat rvec = cv::Mat::zeros(3, 1, CV_64FC1);
-	cv::Mat tvec = cv::Mat::zeros(3, 1, CV_64FC1);
+    Mat cvPhi = Mat::zeros(3, 3, CV_64FC1);
+    Mat rvec = Mat::zeros(3, 1, CV_64FC1);
+    Mat tvec = Mat::zeros(3, 1, CV_64FC1);
 
 	tf::Vector3 t = transform.getOrigin();
 	tvec.at<double>(0, 0) = t.x();
@@ -195,8 +210,8 @@ void projectPoint(geometry_msgs::Point32 &pointIn, cv::Point2d &pointOut, cv::Ma
    printf("Original Point:  x %f y %f z %f\n", pt.x, pt.y, pt.z);
    printf("Projected point: x %f y %f z %f\n\n",pIn.at<double>(0,0), pIn.at<double>(0,1), pIn.at<double>(0,2));
 
-	 */
-	cv::Rodrigues(cvPhi, rvec);
+     */
+    Rodrigues(cvPhi, rvec);
 
 	//printf("\nRvec %f %f %f",rvec.at<double>(0,0),rvec.at<double>(0,1),rvec.at<double>(0,2));
 	//printf("\nTvec %f %f %f",tvec.at<double>(0,0),tvec.at<double>(0,1),tvec.at<double>(0,2));

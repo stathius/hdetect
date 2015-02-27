@@ -8,9 +8,10 @@ Stathis Fotiadis 2012
  */
 #include "hdetect/lib/laserLib.hpp"
 
+using namespace std;
 
 /// Starts the laser filter. people2D_engine parameter setting.
-laserLib::laserLib(double &jumpdist, int feature_set, double laser_range ) : laserFilter("sensor_msgs::LaserScan") {
+laserLib::laserLib(double jumpdist, int feature_set, double laser_range ) : laserFilter("sensor_msgs::LaserScan") {
 	// Set the configuration
 	// segmentation distance
 	libEngineParams.jumpdist = jumpdist;
@@ -27,8 +28,16 @@ laserLib::laserLib(double &jumpdist, int feature_set, double laser_range ) : las
 	laserFilter.configure("scan_filter_chain");
 }
 
-laserLib::~laserLib(void) {
+laserLib::~laserLib()
+{
+    delete libEngine;
+}
 
+void laserLib::getHeader(std_msgs::Header &header)
+{
+    header.stamp = stamp;
+    header.seq = seq;
+    header.frame_id = frame_id;
 }
 
 /** Filters and loads the laser scan.
@@ -69,13 +78,13 @@ void laserLib::loadScan(sensor_msgs::LaserScan ls) {
  *  Computes the features and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getFeatures(hdetect::ClusteredScan *features) {
-
+void laserLib::getFeatures(vector<hdetect::ClusteredScan> &clusterData)
+{
 	// Compute the features
-	libEngine->computeFeatures(clusters, descriptor);
+    libEngine->computeFeatures(clusters, descriptor);
 
 	// Convert features to Float32MultiArray
-	features2ROS(features);
+    features2ROS(clusterData);
 
 	// Copy the header from the laser scan	
 	//features.header.seq=seq;
@@ -96,31 +105,21 @@ void laserLib::getFeatures(hdetect::ClusteredScan *features) {
  *  Each cluster's annotation initialised to FALSE (0)
  *  Each cluster's fusion attribute initialised to FALSE (0)
  * */
-void laserLib::features2ROS(hdetect::ClusteredScan *features)
+void laserLib::features2ROS(vector<hdetect::ClusteredScan> &clusterData)
 {
-	features->features.resize(descriptor.size());
+    uint descriptor_size = descriptor[0].size();
 
-	//features.features.resize( descriptor.size() );
-	features->nclusters=descriptor.size();
-	features->nfeatures=descriptor[0].size();
+    for (uint i = 0; i < clusterData.size(); i++)
+    {
+        // Clear all features in cluster data
+        clusterData[i].features.data.clear();
 
-	int i=0;
-
-	for (std::vector< std::vector <float> >::iterator
-			it = descriptor.begin(); it!=descriptor.end(); it++)
-	{
-		// initialize the label to -1
-		features->labels.push_back(NO_HUMAN);
-		features->fusion.push_back(0);
-		features->projected.push_back(0);
-		for (std::vector<float>::iterator it2 = it->begin();
-				it2!=it->end(); it2++)
-		{
-			features->features[i].data.push_back(*it2);
-		}
-		i++;
-	}
-
+        // Insert all descriptor to cluster data
+        for (uint j = 0; j < descriptor_size; j++)
+        {
+            clusterData[i].features.data.push_back(descriptor[i][j]);
+        }
+    }
 }
 
 /**
@@ -188,20 +187,15 @@ void laserLib::scan2lib (sensor_msgs::LaserScan &ls, laserscan_data &libScan) {
  *  Computes the individual clusters and saves them in the ClusteredScan message.
  *  Must use loadScan() first.
  */
-void laserLib::getClusters(hdetect::ClusteredScan *laserClusters) {
-
-	// Set the header
-	laserClusters->header.seq=seq;
-	laserClusters->header.stamp=stamp;
-	laserClusters->header.frame_id=frame_id;
-
+void laserLib::getClusters(vector<hdetect::ClusteredScan> &clusterData)
+{
+    // Get the amount of clusters
+    uint cluster_size = clusters.size();
 
 	// Clear the data for clusters and cogs
-	laserClusters->clusters.resize( clusters.size() );
+    clusterData.resize(cluster_size);
 
-	int i=0;
-	for (std::vector<Point3D_container>::iterator 
-			it = clusters.begin(); it!=clusters.end(); it++)
+    for (uint i = 0; i < cluster_size; i++)
 	{
 		// compute cog
 		clusters[i].compute_cog(&cogL);
@@ -210,23 +204,23 @@ void laserLib::getClusters(hdetect::ClusteredScan *laserClusters) {
 
 		// discard cluster too close to the laser
 		//if (distance_L2_XY(&cogLSL,&origin) > 0.2)
-		//{
-		cogROS.x=cogL.x;
-		cogROS.y=cogL.y;
-		cogROS.z=cogL.z;
+        //{
 
-		laserClusters->cogs.push_back(cogROS);
+        clusterData[i].cog.x = cogL.x;
+        clusterData[i].cog.y = cogL.y;
+        clusterData[i].cog.z = cogL.z;
 
-		for (std::vector<Point3D_str>::iterator it2 = it->pts.begin();
-				it2!=it->pts.end(); it2++)
+        // Insert all the cluster points into cluster data
+        clusterData[i].clusters.points.clear();
+        for (vector<Point3D_str>::iterator it2 = clusters[i].pts.begin();
+             it2 != clusters[i].pts.end(); it2++)
 		{
-			pt.x=it2->x;
-			pt.y=it2->y;
-			pt.z=it2->z;
+            pt32.x = it2->x;
+            pt32.y = it2->y;
+            pt32.z = it2->z;
 			//if( sqrt( pow(pt.x,2) + pow(pt.y,2) ) > libEngineParams.laser_range )
-				laserClusters->clusters[i].points.push_back(pt);
-		}
-		i++;
+                clusterData[i].clusters.points.push_back(pt32);
+        }
 		//}
 }
 	//ROS_INFO("clusters %d", laserClusters.clusters.size());

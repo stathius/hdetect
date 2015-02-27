@@ -2,7 +2,7 @@
     <node pkg="rosbag" type="record" name="record" output="screen" 
 	args="-o $(find hdetect)/bag/UTMFF_ 
 	/laser/parameter_updates
-	/laser/scan
+	/iri_hokuyo_laser/scan
 	/camera/camera_info
 	/camera/image_raw
 	/camera/image_raw/compressed" 

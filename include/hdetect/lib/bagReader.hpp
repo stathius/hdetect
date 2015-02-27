@@ -36,9 +36,7 @@ public:
    * @param fname The filename of the bag file
    */
   bagReader(std::string fname);
-  ~bagReader()
-  {
-  }
+  ~bagReader();
   /**
    *
    * @param topics A vector of the topics to be read
@@ -46,7 +44,8 @@ public:
    * @param cameraInfo_sub_ Subscriber to handle the camera info messages
    * @param laserScan_sub_ Subscriber to handle the laser scan messages
    */
-  void loadBag(std::vector<std::string> topics, bagSubscriber<sensor_msgs::Image> &cameraImage_sub_,
+  void loadBag(std::vector<std::string> topics,
+               bagSubscriber<sensor_msgs::Image> &cameraImage_sub_,
                bagSubscriber<sensor_msgs::LaserScan> &laserScan_sub_);
 };
 

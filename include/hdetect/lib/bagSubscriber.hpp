@@ -1,5 +1,7 @@
 #ifndef BAGSUBSCRIBER_HPP
 #define BAGSUBSCRIBER_HPP
+
+#include <message_filters/simple_filter.h>
 /*
  * bagSubscriber.hpp
  *

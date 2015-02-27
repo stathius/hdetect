@@ -31,9 +31,9 @@ int lengine::sanity_check(std::vector<std::vector<Real> > &descriptor)
 		return (0);
 	}
 
-	unsigned int f_num = descriptor[0].size();
+	uint f_num = descriptor[0].size();
 
-	for (unsigned int i = 0; i < descriptor.size(); i++)
+	for (uint i = 0; i < descriptor.size(); i++)
 	{
 		if (f_num != descriptor[i].size())
 		{
@@ -41,7 +41,7 @@ int lengine::sanity_check(std::vector<std::vector<Real> > &descriptor)
 			ret = 0;
 		}
 
-		for (unsigned int j = 0; j < descriptor[i].size(); j++)
+		for (uint j = 0; j < descriptor[i].size(); j++)
 		{
 			int typeval = fpclassify(descriptor[i][j]);
 			if (typeval == FP_NAN || typeval == FP_INFINITE)
@@ -188,9 +188,11 @@ void lengine::computeFeatures(std::vector<Point3D_container> &clusters,
 {
 	// set feature set
 
-	lfeatures = new lfeatures_class(params.feature_set);
 
-	lfeatures->compute_descriptor(clusters, descriptor);
+    // made it public
+    lfeatures_class lfeatures = lfeatures_class(params.feature_set);
+
+    lfeatures.compute_descriptor(clusters, descriptor);
 
 	// for now only checking right size
 	if ( !(descriptor[0].size() == feature_set_size[params.feature_set]) ) {

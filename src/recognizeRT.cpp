@@ -9,18 +9,26 @@
 
 #include <boost/bind.hpp>
 
-#include "hdetect/lib/detector.hpp"
+#include "lib/Header.hpp"
+#include "lib/Recognizer.hpp"
+#include "hdetect/ClusterClass.h"
 
 /**
- * A node to set up all things needed for visualization.
+ * A node to set up all things needed for the tracking of human after detection.
  * Also used for the annotation.
- * The name file is given from command line.
- * @author Stathis Fotiadis
- * @date 10/10/2012
+ * @author Bang-Cheng Wang
+ * @date 2013/10/01
  */
-class headlessRT
+
+class recognizeRT
 {
+    public:
+        recognizeRT(std::string cameraTopic, std::string laserTopic);
+
+        ~recognizeRT();
+
     private:
+
         ros::NodeHandle nh;
 
         /// Subsciber to the camera image topic
@@ -29,10 +37,10 @@ class headlessRT
         message_filters::Subscriber<sensor_msgs::LaserScan>  laserScan_sub_;
 
         /**
-          * An approximate time policy to synchronize image, camera info and laser messages.
-          * This sync policy waits for all the three messages to arrive before it invokes the callback
-          * from the annotator object.
-          */
+        * An approximate time policy to synchronize image, camera info and laser messages.
+        * This sync policy waits for all the three messages to arrive before it invokes the callback
+        * from the annotator object.
+        */
         typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::LaserScan> MySyncPolicy;
 
         /** The synchronizer based on the three messages policy */
@@ -42,22 +50,13 @@ class headlessRT
         std::string cameraImageIn;
         std::string laserScanIn;
 
-        /// The visualizer object that will be used for the callback
-        detector myDetector;
+        /// The recognizer object that will be used for the callback
+        Recognizer myRecognizer;
 
-    public:
-        /**
-          * Creates a synchronizer of two topics (image, laser).
-          * It displays the laser data on to the image and the laser data alone in 2d.
-          * @param[in] laserTopic The name of the laser topic that will be subscribed to.
-          * @param[in] cameraTopic The name of the camera topic that will be subscribed to.
-          */
-        headlessRT(std::string cameraTopic, std::string laserTopic);
-
-        ~headlessRT();
 };
 
-headlessRT::headlessRT(std::string cameraTopic, std::string laserTopic) : nh("~")
+recognizeRT::recognizeRT(std::string cameraTopic, std::string laserTopic)
+    : nh("~")
 {
     // Subscibe to the corresponding topics
     cameraImage_sub_.subscribe(nh,cameraTopic,3);
@@ -67,27 +66,28 @@ headlessRT::headlessRT(std::string cameraTopic, std::string laserTopic) : nh("~"
     // Future work change it to a tf::MessageFilter to include the tf transform
     sync = new message_filters::Synchronizer<MySyncPolicy>(MySyncPolicy(10), cameraImage_sub_, laserScan_sub_);
 
-    sync->registerCallback(boost::bind(&detector::detectHumans, boost::ref(myDetector), _1, _2 ));
+    sync->registerCallback(boost::bind(&Recognizer::recognizeData, boost::ref(myRecognizer), _1, _2));
 
     // Sleep to give time to other nodes (tf) to start
     sleep(2);
-    ROS_INFO("[HEADLESS_RT] headlessRT running OK.");
+    ROS_INFO("[ROCOGNIZE_RT] RecognizeRT running OK.");
 }
 
-headlessRT::~headlessRT()
+recognizeRT::~recognizeRT()
 {
 
 }
 
 int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "headlessRT");
+    ros::init(argc, argv, "recognizeRT");
 
     std::string cameraTopic(argv[1]);
     std::string laserTopic(argv[2]);
 
-    headlessRT hdless(cameraTopic, laserTopic);
+    recognizeRT vl(cameraTopic, laserTopic);
     ros::spin();
 
     return 0;
 }
+

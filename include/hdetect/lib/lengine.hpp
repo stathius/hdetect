@@ -56,12 +56,11 @@ class lengine
 private:
 
 	lengine_params params;
-	std::vector<laserscan_data> laserscan;int get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx
-	);int sanity_check(
-			std::vector<std::vector<Real> > & descriptor);
+    std::vector<laserscan_data> laserscan;
 
-	// made it public
-	lfeatures_class *lfeatures;
+    int get_breakpoint(std::vector<Point3D_str> &pts, int last_breaking_idx);
+
+    int sanity_check(std::vector<std::vector<Real> > & descriptor);
 
 	// UPM
 	// instead of using the vector laserscan we will be using a

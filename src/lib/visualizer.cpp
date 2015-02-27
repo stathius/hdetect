@@ -1,7 +1,18 @@
 #include <hdetect/lib/visualizer.hpp>
 
-visualizer::visualizer() {
+using namespace std;
+using namespace cv;
 
+#define FALSE 0
+#define TRUE 1
+
+#define INITIAL_ZOOM 30
+
+static const char C_WINDOW[] = "Visualizer: Camera + Laser";
+static const char L_WINDOW[] = "Visualizer: Laser";
+
+visualizer::visualizer()
+{
 	ss << std::fixed << std::setprecision(2);
 
 	// Random generator for the random coloring of the clusters
@@ -9,8 +20,8 @@ visualizer::visualizer() {
 	pallete = randomColors(rng);
 
 	// init window and font
-	cv::namedWindow(C_WINDOW, CV_WINDOW_AUTOSIZE);
-	cv::namedWindow(L_WINDOW, CV_WINDOW_AUTOSIZE);
+    namedWindow(C_WINDOW, CV_WINDOW_AUTOSIZE);
+    namedWindow(L_WINDOW, CV_WINDOW_AUTOSIZE);
 
 
 	cvInitFont(&font_, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5);
@@ -18,18 +29,43 @@ visualizer::visualizer() {
 	zoom = INITIAL_ZOOM; // in meters
 
 	// Trackbar to control the zoom
-	createTrackbar("Zoom:", L_WINDOW, &zoom, 30, &plotLaser<visualizer>, this);
+//    createTrackbar("Zoom:", L_WINDOW, &zoom, 30, &plotLaser, this);
 
 	pub = nh.advertise<std_msgs::Byte>("Hz", 5);
 	dummy.data=1;
 
 	ROS_INFO("[VISUALIZER] Visualizer running OK.");
+    colors.push_back(Scalar(191, 0, 0));
+    colors.push_back(Scalar(0, 191, 0));
+    colors.push_back(Scalar(0, 0, 191));
+    colors.push_back(Scalar(255, 63, 0));
+    colors.push_back(Scalar(63, 255, 0));
+    colors.push_back(Scalar(255, 0, 63));
+    colors.push_back(Scalar(63, 0, 255));
+    colors.push_back(Scalar(0, 255, 63));
+    colors.push_back(Scalar(0, 63, 255));
+    colors.push_back(Scalar(191, 191, 0));
+    colors.push_back(Scalar(191, 0, 191));
+    colors.push_back(Scalar(0, 191, 191));
 }
 
-visualizer::~visualizer() {
+visualizer::~visualizer()
+{
 	cv::destroyWindow(C_WINDOW);
 	cv::destroyWindow(L_WINDOW);
 }
+
+
+//std::vector<hdetect::ClusteredScan>  &visualizer::getClusteredData()
+//{
+//    return clusterData;
+//}
+
+
+//void visualizer::setLaserPlane(Mat lp)
+//{
+//    laserPlane = lp;
+//}
 
 /**
  * It superimposes the clusters on the image along with their bounding boxes if available.
@@ -44,14 +80,14 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 	cvtColor(cv_ptr->image, colorImage , CV_GRAY2RGB);
 
 	// Iterate through every cog of the scanClusters
-	for (uint i=0; i < clusterData->cogs.size() ;i++)
+    for (uint i = 0; i < clusterData.size() ;i++)
 	{
-
 		// If the cog is in the image save its features and then plot the cluster
-		if (clusterData->projected[i]==1)
+        if (clusterData[i].cog_projected == true)
 		{
 			// Get the color index
-			color = getColor(clusterData->cogs[i]);
+//            color = getColor(clusterData[i].cog);
+            color = colors.at(i % colors.size());
 
 			// Draw a rectangle around each crop
 			//rectangle(colorImage, upleft, downright, color, 2, 8, 0);
@@ -66,26 +102,28 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 			/// add an if below so it draws something in either case
 
 			// Draw the cluster number
-			projectPoint(clusterData->cogs[i], prPixel, K , D, transform);
-			cv::putText(colorImage, boost::lexical_cast<string>(i), prPixel, 1, 1, color, 1, 1);
-			circle(colorImage, prPixel, 4, color);
+            projectPoint(clusterData[i].cog, prPixel, K , D, transform);
+            putText(colorImage, boost::lexical_cast<string>(i), prPixel, 1, 1.4, color, 1.6, 1);
+            circle(colorImage, prPixel, 4, color);
 
 			// Draw the rectangle around the ROI
-			if (clusterData->fusion[i] == 1) {
-				if(clusterData->detection_labels[i] == 1) {
-					getBox(clusterData->cogs[i], prPixel, boxSize, upleft, downright, params.m_to_pixels, params.body_ratio);
-					rectangle(colorImage, upleft, downright, color);
-				    ss << clusterData->detection_probs[i];
-					putText(colorImage, ss.str(), upleft, 1, 1, color, 1, 1);
-					ss.str("");
+            if (clusterData[i].crop_projected == true)
+            {
+                if (clusterData[i].detection_label == true)
+                {
+                    getBox(clusterData[i].cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
+                    rectangle(colorImage, rect, color);
+                    ss << clusterData[i].detection_fusion_prob;
+                    putText(colorImage, ss.str(), Point(rect.x, rect.y), 1, 1, color, 1, 1);
+                    ss.str("");
 				}
 			}
 
 			// This is the code to superimpose the clusters on the image
-			for (uint j = 0; j < clusterData->clusters[i].points.size(); j++)
+            for (uint j = 0; j < clusterData[i].clusters.points.size(); j++)
 			{
 				// Convert each cluster point to image coordinates
-				projectPoint(clusterData->clusters[i].points[j], prPixel, K , D, transform);
+                projectPoint(clusterData[i].clusters.points[j], prPixel, K , D, transform);
 
 				// Draw the point to the image
 				if (prPixel.x >= 0 && prPixel.x < colorImage.cols && prPixel.y >= 0 && prPixel.y < colorImage.rows)
@@ -105,7 +143,7 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
   	  ROS_INFO("[ANNOTATOR] size fusion %d", scanClusters.fusion.size());
   	  /*/
 
-	plotLaser<visualizer>(zoom, this);
+    plotLaser(zoom);
 	cv::imshow(L_WINDOW, laserPlane);
 	waitKey(3);
 	cv::imshow(C_WINDOW, colorImage);
@@ -119,5 +157,80 @@ void visualizer::visualizeData(const sensor_msgs::Image::ConstPtr &image,
 /// Returns a color from the pallete, based on its position
 Scalar visualizer::getColor(geometry_msgs::Point32 &point)
 {
-	return pallete[(int) (5 * sqrt(pow(point.x, 2) + pow(point.y, 2)) )];
+    return pallete[(int) (5 * distance(point))];
+}
+
+float visualizer::distance(geometry_msgs::Point32 point)
+{
+    return sqrt(point.x * point.x + point.y * point.y);
+}
+
+
+void visualizer::plotLaser(int zoom)
+{
+    laserPlane = Mat(window_size, CV_8UC3);
+    laserPlane.setTo(Scalar(255, 255, 255));
+
+    Point pt;
+    Scalar color;
+    // The mat will be 1000(X)x500(Y) pixels
+    // The values are computed according to the zoom value
+    // The default zoom corresponds to 500 pixels = 30000 mm
+
+    for (uint cNo = 0; cNo < clusterData.size(); cNo++)
+    {
+        if (1) //scanClusters.fusion[clusterNo] == TRUE)
+        {
+//            color = getColor(clusterData[cNo].cog);
+            color = colors.at(cNo % colors.size());
+
+            for (uint pointNo = 0; pointNo < clusterData[cNo].clusters.points.size(); pointNo++)
+            {
+                // Transform x, y point to pixels
+                pointToPlane(clusterData[cNo].clusters.points[pointNo], pt, window_size, zoom);
+                circle(laserPlane, pt, 2, color);
+            }
+
+            pointToPlane(clusterData[cNo].cog, pt, window_size, zoom);
+
+            // Number of cluster
+            //cv::putText(laserPlane, boost::lexical_cast<string>(clusterNo),
+            //            pt, 1, 2, color,2, 8);
+            //pt.x+=30;
+
+            // Number of points
+            Scalar black(0,0,0);
+//            cv::putText(laserPlane, boost::lexical_cast<string>(clusterData[cNo].clusters.points.size()),
+//                    pt, 1, 2, black, 2, 8);
+            pt.x -= 10;
+            pt.y += 5;
+            cv::putText(laserPlane, boost::lexical_cast<string>(cNo),
+                        pt, 1, 0.8, black, 1.6, 8);
+
+//            // Distance to cog
+//            char buf[10] = "";
+//            sprintf(buf, "%.1f", distance(clusterData[cNo].cog));
+//            pt.x += 35;
+//            cv::putText(laserPlane, boost::lexical_cast<string>(buf),
+//                        pt, 1, 0.6, black, 1.0, 8);
+
+            if (clusterData[cNo].label == true)
+            {
+                //cv::circle(laserPlane, 1 , 2, Scalar(0,0,0));
+            }
+        }
+    }
+
+    color.val[0] = 0;
+    color.val[1] = 255;
+    color.val[2] = 0;
+
+    geometry_msgs::Point32 org;
+    org.x = 0;
+    org.y = 0;
+
+    pointToPlane(org, pt, window_size, zoom);
+    pt.x -= 10;
+    cv::putText(laserPlane, "Laser", pt, 1, 1, color, 1, 1);
+    circle(laserPlane, pt, 2, color);
 }
