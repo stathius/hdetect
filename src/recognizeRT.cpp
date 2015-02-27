@@ -9,13 +9,14 @@
 
 #include <boost/bind.hpp>
 
-#include "lib/Header.hpp"
-#include "lib/Recognizer.hpp"
-#include "hdetect/ClusterClass.h"
+#include <hdetect/lib/recognizer.hpp>
+#include <hdetect/lib/header.hpp>
+#include <hdetect/ClusterClass.h>
 
 /**
- * A node to set up all things needed for the tracking of human after detection.
+ * A node to set up all things needed for recognition.
  * Also used for the annotation.
+ * The name file is given from command line.
  * @author Bang-Cheng Wang
  * @date 2013/10/01
  */
@@ -42,7 +43,7 @@ class recognizeRT
         * from the annotator object.
         */
         typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::LaserScan> MySyncPolicy;
-
+        //typedef message_filters::sync_policies::ExactTime<sensor_msgs::Image, sensor_msgs::LaserScan> MySyncPolicy;
         /** The synchronizer based on the three messages policy */
         message_filters::Synchronizer<MySyncPolicy> *sync;
 
@@ -52,6 +53,7 @@ class recognizeRT
 
         /// The recognizer object that will be used for the callback
         Recognizer myRecognizer;
+
 
 };
 

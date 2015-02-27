@@ -9,7 +9,7 @@
 
 #include <boost/bind.hpp>
 
-#include "hdetect/lib/visualizer.hpp"
+#include <hdetect/lib/visualizer.hpp>
 
 /**
  * A node to set up all things needed for visualization.

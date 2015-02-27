@@ -1,5 +1,5 @@
-#include "Observation.hpp"
-#include <stdio.h>
+#include <hdetect/lib/observation.hpp>
+
 
 using namespace cv;
 using namespace NEWMAT;

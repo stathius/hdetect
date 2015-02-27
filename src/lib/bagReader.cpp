@@ -38,7 +38,7 @@ void bagReader::loadBag(std::vector<std::string> topics,
 
         count++;
 
-//        ROS_INFO("[BAG_READER] Bag view count = %d %s.", count, m.getTopic().c_str());
+        //ROS_INFO("[BAG_READER] Bag view count = %d %s.", count, m.getTopic().c_str());
 
         if (m.getTopic() == cameraImageIn)
         {

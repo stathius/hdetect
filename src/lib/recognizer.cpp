@@ -1,4 +1,4 @@
-#include "Recognizer.hpp"
+#include <hdetect/lib/recognizer.hpp>
 
 using namespace std;
 using namespace std_msgs;
@@ -49,6 +49,8 @@ Recognizer::Recognizer()
 
     odom_sub_ = nh.subscribe("/odom", 1, &Recognizer::setOdom, this);
     odom_ekf_sub_ = nh.subscribe("/ekf_pose/odom_combined", 1, &Recognizer::setOdomEkf, this);
+
+    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>("/HumansDetected",10);
 }
 
 Recognizer::Recognizer(const string odomTopic, const string odomEkfTopic)
@@ -58,6 +60,8 @@ Recognizer::Recognizer(const string odomTopic, const string odomEkfTopic)
 
     odom_sub_ = nh.subscribe(odomTopic, 1, &Recognizer::setOdom, this);
     odom_ekf_sub_ = nh.subscribe(odomEkfTopic, 1, &Recognizer::setOdomEkf, this);
+
+    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>("/HumansDetected",10);
 }
 
 Recognizer::~Recognizer()
@@ -67,8 +71,13 @@ Recognizer::~Recognizer()
 void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
                                const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-    curTimestamp = getTimestamp();
+//    curTimestamp = getTimestamp();
+    static double init_time =  lScan->header.stamp.sec;
+    curTimestamp = lScan->header.stamp.toSec() - init_time;
 
+    //getTimestamp();
+    //ROS_INFO("laser %f - getTimestamp %f = %f",
+    //         curTimestamp, getTimestamp(), curTimestamp -getTimestamp());
     observations.clear();
     pairs.clear();
 
@@ -79,9 +88,7 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
 
     loadObservation();
 
-    fprintf(stderr, "Before: Humans = %d, Observations = %d \n", humans.size(), observations.size());
-
-    //myHumanPose.getHuman(humans, with_odom, with_odom_ekf);
+    //ROS_INFO("Before: Humans = %d, Observations = %d", (int)humans.size(), (int)observations.size());
 
     // Eliminate Untracked Human
     ObjectTracking::eliminate(humans);
@@ -94,7 +101,41 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
 
     publish(lScan);
 
-    fprintf(stderr, "After : Humans = %d, Pairs = %d \n\n\n", humans.size(), pairs.size());
+    //ROS_INFO("After : Humans = %d, Pairs = %d\n", (int)humans.size(), (int)pairs.size());
+    //changeframe();
+    //tf::Transform laser_pos;
+    tf::Transform odom_pos;
+
+    // Publish Humans detected
+    for(uint i=0 ; i < humans.size() ; i++)
+    {
+        tf::Transform laser_pos(tf::Quaternion(), tf::Vector3(humans[i].state(1), humans[i].state(2), 0));
+        if(with_odom_ekf == true)
+        {
+          odom_pos = cur_odom_ekf * laser_pos;
+        }
+        else if(with_odom == true)
+        {
+          odom_pos = cur_odom * laser_pos;
+        }
+        else
+        {
+          odom_pos = laser_pos;
+        }
+
+        HumansAux.id = humans[i].id;
+        HumansAux.x =  odom_pos.getOrigin().getX(); // humans[i].state(1);
+        HumansAux.y = odom_pos.getOrigin().getY();  // humans[i].state(2);
+        HumansAux.velx = humans[i].state(3);
+        HumansAux.vely = humans[i].state(4);
+        HumansAux.detectiontime = humans[i].firstTimestamp.sec + (humans[i].firstTimestamp.nsec * 0.000000001);
+        HumansVector.push_back(HumansAux);
+    }
+    geometry_msgs::Vector3Stamped pos_laser;
+    geometry_msgs::Vector3Stamped pos_odom;
+    HumansDetected.HumansDetected = HumansVector;
+    Humanpublisher.publish(HumansDetected);
+    HumansVector.clear();
 
     preTimestamp = curTimestamp;
 }
@@ -301,23 +342,29 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
 
         temp_line.points.clear();
 
-        setPoint(0.0, 0.0, 0.0, point);
-        temp_line.points.push_back(point);
-        setPoint(observations[i].state(1), observations[i].state(2), 0.0, point);
-        temp_line.points.push_back(point);
+
 
         // Paired observation with color line
         if (pairs.count(i) == 1)
         {
+            setPoint(0.0, 0.0, 0.0, point);
+            temp_line.points.push_back(point);
+            setPoint(observations[i].state(1), observations[i].state(2), 0.0, point);
+            temp_line.points.push_back(point);
             temp_line.color = getColorRgba(humans[pairs[i]].id, 0.7);
+
         }
         // False observation with white line
         else
         {
-            temp_line.color.r = 1.0;
-            temp_line.color.g = 1.0;
-            temp_line.color.b = 1.0;
-            temp_line.color.a = 0.5;
+//            setPoint(0.0, 0.0, 0.0, point);
+//            temp_line.points.push_back(point);
+//            setPoint(observations[i].state(1), observations[i].state(2), 0.0, point);
+//            temp_line.points.push_back(point);
+//            temp_line.color.r = 1.0;
+//            temp_line.color.g = 1.0;
+//            temp_line.color.b = 1.0;
+//            temp_line.color.a = 0.5;
         }
 
         rviz_markers.markers.push_back(temp_line);
@@ -329,13 +376,6 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
     }
 }
 
-//std::deque<Human> Recognizer::HumansDetected()
-//{
-//    Humans_pub.publish(humans);
-
-//    //ROS_INFO("[RECOGNIZER]  Humans Deque size: %d", humans.size());
-//    //return humans;
-//}
 
 void Recognizer::setOdom(const nav_msgs::Odometry &odom)
 {

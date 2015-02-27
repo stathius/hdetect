@@ -2,8 +2,8 @@
  Reads the camera topic (camera/image_raw) and the laser topic from a bag
  Publishes ...
  */
-#include "hdetect/lib/bagReader.hpp"
-#include "hdetect/lib/annotator.hpp"
+#include <hdetect/lib/bagReader.hpp>
+#include <hdetect/lib/annotator.hpp>
 
 /**
  * A node to set up all things needed for the annotation.
