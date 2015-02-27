@@ -1,5 +1,5 @@
 <package>
-  <description brief="Human detection & tracking package">
+  <description brief="Human detection and tracking package">
   Uses a combination of laser range finder and a computer vision module for the pedestrian detection.
   The vision module works with OpenCV's detector which uses Histogram of Oriented Gradients and Support Vector Machines.
   For pairing observations and tracking it uses a combination of Kalman filters and Mahalanobis distance.
