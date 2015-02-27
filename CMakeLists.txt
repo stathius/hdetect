@@ -39,18 +39,17 @@ rosbuild_link_boost(annotateData signals)
 rosbuild_add_executable(trainLaser src/trainLaser.cpp)
 #rosbuild_add_executable(detectTest src/detectTest.cpp)
 #rosbuild_add_executable(Calib_Matlab2ROS src/other/Calib_Matlab2ROS.cpp)
-rosbuild_add_executable(HumanFollowerRT src/HumanFollowerRT.cpp)
 
 # LIBRARIES
 
 find_library(NEWMAT newmat /usr/lib)
 
-rosbuild_add_library(Header src/lib/Header.hpp src/lib/Header.cpp)
+rosbuild_add_library(Header src/lib/header.cpp)
 
-rosbuild_add_library(Recognizer src/lib/Recognizer.hpp src/lib/Recognizer.cpp)
-rosbuild_add_library(ObjectTracking src/lib/ObjectTracking.cpp src/lib/ObjectTracking.hpp)
-rosbuild_add_library(Observation src/lib/Observation.cpp src/lib/Observation.hpp)
-rosbuild_add_library(Human src/lib/Human.cpp src/lib/Human.hpp)
+rosbuild_add_library(Recognizer src/lib/recognizer.cpp include/hdetect/lib/recognizer.hpp)
+rosbuild_add_library(ObjectTracking src/lib/object_tracking.cpp include/hdetect/lib/object_tracking.hpp)
+rosbuild_add_library(Observation src/lib/observation.cpp)
+rosbuild_add_library(Human src/lib/human.cpp)
 
 rosbuild_add_library(laserLib src/lib/laserLib.cpp include/hdetect/lib/laserLib.hpp)
 rosbuild_add_library(visualizer src/lib/visualizer.cpp include/hdetect/lib/visualizer.hpp)
@@ -62,8 +61,6 @@ rosbuild_add_library(detector src/lib/detector.cpp include/hdetect/lib/detector.
 
 rosbuild_add_library(annotator src/lib/annotator.cpp include/hdetect/lib/annotator.hpp)
 rosbuild_add_library(bagReader src/lib/bagReader.cpp include/hdetect/lib/bagReader.hpp include/hdetect/lib/bagSubscriber.hpp)
-
-rosbuild_add_library(HumanFollower src/lib/HumanFollower.cpp src/lib/HumanFollower.hpp)
 
 
 # GSL IS NEEDED FOR PEOPLE2D LIBRARY TO COMPILE
@@ -79,12 +76,10 @@ target_link_libraries(lengine lgeometry lfeatures Header)
 target_link_libraries(laserLib lengine)
 target_link_libraries(detector laserLib projectTools)
 target_link_libraries(visualizer detector)
-target_link_libraries(Recognizer detector ObjectTracking Human Observation ${NEWMAT})
-target_link_libraries(HumanFollower Recognizer)
-target_link_libraries(HumanFollowerRT HumanFollower)
-target_link_libraries(visualizeRT visualizer lgeometry)
-target_link_libraries(headlessRT detector lgeometry)
-target_link_libraries(recognizeRT Recognizer lgeometry)
+target_link_libraries(Recognizer detector)
+target_link_libraries(visualizeRT visualizer lgeometry  ${NEWMAT})
+target_link_libraries(headlessRT detector lgeometry ${NEWMAT})
+target_link_libraries(recognizeRT Recognizer lgeometry ${NEWMAT} Recognizer ObjectTracking Human Observation)
 target_link_libraries(showRT ${GSL_LIBRARIES})
 
 target_link_libraries(annotator visualizer)
