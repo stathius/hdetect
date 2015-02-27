@@ -11,7 +11,7 @@
 	 		    /laser_top /camera 20" />
 
 	<node pkg="hdetect" type="annotateData" name="annotator" output="screen" 
-		args="$(find hdetect)/bag/moving.bag /camera/image_raw /iri_hokuyo_laser/scan" >
+		args="/media/Data/RosBags/hdetect/bags/outdoor1.bag /camera/image_raw /iri_hokuyo_laser/scan" >
 
 		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>
 		<param name="/camera_name" value="00b09d0100aa73bb"/>

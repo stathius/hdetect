@@ -17,7 +17,7 @@
 	 		    /laser_top /camera 20" />
 
 	<node pkg="rosbag" type="play" name="play" output="screen" 
-		  args="$(find hdetect)/bag/moving7.bag --loop --clock --hz=1000 --pause"/> 
+		  args="/media/Data/RosBags/hdetect/moving7.bag --pause --clock --quiet"/> 
 
 	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
 		  args="/camera/image_raw /iri_hokuyo_laser/scan">
@@ -28,5 +28,11 @@
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 
 	</node>
+	<node pkg="tf" type="static_transform_publisher" name="base_link_to_base_footprint"
+	    	args="0 0 0 -1.57079 0 0 /base_footprint /base_link 100" />
+	<node pkg="tf" type="static_transform_publisher" name="field_center_to_world"
+	    	args="-458962 -4462629 0 0 0 0 /field_center /world_UTM 100" /> 
+	
+	<node name="rviz" pkg="rviz" type="rviz" args="-d /home/mario/.rviz/hdetect2.rviz"/>
 
 </launch> 
