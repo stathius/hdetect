@@ -57,22 +57,22 @@ class lfeatures_class
 		int feature_14(Point3D_container *laserfeat_cluster, Real *out);		
 		int feature_15(Point3D_container *laserfeat_cluster, Real *out);		
 		int feature_16(Point3D_container *laserfeat_cluster, Real *out);		
-		int feature_01_comparative(std::vector <Point3D_container> &all_laserfeat_cluster, unsigned int curidx, Real *out);
+        int feature_01_comparative(std::vector <Point3D_container> &all_laserfeat_cluster, uint curidx, Real *out);
 		
 		int feature_size;
 		int feature_set;
 
 		#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 		typedef int  (lfeatures_class::*ptr_feature)(Point3D_container*, Real*);
-		std::vector <ptr_feature> ptr_feature_vector;
+        std::vector<ptr_feature> ptr_feature_vector;
 		
 		#define CALL_MEMBER_FN_CMP(object,ptrToMember)  ((object).*(ptrToMember))
-		typedef int  (lfeatures_class::*ptr_feature_cmp)(std::vector <Point3D_container> &, unsigned int, Real*);
-		std::vector <ptr_feature_cmp> ptr_feature_vector_cmp;
+        typedef int  (lfeatures_class::*ptr_feature_cmp)(std::vector<Point3D_container> &, uint, Real*);
+        std::vector<ptr_feature_cmp> ptr_feature_vector_cmp;
 
 	public:
 		lfeatures_class(int feature_set);
-		void compute_descriptor(std::vector <Point3D_container> &all_laserfeat_cluster, std::vector < std::vector <Real> > &descriptor);
+        void compute_descriptor(std::vector <Point3D_container> &all_laserfeat_cluster, std::vector< std::vector<Real> > &descriptor);
 
 };
 #endif

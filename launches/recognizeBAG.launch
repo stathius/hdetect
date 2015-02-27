@@ -17,9 +17,9 @@
 	 		    /laser_top /camera 20" />
 
 	<node pkg="rosbag" type="play" name="play" output="screen" 
-		  args="$(find hdetect)/bag/outdoor1.bag --loop --clock --pause"/> 
+		  args="$(find hdetect)/bag/moving7.bag --loop --clock --hz=1000 --pause"/> 
 
-	<node pkg="hdetect" type="headlessRT" name="headlessRT" output="screen" cwd="node"
+	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
 		  args="/camera/image_raw /iri_hokuyo_laser/scan">
 
 		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>

@@ -28,13 +28,20 @@
 			    3.12148546397231552163 -0.01876295705026196844 0.10236192367415890281
 	 		    /laser_top /camera 20" />
 
-	<node pkg="hdetect" type="visualizeRT" name="visualizeRT" output="screen" cwd="node"
+	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
 		  args="/camera/image_raw /iri_hokuyo_laser/scan">
 
 		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib.yaml"/>
 		<param name="/camera_name" value="00b09d0100aa73bb"/>
 		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
+
+	</node>
+
+	<node pkg="hdetect" type="showRT" name="showRT" output="screen" cwd="node">
+		
+		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+		<rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 
 	</node>
 

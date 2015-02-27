@@ -3,12 +3,11 @@
 
 //#include "sensor_msgs/LaserScan.h"
 #include <filters/filter_chain.h>
+#include <std_msgs/Header.h>
 #include "sensor_msgs/LaserScan.h"
 #include "lengine.hpp"
+#include "../src/lib/Header.hpp"
 #include <hdetect/ClusteredScan.h>
-
-#define NO_HUMAN -1
-#define HUMAN 1
 
 /**
  * A class used as a ROS wrapper for the lengine class.
@@ -19,8 +18,7 @@ private:
   /// Needed by getClusters()
   Point3D_str cogL;
   Point3D_str origin;
-  geometry_msgs::Point32 pt;
-  geometry_msgs::Point32 cogROS;
+  geometry_msgs::Point32 pt32;
 
   /// The shadow filter to preprocess the laser
   filters::FilterChain<sensor_msgs::LaserScan> laserFilter;
@@ -41,6 +39,7 @@ private:
 
   /// The feature vector of the lengine format
   std::vector < std::vector <float> > descriptor;
+
   float angle_min;
   float angle_max;
   float angle_inc;
@@ -61,7 +60,7 @@ private:
    *
    * @param features[out] Exported cluster features.
    */
-  void features2ROS(hdetect::ClusteredScan *features);
+  void features2ROS(std::vector<hdetect::ClusteredScan> &clusterData);
 
 public:
   /// Null constructor
@@ -74,25 +73,27 @@ public:
    * @param feature_set Feature set to be used (0 = 17, 1 = 63, 2 = 73)
    * @param laser_range The maximum trusted laser range
    */
-  laserLib(double &jumpdist, int feature_set, double laser_range);
+  laserLib(double jumpdist, int feature_set, double laser_range);
 
   /**
    *
    * @param features[out] Exported cluster features
    */
-  void getFeatures(hdetect::ClusteredScan *features);
+  void getFeatures(std::vector<hdetect::ClusteredScan> &clusterData);
 
   /**
    *
    * @param features[out] Where the clusters are going to be exported.
    */
-  void getClusters(hdetect::ClusteredScan *laserClusters);
+  void getClusters(std::vector<hdetect::ClusteredScan> &clusterData);
 
   /**
    *
    * @param ls LaserScan to be loaded
    */
   void loadScan(sensor_msgs::LaserScan ls);
+
+  void getHeader(std_msgs::Header &header);
 };
 
 #endif

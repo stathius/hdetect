@@ -87,7 +87,7 @@ class Point3D_container
 		
 		// constructor
 		Point3D_container();	
-		Point3D_container(unsigned int sz);	
+		Point3D_container(uint sz);	
 		Point3D_container(std::vector <Point3D_str> &ptvec);	
 
 		// compute cog

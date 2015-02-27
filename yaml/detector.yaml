@@ -1,5 +1,8 @@
+laser_window_width: 600 #width of laser window
+laser_window_height: 400 #height of laser window
 rect: 0 # 0 for original, 1 if rectified image is used. for projection purposes.
 jumpdist: 0.20 # laser segmentation distance
+#jumpdist: 0.80 # laser segmentation distance
 feature_set: 0 # 0 = 17, 1 = 63
 hog_hit_threshold: 0.0 # hog svm bias
 hog_group_threshold : 0 # hog grouping threshold, use 0 for meanshift
@@ -10,5 +13,7 @@ laserA: -2.0 # probability sigmoid
 laserB: 0.0 # parameters for laser
 cameraA: -4.0 # probability sigmoid
 cameraB: 0.0 # parameters for camera
-m_to_pixels: 1000.0 # ROI meter to pixel ratio
+#m_to_pixels: 1000.0 # ROI meter to pixel ratio
+m_to_pixels: 900.0 # ROI meter to pixel ratio
 laser_range: 30.0 # accepted laser range
+fusion_prob: 0.01 # threshold of fusion probability

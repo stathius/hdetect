@@ -19,11 +19,18 @@
 	<node pkg="rosbag" type="play" name="play" output="screen" 
 		  args="$(find hdetect)/bag/outdoor1.bag --loop --clock --pause"/> 
 
-	<node pkg="hdetect" type="headlessRT" name="headlessRT" output="screen" cwd="node"
+	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
 		  args="/camera/image_raw /iri_hokuyo_laser/scan">
 
-		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>
+		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib.yaml"/>
 		<param name="/camera_name" value="00b09d0100aa73bb"/>
+		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+        <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
+
+	</node>
+
+	<node pkg="hdetect" type="showRT" name="showRT" output="screen" cwd="node">
+	
 		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 

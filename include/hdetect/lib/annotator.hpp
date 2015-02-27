@@ -3,8 +3,11 @@
 
 #include <sys/stat.h>
 #include <sstream>
+#include <deque>
+#include <set>
 
 #include <rosbag/bag.h>
+#include <geometry_msgs/Point32.h>
 #include <hdetect/lib/visualizer.hpp>
 
 /**
@@ -12,43 +15,47 @@
  */
 class annotator : public visualizer
 {
-private:
+    public:
+        /**
+          *
+          * @param bagFile This is the name of bag file where the output data will be written
+          */
+        annotator(std::string bagFile);
+        ~annotator();
 
-  std::string bagDir;
+        /**
+          * @param image Image message
+          * @param cInfo CameraInfo message
+          * @param lScan LaserScan message
+          */
+        void annotateData(const sensor_msgs::Image::ConstPtr &image,
+                          const sensor_msgs::LaserScan::ConstPtr &lScan);
 
-  /// File handle for CSV output.
-  FILE *f;
+    private:
 
-  /// For writing to bag format.
-  rosbag::Bag bag;
+        /// Curent scan number
+        int scanNo;
 
-  void saveCSV();
+        std::string bagDir;
 
-  /**
-   * @param image Image message
-   * @param cInfo CameraInfo message
-   * @param lScan LaserScan message
-   */
-  void saveBag(const sensor_msgs::Image::ConstPtr &image,
-               const sensor_msgs::LaserScan::ConstPtr &lScan);
+        /// File handle for CSV output.
+        FILE *f;
 
+        /// For writing to bag format.
+        rosbag::Bag bag;
 
+        std::deque<geometry_msgs::Point32> prev_points;
 
-public:
-  /**
-   *
-   * @param bagFile This is the name of bag file where the output data will be written
-   */
-  annotator(string bagFile);
-  ~annotator();
+        void saveCSV();
 
-  /**
-   * @param image Image message
-   * @param cInfo CameraInfo message
-   * @param lScan LaserScan message
-   */
-  void annotateData(const sensor_msgs::Image::ConstPtr &image,
-                    const sensor_msgs::LaserScan::ConstPtr &lScan);
+        /**
+          * @param image Image message
+          * @param cInfo CameraInfo message
+          * @param lScan LaserScan message
+          */
+        void saveBag(const sensor_msgs::Image::ConstPtr &image,
+                     const sensor_msgs::LaserScan::ConstPtr &lScan);
 
+        float calculateEucDis(geometry_msgs::Point32 &point1, geometry_msgs::Point32 &point2);
 };
 #endif

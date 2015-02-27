@@ -28,7 +28,7 @@ Point3D_container :: Point3D_container (void)
 
 ////-------------------------------------------------------------------------------------------------------------------
 
-Point3D_container :: Point3D_container(unsigned int sz)
+Point3D_container :: Point3D_container(uint sz)
 {
 	pts = std::vector <Point3D_str> (sz);
 }
@@ -94,7 +94,7 @@ void order_bytheta (std::vector <Point3D_polar_str> &pts_polar_out)
 	size_t *p = (size_t*) malloc(pts_polar_out.size() * sizeof(size_t));
 
 	// sort index according to thetaval
-	for(unsigned int i=0; i<pts_polar_out.size(); i++)
+	for(uint i=0; i<pts_polar_out.size(); i++)
 		th_val.push_back(pts_polar_out[i].theta);
 
         gsl_sort_index (p, &th_val[0], 1, pts_polar_out.size());	
@@ -102,7 +102,7 @@ void order_bytheta (std::vector <Point3D_polar_str> &pts_polar_out)
      // order elements
      // ASCENDING order
      
-       for(unsigned int i = 0; i < pts_polar_out.size(); i++)
+       for(uint i = 0; i < pts_polar_out.size(); i++)
        {
        
            polar_p.theta =   pts_polar_out[ p[i] ].theta;
@@ -143,7 +143,7 @@ void Point3D_container :: compute_cog(Point3D_str *pts_out)
 	double z_sum = 0;
 		
 	// centroid
-	for(unsigned int i=0 ; i < pts.size(); i++)
+	for(uint i=0 ; i < pts.size(); i++)
 	{
 		x_sum += pts[i].x;
 		y_sum += pts[i].y;
@@ -173,21 +173,21 @@ void Point3D_container :: get_coords(std::vector <double> &pts_coord, char coord
 	if(coord_sel == GEOMETRY_COORD_X)	
 	{
 		// centroid
-		for(unsigned int i=0 ; i < pts.size(); i++)
+		for(uint i=0 ; i < pts.size(); i++)
 			pts_coord.push_back(pts[i].x);
 	}
 
 	if(coord_sel == GEOMETRY_COORD_Y)	
 	{
 		// centroid
-		for(unsigned int i=0 ; i < pts.size(); i++)
+		for(uint i=0 ; i < pts.size(); i++)
 			pts_coord.push_back(pts[i].y);
 	}
 
 	if(coord_sel == GEOMETRY_COORD_Z)	
 	{
 		// centroid
-		for(unsigned int i=0 ; i < pts.size(); i++)
+		for(uint i=0 ; i < pts.size(); i++)
 			pts_coord.push_back(pts[i].z);
 	}
 	
@@ -209,7 +209,7 @@ void conv2polar_func(std::vector <Point3D_str>& pts_in, std::vector <Point3D_pol
 	origin.y = 0;
 	origin.z = 0;
 	
-	for(unsigned int i= 0; i < pts_in.size() ; i++)
+	for(uint i= 0; i < pts_in.size() ; i++)
 	{
 		// cart to pol conver
 		polar_pt.rho = distance_L2_XY (&pts_in[i], &origin);
@@ -239,7 +239,7 @@ void conv2cart_func(std::vector <Point3D_polar_str>& pts_polar_in, std::vector <
 
 	Point3D_str pt;	
 	
-	for(unsigned int i= 0; i < pts_polar_in.size() ; i++)
+	for(uint i= 0; i < pts_polar_in.size() ; i++)
 	{
 		// pol2cart conver
 		pt.x = pts_polar_in[i].rho * sin(pts_polar_in[i].alpha) * cos(pts_polar_in[i].theta);
@@ -273,7 +273,7 @@ void  get_circle_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circl
 	std::vector <double> B (laserfeat_cluster->pts.size());
 
 	// fill A
-	for(unsigned int i=0,a=0; i < laserfeat_cluster->pts.size(); i++)
+	for(uint i=0,a=0; i < laserfeat_cluster->pts.size(); i++)
 	{
 		A[a] = -2.0 * laserfeat_cluster->pts[i].x;
 		a = a+1;
@@ -284,7 +284,7 @@ void  get_circle_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circl
 	}
 
 	// fill B
-	for(unsigned int i=0; i < laserfeat_cluster->pts.size(); i++)
+	for(uint i=0; i < laserfeat_cluster->pts.size(); i++)
 		B[i] = -laserfeat_cluster->pts[i].x*laserfeat_cluster->pts[i].x - laserfeat_cluster->pts[i].y*laserfeat_cluster->pts[i].y;
 	     
         gsl_matrix_view m    = gsl_matrix_view_array (&A[0], laserfeat_cluster->pts.size(), 3);     
@@ -325,14 +325,14 @@ void get_line_param(Point3D_container *laserfeat_cluster, 	Point3D_str *circle_p
 	std::vector <double> B;
 	
 	// fill A
-	for(unsigned int i=0; i < laserfeat_cluster->pts.size(); i++)
+	for(uint i=0; i < laserfeat_cluster->pts.size(); i++)
 	{
 		A.push_back( laserfeat_cluster->pts[i].x);
 		A.push_back(1.0);						
 	}
 
 	// fill B
-	for(unsigned int i=0; i < laserfeat_cluster->pts.size(); i++)
+	for(uint i=0; i < laserfeat_cluster->pts.size(); i++)
 		B.push_back( laserfeat_cluster->pts[i].y);
 
 	     

@@ -1,14 +1,22 @@
 <launch>
-	<param name="use_sim_time" value="true" />
-	<param name="pkg_path" value="$(find upm)"/>
-        <!-- laser shadow filtering file -->
-        <rosparam command="load" file="$(find upm)/yaml/laser_filter.yaml"/>
+	<param name="use_sim_time" value="false" />
+	<param name="pkg_path" value="$(find hdetect)"/>
 
-  	<node pkg="tf" type="static_transform_publisher" name="world_to_laser"
-    	args="0.055360992904849 -0.0311190557844302 -0.0198410310814696 
-    	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /camera /laser 10">
+	<!-- laser shadow filtering file -->
+	<rosparam command="load" file="$(find hdetect)/yaml/laser_filter.yaml"/>
+
+	<node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
+    	  args="0.01070505651962671764 -0.06722345284252317921 -0.03089017107345514920 
+			    3.12148546397231552163 -0.01876295705026196844 0.10236192367415890281
+	 		    /laser_top /camera 20" />
+
+	<node pkg="hdetect" type="annotateData" name="annotator" output="screen" 
+		args="$(find hdetect)/bag/moving.bag /camera/image_raw /iri_hokuyo_laser/scan" >
+
+		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>
+		<param name="/camera_name" value="00b09d0100aa73bb"/>
+		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+		<rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 	</node>
 
-	<node pkg="upm" type="annotateData" name="annotator" output="screen" args="$(find upm)/bag/UTMFF__2013-01-17-19-00-24.bag" >
-	</node>
 </launch>
