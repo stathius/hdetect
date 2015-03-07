@@ -43,7 +43,7 @@ Autonomous detection tracking and following
 
 
 ## Requirements
- 1. ROS (groovy)
+ 1. ROS (hydro)
  2. libgsl
  3. all the libraries that are needed to compile the project
  
