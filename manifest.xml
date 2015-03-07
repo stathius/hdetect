@@ -19,12 +19,13 @@
   <depend package="camera1394"/>
   <depend package="laser_geometry"/>
   <depend package="angles"/>
-  <depend package="common_rosdeps"/>
+<!--  <depend package="common_rosdeps"/> -->
   <depend package="sensor_msgs"/>
   <depend package="filters"/>
   <depend package="laser_filters"/>
   <depend package="message_filters"/>
-  <depend package="pcl_ros"/>
+<!--  <depend package="pcl_ros"/> -->
+<!--  <depend package="pcl_conversions"/> -->
   <depend package="pluginlib"/>
   <depend package="geometry_msgs"/>
   <depend package="image_geometry"/>
