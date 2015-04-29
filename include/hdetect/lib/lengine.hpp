@@ -27,7 +27,7 @@
 #include <string.h>
 #include <sys/time.h>
 
-#include "lfeatures.hpp"
+#include <hdetect/lib/lfeatures.hpp>
 
 typedef struct
 {

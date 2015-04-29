@@ -15,7 +15,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <rosgraph_msgs/Clock.h>
 
-#include "bagSubscriber.hpp"
+#include <hdetect/lib/bagSubscriber.hpp>
 
 /**
  * Opens a bag file and reads its data

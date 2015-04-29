@@ -45,7 +45,12 @@ Autonomous detection tracking and following
 ## Requirements
  1. ROS (hydro)
  2. libgsl
- 3. all the libraries that are needed to compile the project
+    -  install it with:
+          $ sudo apt-get install libgsl-ruby
+ 3. NEWMAT
+    -  install it with: 
+          $ sudo apt-get install libnewmat10-dev   
+ 4. all the ROS components listed in the package.xml dependencies
  
 ## How to compile
 

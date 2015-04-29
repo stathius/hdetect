@@ -10,8 +10,8 @@
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 // MY INCLUDES
-#include "laserLib.hpp"
-#include "projectTools.hpp"
+#include <hdetect/lib/laserLib.hpp>
+#include <hdetect/lib/projectTools.hpp>
 #include <hdetect/ClusterClass.h>
 
 

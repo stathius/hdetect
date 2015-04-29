@@ -24,7 +24,7 @@
 #include <string>
 #include <algorithm>
 
-#include "lgeometry.hpp" 
+#include <hdetect/lib/lgeometry.hpp>
 
 #define L_MINCLUSTERSZ 3
 #define L_EPSNUM 1e-10

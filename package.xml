@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<package>
+  <name>hdetect</name>
+  <version>1.0.1</version>
+  <description> Human detection and tracking package </description>
+  Uses a combination of laser range finder and a computer vision module for the pedestrian detection.
+  The vision module works with OpenCV's detector which uses Histogram of Oriented Gradients and Support Vector Machines.
+  For pairing observations and tracking it uses a combination of Kalman filters and Mahalanobis distance.
+
+  
+  <author>Stathis Fotiadis, Bang-Cheng Wang, Mario Garzon</author>
+  <maintainer email="ma.garzon@upm.es">Mario Garzon</maintainer>
+  <license>BSD</license>
+
+ 
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <!-- <build_depend package="camera1394"/> -->
+  <build_depend>laser_geometry</build_depend>
+  <build_depend>angles</build_depend>
+<!--  <depend package="common_rosdeps"/> -->
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>filters</build_depend>
+  <build_depend>laser_filters</build_depend>
+  <build_depend>message_filters</build_depend>
+<!--  <depend package="pcl_ros"/> -->
+<!--  <depend package="pcl_conversions"/> -->
+  <build_depend>pluginlib</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>image_geometry</build_depend> 
+  <build_depend>nav_msgs</build_depend> 
+  <build_depend>camera_calibration_parsers</build_depend> 
+
+  
+  <run_depend>roslib</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>cv_bridge</run_depend>
+  <!-- <run_depend package="camera1394"/> -->
+  <run_depend>laser_geometry</run_depend>
+  <run_depend>angles</run_depend>
+<!--  <depend package="common_rosdeps"/> -->
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>filters</run_depend>
+  <run_depend>laser_filters</run_depend>
+  <run_depend>message_filters</run_depend>
+<!--  <depend package="pcl_ros"/> -->
+<!--  <depend package="pcl_conversions"/> -->
+  <run_depend>pluginlib</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>image_geometry</run_depend> 
+  <run_depend>nav_msgs</run_depend> 
+  <run_depend>camera_calibration_parsers</run_depend> 
+
+</package>
