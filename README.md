@@ -54,10 +54,10 @@ Autonomous detection tracking and following
  
 ## How to compile
 
-The code compiles only using *rosbuild*. The current version doesn't work with *catkin*.
+The code compiles only using *catkin*.
 
-* cd (hdetect folder)
-* rosmake
+* cd to catkin workspace
+* catkin_make hdetect
 
 ## Demo the code
  1. Download [this rosbag](https://www.dropbox.com/s/szi5szgs12amv99/moving7.bag?dl=0)
