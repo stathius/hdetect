@@ -5,9 +5,6 @@ using namespace cv;
 using namespace sensor_msgs;
 using namespace Header;
 
-float MIN_PROB = 0.0001;
-//float MIN_PROB = 0.0;
-
 detector::detector() : nh("~")
 {
 	//string s = nh.getNamespace();
@@ -25,7 +22,13 @@ detector::detector() : nh("~")
 
 		nh.getParam("boost_xml", boost_xml);
 
-		camera_calibration_parsers::readCalibrationYml(camera_yaml, cname, params.cInfo);
+
+        if(!camera_calibration_parsers::readCalibrationYml(camera_yaml, cname, params.cInfo))
+        {
+            ROS_ERROR("[DETECTOR] Failure reading camera calibration parameters.");
+            return;
+        }
+
 
 		// Load the boost classifier
         boost.load(boost_xml.c_str() , "boost");
@@ -34,16 +37,18 @@ detector::detector() : nh("~")
     }
     else
     {
-        ROS_WARN("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
+        ROS_ERROR("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
+        return;
     }
 
     if (nh.hasParam("laser_window_width") && nh.hasParam("laser_window_height") &&
         nh.hasParam("rect") && nh.hasParam("hog_hit_threshold") && nh.hasParam("hog_group_threshold") &&
         nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout") &&
-        nh.hasParam("cameraA") && nh.hasParam("cameraB") &&
+//      nh.hasParam("cameraA") && nh.hasParam("cameraB") &&
         nh.hasParam("laserA") && nh.hasParam("laserB") &&
         nh.hasParam("m_to_pixels") && nh.hasParam("body_ratio") && nh.hasParam("jumpdist") &&
-        nh.hasParam("feature_set") && nh.hasParam("laser_range") && nh.hasParam("fusion_prob"))
+        nh.hasParam("feature_set") && nh.hasParam("laser_range") && nh.hasParam("fusion_prob") &&
+        nh.hasParam("min_camera_prob") && nh.hasParam("min_laser_prob"))
     {
         nh.getParam("laser_window_width", params.laser_window_width);
         nh.getParam("laser_window_height", params.laser_window_height);
@@ -52,8 +57,8 @@ detector::detector() : nh("~")
 		nh.getParam("hog_group_threshold", params.hog_group_threshold);
 		nh.getParam("hog_meanshift", params.hog_meanshift);
         nh.getParam("tf_timeout", params.tf_timeout);
-		nh.getParam("cameraA", params.cameraA);
-		nh.getParam("cameraB", params.cameraB);
+//		nh.getParam("cameraA", params.cameraA);
+//		nh.getParam("cameraB", params.cameraB);
 		nh.getParam("laserA", params.laserA);
 		nh.getParam("laserB", params.laserB);
 		nh.getParam("m_to_pixels", params.m_to_pixels);
@@ -62,6 +67,8 @@ detector::detector() : nh("~")
 		nh.getParam("feature_set", params.feature_set);
 		nh.getParam("laser_range", params.laser_range);
         nh.getParam("fusion_prob", params.fusion_prob);
+        nh.getParam("min_camera_prob", params.min_camera_prob);
+        nh.getParam("min_laser_prob", params.min_laser_prob);
 		ROS_INFO("[DETECTOR] Parameters loaded.");
 	}
 	else
@@ -75,7 +82,7 @@ detector::detector() : nh("~")
     window_size = Size(params.laser_window_width, params.laser_window_height);
 
 	// Set the default detector
-    hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+    hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector()); 
 
     switch(params.feature_set)
     {
@@ -97,7 +104,7 @@ detector::detector() : nh("~")
 	CameraInfo2CV(params.cInfo, K, D, params.rect);
 
 	// Initializing the detector publisher
-	detectionPublisher = nh.advertise<hdetect::ClusterClass>("humanDetections",100);
+    detectionPublisher = nh.advertise<hdetect::ClusterClass>("humanDetections",1);
 
 	ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
 }
@@ -239,15 +246,6 @@ void detector::classifyLaser(std_msgs::Float32MultiArray &features, float &probs
     // Find the prediction
     probs = boost.predict(lFeatures, Mat(), Range::all(), false, true);
 
-    if (probs >= 0.0)
-    {
-//		laserClass.push_back(1);
-    }
-	else
-    {
-//		laserClass.push_back(-1);
-    }
-
 	// Convert prediction to probabilty
     probs = 1 / ( 1 + exp(params.laserA * probs + params.laserB) );
 	//laserProb.push_back(pred);
@@ -282,8 +280,6 @@ void detector::classifyCamera(geometry_msgs::Point32 &cog, float &prob)
 		//ROS_INFO("[DETECTOR] max element %f", prob);
     }
 
-	//pred = 1 / ( 1 + exp(params.cameraA * pred + params.cameraB));
-	//cameraProb.push_back(pred);
 }
 
 void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect::ClusterClass &detections)
@@ -307,7 +303,7 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
 
     classifyLaser(clusterData[i].features, laserProb);
 
-    if (laserProb < 0.5)
+    if (laserProb < params.min_laser_prob)
     {
       clusterData[i].crop_projected = false;
     }
@@ -342,7 +338,7 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
     {
       if (clusterData[i].crop_projected == true)
       {
-        if(cameraProb > 0.25)
+        if(cameraProb > params.min_camera_prob)
           clusterData[i].detection_label = FUSION_HUMAN;
       }
       else

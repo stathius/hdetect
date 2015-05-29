@@ -162,13 +162,24 @@ void projectPoint(geometry_msgs::Point32 &pointIn, Point2d &pointOut, Mat &K, Ma
 	tf::Matrix3x3 phi(transform.getRotation());
 
 	// ***********************************
-	// ***********************************
+    // With matlab camera calib.
 	// NOTICE WE EXCHANGE X --> Z, y --> X
+    // ***********************************
 	// ***********************************
-	// ***********************************
-	pIn.at<double>(0, 0) = pointIn.y;
-	pIn.at<double>(0, 1) = pointIn.z;
-	pIn.at<double>(0, 2) = pointIn.x;
+    // pIn.at<double>(0, 0) = pointIn.y;
+    // pIn.at<double>(0, 1) = pointIn.z;
+    // pIn.at<double>(0, 2) = pointIn.x;
+    // -----------------------------------
+    // ***********************************
+    // ***********************************
+    // With ROS camera tf calibration
+    // NOTICE WE EXCHANGE z --> x, y --> z  x --> y
+    // ***********************************
+    // ***********************************
+    pIn.at<double>(0, 0) = pointIn.z;
+    pIn.at<double>(0, 1) = pointIn.x;
+    pIn.at<double>(0, 2) = pointIn.y;
+
 
 	/*
    //phi.setValue( -0.999929898220757 ,     -0.00442044279230751  ,      0.0109844585550146,

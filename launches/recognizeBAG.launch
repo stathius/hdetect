@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
 	<param name="use_sim_time" value="true" />
 	<param name="pkg_path" value="$(find hdetect)"/>
@@ -10,29 +11,29 @@
     	args="0.055360992904849 -0.0311190557844302 -0.0198410310814696 
     	-3.12632591028048 -0.00464314210625259 -0.0196141309638589 /laser /camera 20" /-->
 
-	<!-- yellow base inv phi-->
+        <!-- yellow base inv phi
   	<node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
     	  args="0.01070505651962671764 -0.06722345284252317921 -0.03089017107345514920 
 			    3.12148546397231552163 -0.01876295705026196844 0.10236192367415890281
-	 		    /laser_top /camera 20" />
+                            /laser_top /camera 20" /> -->
+
+       <node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
+        args="0.0 0.0 0.0 -1.552 0.08 -1.588 /hokuyo_laser_link /logitech_camera 20" />
+
+        <node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
+             args="/camera/image_raw /scan">
+             <param name="/camera_yaml" value="$(find hdetect)/yaml/logitech_cam_hd.yml"/>
+             <param name="/camera_name" value="narrow_stereo"/>
+             <param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+             <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
+        </node>
 
 	<node pkg="rosbag" type="play" name="play" output="screen" 
-		  args="/media/Data/RosBags/hdetect/moving7.bag --pause --clock --quiet"/> 
+                  args="/home/mario/Desktop/bags_hdet/static_test.bag --pause --clock --quiet -l
+                  --topics /camera/camera_info
+                           /camera/image_raw
+                           /scan "/>
 
-	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
-		  args="/camera/image_raw /iri_hokuyo_laser/scan">
-
-		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib_yellow.yaml"/>
-		<param name="/camera_name" value="00b09d0100aa73bb"/>
-		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
-        <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
-
-	</node>
-	<node pkg="tf" type="static_transform_publisher" name="base_link_to_base_footprint"
-	    	args="0 0 0 -1.57079 0 0 /base_footprint /base_link 100" />
-	<node pkg="tf" type="static_transform_publisher" name="field_center_to_world"
-	    	args="-458962 -4462629 0 0 0 0 /field_center /world_UTM 100" /> 
-	
 	<node name="rviz" pkg="rviz" type="rviz" args="-d /home/mario/.rviz/hdetect2.rviz"/>
 
 </launch> 

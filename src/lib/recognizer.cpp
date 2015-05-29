@@ -28,6 +28,14 @@ Recognizer::Recognizer()
         ROS_INFO("[Recognizer] Object Tracking Using Default Value");
     }
 
+    string odom_ekf_topic;
+    string odom_topic;
+    string humans_detectec_topic;
+
+    nh.param("odom_ekf_topic", odom_ekf_topic, string("/ekf_pose/odom_combined"));
+    nh.param("odom_topic", odom_topic, string("/odom"));
+    nh.param("humans_detectec_topic", humans_detectec_topic, string("/HumansDetected"));
+
     initColor();
 
     ROS_INFO("[RECOGNIZER] Recognizer running OK.");
@@ -47,22 +55,12 @@ Recognizer::Recognizer()
     curTimestamp = getTimestamp();
     preTimestamp = getTimestamp();
 
-    odom_sub_ = nh.subscribe("/odom", 1, &Recognizer::setOdom, this);
-    odom_ekf_sub_ = nh.subscribe("/ekf_pose/odom_combined", 1, &Recognizer::setOdomEkf, this);
+    odom_sub_ = nh.subscribe(odom_topic, 1, &Recognizer::setOdom, this);
+    odom_ekf_sub_ = nh.subscribe(odom_ekf_topic, 1, &Recognizer::setOdomEkf, this);
 
-    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>("/HumansDetected",10);
+    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>(humans_detectec_topic,1);
 }
 
-Recognizer::Recognizer(const string odomTopic, const string odomEkfTopic)
-    : it_(nh)
-{
-    Recognizer();
-
-    odom_sub_ = nh.subscribe(odomTopic, 1, &Recognizer::setOdom, this);
-    odom_ekf_sub_ = nh.subscribe(odomEkfTopic, 1, &Recognizer::setOdomEkf, this);
-
-    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>("/HumansDetected",10);
-}
 
 Recognizer::~Recognizer()
 {
@@ -74,6 +72,8 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
 //    curTimestamp = getTimestamp();
     static double init_time =  lScan->header.stamp.sec;
     curTimestamp = lScan->header.stamp.toSec() - init_time;
+
+    laser_frame_id = lScan->header.frame_id;
 
     //getTimestamp();
     //ROS_INFO("laser %f - getTimestamp %f = %f",
@@ -257,14 +257,14 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
     visualization_msgs::Marker temp_scan;
     visualization_msgs::MarkerArray rviz_markers;
 
-    temp_human.header.frame_id = "/laser_top";
+    temp_human.header.frame_id = laser_frame_id;
     temp_human.header.stamp = ros::Time();
     temp_human.type = visualization_msgs::Marker::SPHERE;
     temp_human.action = visualization_msgs::Marker::ADD;
     temp_human.lifetime = ros::Duration(0.5);
 
 
-    temp_id.header.frame_id = "/laser_top";
+    temp_id.header.frame_id = laser_frame_id;
     temp_id.header.stamp = ros::Time();
     temp_id.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     temp_id.action = visualization_msgs::Marker::ADD;
@@ -280,7 +280,7 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
     temp_id.color.a = 0.8;
 
 
-    temp_line.header.frame_id = "/laser_top";
+    temp_line.header.frame_id = laser_frame_id;
     temp_line.header.stamp = ros::Time();
     temp_line.type = visualization_msgs::Marker::LINE_LIST;
     temp_line.action = visualization_msgs::Marker::ADD;
@@ -291,7 +291,7 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
     temp_line.scale.z = 0.05;
 
 
-    temp_scan.header.frame_id = "/laser_top";
+    temp_scan.header.frame_id = laser_frame_id;
     temp_scan.header.stamp = ros::Time();
     temp_scan.type = visualization_msgs::Marker::SPHERE;
     temp_scan.action = visualization_msgs::Marker::ADD;

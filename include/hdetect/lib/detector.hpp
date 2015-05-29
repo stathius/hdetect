@@ -68,6 +68,13 @@ class detectorParameters
 
         /// Threshold of fusion probability
         double fusion_prob;
+
+        /// Minimum acceptable camera problability
+        double min_camera_prob;
+
+        /// Minimum acceptable laser problability
+        double min_laser_prob;
+
 };
 
 class detector

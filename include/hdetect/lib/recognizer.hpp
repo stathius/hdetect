@@ -34,7 +34,6 @@ class Recognizer : public detector
 {
     public:
         Recognizer();
-        Recognizer(const string odomTopic, const string odomEkfTopic);
         ~Recognizer();
 
         void recognizeData(const sensor_msgs::Image::ConstPtr &image,
@@ -117,6 +116,8 @@ class Recognizer : public detector
         uint getNewId();
 
         uint getNewId(int category);
+
+        string laser_frame_id;
 
         // Publisher variables
         ros::Publisher Humanpublisher;
