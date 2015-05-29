@@ -118,6 +118,24 @@ catkin_package(
 )
 
 
+set(HEADER_FILES
+    include/hdetect/human_follower.hpp
+    include/hdetect/recognizeRT.hpp
+    include/hdetect/lib/annotator.hpp
+    include/hdetect/lib/bagSubscriber.hpp
+    include/hdetect/lib/header.hpp
+    include/hdetect/lib/laserLib.hpp
+    include/hdetect/lib/lfeatures.hpp
+    include/hdetect/lib/object_tracking.hpp
+    include/hdetect/lib/projectTools.hpp
+    include/hdetect/lib/visualizer.hpp
+    include/hdetect/lib/bagReader.hpp
+    include/hdetect/lib/detector.hpp
+    include/hdetect/lib/human.hpp
+    include/hdetect/lib/lengine.hpp
+    include/hdetect/lib/lgeometry.hpp
+    include/hdetect/lib/observation.hpp
+    include/hdetect/lib/recognizer.hpp)
 
 
 
@@ -142,28 +160,28 @@ link_directories(${GLS_LIBRARY_DIRS})
 # )
 
 
-add_library(Header src/lib/header.cpp)
-add_library(Recognizer src/lib/recognizer.cpp)
-add_library(ObjectTracking src/lib/object_tracking.cpp)
-add_library(Observation src/lib/observation.cpp)
-add_library(Human src/lib/human.cpp)
-add_library(laserLib src/lib/laserLib.cpp)
-add_library(visualizer src/lib/visualizer.cpp)
-add_library(lgeometry src/lib/lgeometry.cpp)
-add_library(lfeatures src/lib/lfeatures.cpp)
-add_library(lengine src/lib/lengine.cpp)
-add_library(projectTools src/lib/projectTools.cpp)
-add_library(detector src/lib/detector.cpp)
-add_library(annotator src/lib/annotator.cpp)
-add_library(bagReader src/lib/bagReader.cpp)
+add_library(Header src/lib/header.cpp ${HEADER_FILES})
+add_library(Recognizer src/lib/recognizer.cpp ${HEADER_FILES})
+add_library(ObjectTracking src/lib/object_tracking.cpp ${HEADER_FILES})
+add_library(Observation src/lib/observation.cpp ${HEADER_FILES})
+add_library(Human src/lib/human.cpp ${HEADER_FILES})
+add_library(laserLib src/lib/laserLib.cpp ${HEADER_FILES})
+add_library(visualizer src/lib/visualizer.cpp ${HEADER_FILES})
+add_library(lgeometry src/lib/lgeometry.cpp ${HEADER_FILES})
+add_library(lfeatures src/lib/lfeatures.cpp ${HEADER_FILES})
+add_library(lengine src/lib/lengine.cpp ${HEADER_FILES})
+add_library(projectTools src/lib/projectTools.cpp ${HEADER_FILES})
+add_library(detector src/lib/detector.cpp ${HEADER_FILES})
+add_library(annotator src/lib/annotator.cpp ${HEADER_FILES})
+add_library(bagReader src/lib/bagReader.cpp ${HEADER_FILES})
 
 ## Declare a cpp executable  # EXECUTABLE NODES
-add_executable(visualizeRT src/visualizeRT.cpp)
-add_executable(recognizeRT src/recognizeRT.cpp)
-add_executable(showRT src/showRT.cpp)
-add_executable(annotateData src/annotateData.cpp)
-add_executable(trainLaser src/trainLaser.cpp)
-add_executable(headlessRT src/headlessRT.cpp)
+add_executable(visualizeRT src/visualizeRT.cpp ${HEADER_FILES})
+add_executable(recognizeRT src/recognizeRT.cpp ${HEADER_FILES})
+add_executable(showRT src/showRT.cpp ${HEADER_FILES})
+add_executable(annotateData src/annotateData.cpp ${HEADER_FILES})
+add_executable(trainLaser src/trainLaser.cpp ${HEADER_FILES})
+add_executable(headlessRT src/headlessRT.cpp ${HEADER_FILES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

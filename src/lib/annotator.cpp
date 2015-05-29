@@ -94,8 +94,8 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
     bool error = false;
     char warning[1000];
     sprintf(warning, "\n--------------------------------------------------------\n"
-           "     Input should be an integer between 0 and %d\n"
-           "--------------------------------------------------------\n", clusterData.size() - 1);
+                     "     Input should be an integer between 0 and %d\n"
+            "--------------------------------------------------------\n",(int)(clusterData.size() - 1));
 
     // Check if there are some points which have been labeled before
     for (uint i = 0; i < clusterData.size(); i++)
@@ -118,7 +118,7 @@ void annotator::annotateData(const sensor_msgs::Image::ConstPtr &image,
 
         printf("\nSCAN No %04d\n", scanNo);
 
-        printf("\nCurrently there are %d human clusters", humans.size());
+        printf("\nCurrently there are %d human clusters", (int)(humans.size()));
 
         if (humans.size() > 0)
         {
