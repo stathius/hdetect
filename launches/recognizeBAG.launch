@@ -16,9 +16,15 @@
     	  args="0.01070505651962671764 -0.06722345284252317921 -0.03089017107345514920 
 			    3.12148546397231552163 -0.01876295705026196844 0.10236192367415890281
                             /laser_top /camera 20" /> -->
+<!--       <node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
+        args="0.0 0.0 0.0 -1.552 0.08 -1.588 /hokuyo_laser_link /logitech_camera_link 20" /> -->
+
+
+       <node pkg="tf" type="static_transform_publisher" name="laser_to_camera_link"
+        args="0.0 -0.015 -0.08 0.0 0.04 0.03 /hokuyo_laser_link /logitech_camera_link 20" />
 
        <node pkg="tf" type="static_transform_publisher" name="laser_to_camera"
-        args="0.0 0.0 0.0 -1.552 0.08 -1.588 /hokuyo_laser_link /logitech_camera 20" />
+        args="0.0 0.0 0.0 -1.57079 0.0 -1.57079 /logitech_camera_link /logitech_camera 20" />
 
         <node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
              args="/camera/image_raw /scan">
@@ -29,7 +35,7 @@
         </node>
 
 	<node pkg="rosbag" type="play" name="play" output="screen" 
-                  args="/home/mario/Desktop/bags_hdet/static_test.bag --pause --clock --quiet -l
+                  args="/home/mario/Desktop/bags_hdet/static_test.bag --pause --clock --quiet
                   --topics /camera/camera_info
                            /camera/image_raw
                            /scan "/>

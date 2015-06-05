@@ -17,106 +17,102 @@ using namespace Header;
 
 detector::detector() : nh("~")
 {
-	//string s = nh.getNamespace();
-	//ROS_INFO("[DETECTOR] my namespace %s ", s.c_str());
+  //string s = nh.getNamespace();
+  //ROS_INFO("[DETECTOR] my namespace %s ", s.c_str());
 
-    if (nh.hasParam("camera_yaml") && nh.hasParam("camera_name") && nh.hasParam("boost_xml"))
-    {
-		string camera_yaml;
-		string cname;
-		string boost_xml;
+  if (nh.hasParam("camera_yaml") && nh.hasParam("camera_name") && nh.hasParam("boost_xml"))
+  {
+    string camera_yaml;
+    string cname;
+    string boost_xml;
 
 		nh.getParam("camera_yaml", camera_yaml);
 
 		nh.getParam("camera_name", cname);
 
-		nh.getParam("boost_xml", boost_xml);
-
-
-        if(!camera_calibration_parsers::readCalibrationYml(camera_yaml, cname, params.cInfo))
-        {
-            ROS_ERROR("[DETECTOR] Failure reading camera calibration parameters.");
-            return;
-        }
-
-
-		// Load the boost classifier
-        boost.load(boost_xml.c_str() , "boost");
-
-		ROS_INFO("[DETECTOR] Camera calibration & Boost Classifier Loaded");
-    }
-    else
+    nh.getParam("boost_xml", boost_xml);
+    if(!camera_calibration_parsers::readCalibrationYml(camera_yaml, cname, params.cInfo))
     {
-        ROS_ERROR("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
-        return;
+      ROS_ERROR("[DETECTOR] Failure reading camera calibration parameters.");
+      return;
     }
 
-    if (nh.hasParam("laser_window_width") && nh.hasParam("laser_window_height") &&
-        nh.hasParam("rect") && nh.hasParam("hog_hit_threshold") && nh.hasParam("hog_group_threshold") &&
-        nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout") &&
-//      nh.hasParam("cameraA") && nh.hasParam("cameraB") &&
-        nh.hasParam("laserA") && nh.hasParam("laserB") &&
-        nh.hasParam("m_to_pixels") && nh.hasParam("body_ratio") && nh.hasParam("jumpdist") &&
-        nh.hasParam("feature_set") && nh.hasParam("laser_range") && nh.hasParam("fusion_prob") &&
-        nh.hasParam("min_camera_prob") && nh.hasParam("min_laser_prob"))
-    {
-      nh.getParam("laser_window_width", params.laser_window_width);
-      nh.getParam("laser_window_height", params.laser_window_height);
-      nh.getParam("rect", params.rect);
-      nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
-      nh.getParam("hog_group_threshold", params.hog_group_threshold);
-      nh.getParam("hog_meanshift", params.hog_meanshift);
-      nh.getParam("tf_timeout", params.tf_timeout);
-      //		nh.getParam("cameraA", params.cameraA);
-      //		nh.getParam("cameraB", params.cameraB);
-      nh.getParam("laserA", params.laserA);
-      nh.getParam("laserB", params.laserB);
-      nh.getParam("m_to_pixels", params.m_to_pixels);
-      nh.getParam("body_ratio", params.body_ratio);
-      nh.getParam("jumpdist", params.jumpdist);
-      nh.getParam("feature_set", params.feature_set);
-      nh.getParam("laser_range", params.laser_range);
-      nh.getParam("fusion_prob", params.fusion_prob);
-      nh.getParam("min_camera_prob", params.min_camera_prob);
-      nh.getParam("min_laser_prob", params.min_laser_prob);
-      ROS_INFO("[DETECTOR] Parameters loaded.");
-    }
-	else
-    {
-		ROS_ERROR("[DETECTOR] Wrong parameters loaded.");
-    }
+    // Load the boost classifier
+    boost.load(boost_xml.c_str() , "boost");
 
-	// Initiates the laserLib with the parameters read from the server
-    laserProcessor = new laserLib(params.jumpdist, params.feature_set, params.laser_range);
+    ROS_INFO("[DETECTOR] Camera calibration & Boost Classifier Loaded");
+  }
+  else
+  {
+    ROS_ERROR("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
+    return;
+  }
 
-    window_size = Size(params.laser_window_width, params.laser_window_height);
+  if (nh.hasParam("laser_window_width") && nh.hasParam("laser_window_height") &&
+      nh.hasParam("rect") && nh.hasParam("hog_hit_threshold") && nh.hasParam("hog_group_threshold") &&
+      nh.hasParam("hog_meanshift") && nh.hasParam("tf_timeout") &&
+      //      nh.hasParam("cameraA") && nh.hasParam("cameraB") &&
+      nh.hasParam("laserA") && nh.hasParam("laserB") &&
+      nh.hasParam("m_to_pixels") && nh.hasParam("body_ratio") && nh.hasParam("jumpdist") &&
+      nh.hasParam("feature_set") && nh.hasParam("laser_range") && nh.hasParam("fusion_prob") &&
+      nh.hasParam("min_camera_prob") && nh.hasParam("min_laser_prob"))
+  {
+    nh.getParam("laser_window_width", params.laser_window_width);
+    nh.getParam("laser_window_height", params.laser_window_height);
+    nh.getParam("rect", params.rect);
 
-	// Set the default detector
-    hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector()); 
+    nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
+    nh.getParam("hog_group_threshold", params.hog_group_threshold);
+    nh.getParam("hog_meanshift", params.hog_meanshift);
+    nh.getParam("tf_timeout", params.tf_timeout);
+    //		nh.getParam("cameraA", params.cameraA);
+    //		nh.getParam("cameraB", params.cameraB);
+    nh.getParam("laserA", params.laserA);
+    nh.getParam("laserB", params.laserB);
+    nh.getParam("m_to_pixels", params.m_to_pixels);
+    nh.getParam("body_ratio", params.body_ratio);
+    nh.getParam("jumpdist", params.jumpdist);
+    nh.getParam("feature_set", params.feature_set);
+    nh.getParam("laser_range", params.laser_range);
+    nh.getParam("fusion_prob", params.fusion_prob);
+    nh.getParam("min_camera_prob", params.min_camera_prob);
+    nh.getParam("min_laser_prob", params.min_laser_prob);
+    ROS_INFO("[DETECTOR] Parameters loaded.");
+  }
+  else
+  {
+    ROS_ERROR("[DETECTOR] Wrong parameters loaded.");
+  }
 
-    switch(params.feature_set)
-    {
-        case 0:
-            params.no_features = FEATURE_SET_0;
-        break;
+  // Initiates the laserLib with the parameters read from the server
+  laserProcessor = new laserLib(params.jumpdist, params.feature_set, params.laser_range);
 
-        case 1:
-            params.no_features = FEATURE_SET_1;
-        break;
+  window_size = Size(params.laser_window_width, params.laser_window_height);
 
-        default:
-            params.no_features = FEATURE_SET_1;
-		break;
-    }
+  // Set the default detector
+  hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+  switch(params.feature_set)
+  {
+    case 0:
+      params.no_features = FEATURE_SET_0;
+      break;
+
+    case 1:
+      params.no_features = FEATURE_SET_1;
+      break;
+
+    default:
+      params.no_features = FEATURE_SET_1;
+      break;
+  }
 
 	// Convert camera info (cInfo) to actual needed camera matrix K and distortion coefficient D
 	// ready to be used by opencv functions
 	CameraInfo2CV(params.cInfo, K, D, params.rect);
 
-	// Initializing the detector publisher
-    detectionPublisher = nh.advertise<hdetect::ClusterClass>("humanDetections",1);
-
-	ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
+  // Initializing the detector publisher
+  detectionPublisher = nh.advertise<hdetect::ClusterClass>("humanDetections",1);
+  ROS_INFO("[DETECTOR] Detector running OK with %d features.", params.no_features);
 }
 
 detector::~detector()
@@ -211,26 +207,26 @@ void detector::initClusterData(vector<hdetect::ClusteredScan> &clusterData)
 
 void detector::findProjectedClusters(vector<hdetect::ClusteredScan> &clusterData)
 {
-    // Iterate through every cog of the scanClusters
-    for (uint i = 0; i < clusterData.size(); i++)
+  // Iterate through every cog of the scanClusters
+  for (uint i = 0; i < clusterData.size(); i++)
+  {
+    // Convert the cog to image coordinates
+    projectPoint(clusterData[i].cog, prPixel, K, D, transform);
+    // If the pixel is projected within the image limits
+    if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols &&
+        prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
     {
-	// Convert the cog to image coordinates
-        projectPoint(clusterData[i].cog, prPixel, K, D, transform);
-        /// If the pixel is projected within the image limits
-        if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols &&
-            prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
-        {
-          clusterData[i].cog_projected = true;
-          // Get the box size and corners
-          getBox(clusterData[i].cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
-          // Check if the whole box lies inside the image
-          if (checkBox(params.cInfo, rect))
-          {
-            // Flag the cluster as 'fusable'. Meaning they appear with a valid box on the image.
-            clusterData[i].crop_projected = true;
-          }
-        }
+      clusterData[i].cog_projected = true;
+      // Get the box size and corners
+      getBox(clusterData[i].cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
+      // Check if the whole box lies inside the image
+      if (checkBox(params.cInfo, rect))
+      {
+        // Flag the cluster as 'fusable'. Meaning they appear with a valid box on the image.
+        clusterData[i].crop_projected = true;
+      }
     }
+  }
 }
 
 void detector::classifyLaser(std_msgs::Float32MultiArray &features, float &probs)
@@ -260,33 +256,42 @@ void detector::classifyLaser(std_msgs::Float32MultiArray &features, float &probs
 
 void detector::classifyCamera(geometry_msgs::Point32 &cog, float &prob)
 {
-	// Convert the cog to image coordinates
-	projectPoint(cog, prPixel, K, D, transform);
+  // Convert the cog to image coordinates
+  projectPoint(cog, prPixel, K, D, transform);
 
-	// Get the box size and corners
-    getBox(cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
+  // Get the box size and corners
+  getBox(cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
 
-	// Extract the crop from the image
-    getCrop(crop, cv_ptr->image, rect);
+  // Extract the crop from the image
+  getCrop(crop, cv_ptr->image, rect);
 
-    //cv::cvtColor(src_img, mono_img, CV_RGB2GRAY);
-    vector<Rect> foundM;
-    vector<double> weightM;
+  //cv::cvtColor(src_img, mono_img, CV_RGB2GRAY);
+  vector<Rect> foundM;
+  vector<double> weightM;
 
-	// We don't really care about the class so we put the threshold really low to even negative predictions
-//    hog.detectMultiScale(crop, foundM, weightM);
-    hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold, cv::Size(8,8), cv::Size(0,0), 1.05, params.hog_group_threshold, params.hog_meanshift);
+  // We don't really care about the class so we put the threshold really low to even negative predictions
+  //    hog.detectMultiScale(crop, foundM, weightM);
 
-	//ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", weightM.size(), foundM.size());
+//  double t = (double)cv::getTickCount();
+//  // run the detector with default parameters. to get a higher hit-rate
+//  // (and more false alarms, respectively), decrease the hitThreshold and
+//  // groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
+//  hog.detectMultiScale(crop, foundM, weightM, 0, Size(8,8), Size(0,0), 1.1, 0, false);
+//  t = (double)cv::getTickCount() - t;
+//  ROS_INFO("tdetection time = %gms", t*1000./cv::getTickFrequency());
+  hog.detectMultiScale(crop, foundM, weightM, params.hog_hit_threshold,
+                       cv::Size(8,8), cv::Size(0,0), 1.1,
+                       params.hog_group_threshold, params.hog_meanshift);
+
+ // ROS_INFO("[DETECTOR] after hog OK, weightM size %d ", (int)(foundM.size()));
 
 	/// TODO HOW TO ACCEPT A POSITIVE (mean shift)
     if (weightM.size() > 0)
     {
-//        ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", weightM.size(), foundM.size());
-        prob = *max_element(weightM.begin(), weightM.end());
-		//ROS_INFO("[DETECTOR] max element %f", prob);
+      //  ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", (int)(weightM.size()), (int)(foundM.size()));
+      prob = *max_element(weightM.begin(), weightM.end());
+      //ROS_INFO("[DETECTOR] max element %f", prob);
     }
-
 }
 
 void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect::ClusterClass &detections)

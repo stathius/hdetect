@@ -154,7 +154,7 @@ protected:
 	std::vector<double> hogPred;
 
 	// Publishes the detected humans coordinates and probability
-	ros::Publisher detectionPublisher;
+  ros::Publisher detectionPublisher;
 
 	/// Contains the laser clusters, annotation, features, , annotation, if it should be fused etc.
     std::vector<hdetect::ClusteredScan> clusterData;
