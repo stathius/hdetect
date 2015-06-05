@@ -1,7 +1,16 @@
 #include "hdetect/lib/annotator.hpp"
 
-using namespace std;
-using namespace cv;
+//using namespace std;
+using std::string;
+using std::set;
+using std::stringstream;
+using std::cin;
+
+//using namespace cv;
+
+using cv::waitKey;
+
+
 using namespace Header;
 
 /**

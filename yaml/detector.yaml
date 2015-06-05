@@ -16,8 +16,14 @@ cameraB: 0.0 # parameters for camera
 #m_to_pixels: 1000.0 # ROI meter to pixel ratio
 m_to_pixels: 1600.0 # ROI meter to pixel ratio
 laser_range: 30.0 # accepted laser range
-fusion_prob: 0.15 # threshold of fusion probability
+fusion_prob: 0.01 # threshold of fusion probability
 min_camera_prob: 0.1  # Minimun probability fo camera detection module
-min_laser_prob: 0.1 # Minimun probability for laser detection module
-max_euc_dist: 3.5 # Maximum euclidean distance
-max_mah_dist: 4.5 # Maximum mahalanobis distance
+min_laser_prob: 0.5 # Minimun probability for laser detection module
+max_euc_dist: 1.0 # Maximum euclidean distance
+max_mah_dist: 5.0 # Maximum mahalanobis distance
+detection_prob: 0.1 # threshold of fusion probability
+init_id: 1 # Inital Human ID
+new_object_score: 1.5 # Score given to a detection when initialized
+predict_score: -1.0   # Score for prediction (must be negative)
+update_score: 1.0     # Score for detection positive
+min_add_score: 4.0    # Value to consider an detection "Real"

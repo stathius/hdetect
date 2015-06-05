@@ -75,6 +75,27 @@ class detectorParameters
         /// Minimum acceptable laser problability
         double min_laser_prob;
 
+        /// Maximum euclidean distance for pairing
+        double max_euc_dist;//: 3.5 # Maximum euclidean distance
+
+        /// Maximum mahalanobis distance for pairing
+        double max_mah_dist;//: 4. # Maximum mahalanobis distance
+
+        /// Inital Human ID
+        int init_id;//: 1      # Inital Human ID
+
+        /// Score given to a detection when initialized
+        double new_object_score;//: 4.0 # Score given to a detection when initialized
+
+        /// Score for prediction (must be negative)
+        double predict_score; //: -1.0       # Score for prediction (must be negative)
+
+        /// Score for detection positive
+        double update_score;//: 1.0         # Score for detection positive
+
+        /// Value to consider an detection "Real"
+        double min_add_score;//: 8
+
 };
 
 class detector

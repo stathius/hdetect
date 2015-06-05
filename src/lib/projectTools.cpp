@@ -3,8 +3,15 @@
 #define HOG_WIDTH 64
 #define HOG_HEIGHT 128
 
-using namespace std;
-using namespace cv;
+//using namespace std;
+//using namespace cv;
+using cv::Point;
+using cv::Size;
+using cv::Rect;
+using cv::Scalar;
+using cv::Point2d;
+using cv::Mat;
+using std::vector;
 
 /// Projects a point from the laser scan to a 2d top-down view plane.
 void pointToPlane(geometry_msgs::Point32 &ptIn, Point &ptOut, Size &windowSize, int &zoom)

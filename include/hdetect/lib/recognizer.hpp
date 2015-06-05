@@ -120,10 +120,11 @@ class Recognizer : public detector
         string laser_frame_id;
 
         // Publisher variables
-        ros::Publisher Humanpublisher;
-        hdetect::HumansFeat HumansAux;
-        std::vector<hdetect::HumansFeat> HumansVector;
-        hdetect::HumansFeatClass HumansDetected;
+        ros::Publisher human_publisher;
+        ros::Publisher best_pose_pub;
+        hdetect::HumansFeat human_aux;
+        std::vector<hdetect::HumansFeat> humans_vec;
+        hdetect::HumansFeatClass humans_detected;
 
 };
 

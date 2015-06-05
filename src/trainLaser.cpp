@@ -9,8 +9,11 @@
 #include <ros/ros.h>
 #include <vector>
 
-using namespace std;
-using namespace cv;
+
+//using namespace cv;
+using cv::TrainData;
+using cv::Boost;
+using cv::BoostParams;
 
 int main(int argc, char** argv)
 {

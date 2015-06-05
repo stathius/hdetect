@@ -1,8 +1,18 @@
 #include <hdetect/lib/detector.hpp>
 
-using namespace std;
-using namespace cv;
-using namespace sensor_msgs;
+//using namespace std;
+using std::string;
+using std::vector;
+//using namespace cv;
+using cv::Size;
+using cv::Mat;
+using cv::Rect;
+using cv::HOGDescriptor;
+using cv::Range;
+
+//using namespace sensor_msgs;
+using sensor_msgs::Image;
+using sensor_msgs::LaserScan;
 using namespace Header;
 
 detector::detector() : nh("~")
@@ -50,27 +60,27 @@ detector::detector() : nh("~")
         nh.hasParam("feature_set") && nh.hasParam("laser_range") && nh.hasParam("fusion_prob") &&
         nh.hasParam("min_camera_prob") && nh.hasParam("min_laser_prob"))
     {
-        nh.getParam("laser_window_width", params.laser_window_width);
-        nh.getParam("laser_window_height", params.laser_window_height);
-		nh.getParam("rect", params.rect);
-		nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
-		nh.getParam("hog_group_threshold", params.hog_group_threshold);
-		nh.getParam("hog_meanshift", params.hog_meanshift);
-        nh.getParam("tf_timeout", params.tf_timeout);
-//		nh.getParam("cameraA", params.cameraA);
-//		nh.getParam("cameraB", params.cameraB);
-		nh.getParam("laserA", params.laserA);
-		nh.getParam("laserB", params.laserB);
-		nh.getParam("m_to_pixels", params.m_to_pixels);
-		nh.getParam("body_ratio", params.body_ratio);
-		nh.getParam("jumpdist", params.jumpdist);
-		nh.getParam("feature_set", params.feature_set);
-		nh.getParam("laser_range", params.laser_range);
-        nh.getParam("fusion_prob", params.fusion_prob);
-        nh.getParam("min_camera_prob", params.min_camera_prob);
-        nh.getParam("min_laser_prob", params.min_laser_prob);
-		ROS_INFO("[DETECTOR] Parameters loaded.");
-	}
+      nh.getParam("laser_window_width", params.laser_window_width);
+      nh.getParam("laser_window_height", params.laser_window_height);
+      nh.getParam("rect", params.rect);
+      nh.getParam("hog_hit_threshold", params.hog_hit_threshold);
+      nh.getParam("hog_group_threshold", params.hog_group_threshold);
+      nh.getParam("hog_meanshift", params.hog_meanshift);
+      nh.getParam("tf_timeout", params.tf_timeout);
+      //		nh.getParam("cameraA", params.cameraA);
+      //		nh.getParam("cameraB", params.cameraB);
+      nh.getParam("laserA", params.laserA);
+      nh.getParam("laserB", params.laserB);
+      nh.getParam("m_to_pixels", params.m_to_pixels);
+      nh.getParam("body_ratio", params.body_ratio);
+      nh.getParam("jumpdist", params.jumpdist);
+      nh.getParam("feature_set", params.feature_set);
+      nh.getParam("laser_range", params.laser_range);
+      nh.getParam("fusion_prob", params.fusion_prob);
+      nh.getParam("min_camera_prob", params.min_camera_prob);
+      nh.getParam("min_laser_prob", params.min_laser_prob);
+      ROS_INFO("[DETECTOR] Parameters loaded.");
+    }
 	else
     {
 		ROS_ERROR("[DETECTOR] Wrong parameters loaded.");
@@ -129,24 +139,21 @@ hdetect::ClusteredScan detector::getClusters()
 
 void detector::getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-	// Read the transform between the laser and the camera
-    // Essential for syncronising
+  // Read the transform between the laser and the camera
+  // Essential for syncronising
+  try
+  {
+    //        acquisition_time = image->header.stamp; /// Maybe need to change to ros::Time::now()
+    acquisition_time = ros::Time::now();
+    ros::Duration timeout(1.0 / params.tf_timeout);
 
-	try
-	{
-//        acquisition_time = image->header.stamp; /// Maybe need to change to ros::Time::now()
-        acquisition_time = ros::Time::now();
-        ros::Duration timeout(1.0 / params.tf_timeout);
-
-        tf_listener_.waitForTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, timeout);
-
-		tf_listener_.lookupTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, transform);
-	}
-	catch (tf::TransformException& ex)
-	{
-		ROS_WARN("[DETECTOR] TF exception:\n%s", ex.what());
-    }
-
+    tf_listener_.waitForTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, timeout);
+    tf_listener_.lookupTransform(lScan->header.frame_id, image->header.frame_id, acquisition_time, transform);
+  }
+  catch (tf::TransformException& ex)
+  {
+    ROS_WARN("[DETECTOR] TF exception:\n%s", ex.what());
+  }
 }
 
 void detector::processLaser(const sensor_msgs::LaserScan::ConstPtr &lScan, vector<hdetect::ClusteredScan> &clusterData)
@@ -330,6 +337,7 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
       //Keep just the laser Prob.
       fusionProb = laserProb;
     }
+
     clusterData[i].detection_laser_prob = laserProb;
     clusterData[i].detection_camera_prob = cameraProb;
     clusterData[i].detection_fusion_prob = fusionProb;

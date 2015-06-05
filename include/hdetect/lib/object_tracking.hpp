@@ -10,14 +10,16 @@
 #include <hdetect/lib/header.hpp>
 #include <hdetect/lib/human.hpp>
 #include <hdetect/lib/observation.hpp>
+#include <hdetect/lib/detector.hpp>
 
 namespace ObjectTracking
 {
-    void loadCfg(string cfg);
+    void loadCfg(detectorParameters params);
+    void loadCfg(std::string cfg);
 
     void eliminate(deque<Human> &humans);
     void predict(deque<Human> &humans);
-    void pair(deque<Human> &humans, deque<Observation> &observations,map<int, int> &pairs);
+    void pair(deque<Human> &humans, deque<Observation> &observations, map<int, int> &pairs);
     void update(deque<Human> &humans, deque<Observation> &observations, map<int, int> &pairs);
 
     float calculateMahDis(Observation &observation, Human &human);

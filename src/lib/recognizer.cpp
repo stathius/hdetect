@@ -1,9 +1,17 @@
 #include <hdetect/lib/recognizer.hpp>
 
-using namespace std;
-using namespace std_msgs;
-using namespace cv;
-using namespace NEWMAT;
+using std::string;
+
+//using namespace std_msgs;
+using std_msgs::ColorRGBA;
+
+//using namespace NEWMAT;
+using NEWMAT::ColumnVector;
+//using namespace cv;
+using cv::Scalar;
+using cv::Mat;
+using cv::Point;
+
 using namespace Header;
 
 #define RVIZ_ID_SIZE 1000
@@ -11,30 +19,42 @@ using namespace Header;
 Recognizer::Recognizer()
     : it_(nh)
 {
-    if (nh.hasParam("object_tracking"))
+    if (nh.hasParam("object_tracking") && nh.hasParam("max_euc_dist") &&
+        nh.hasParam("max_mah_dist") && nh.hasParam("init_id") &&
+        nh.hasParam("new_object_score") && nh.hasParam("predict_score")
+        && nh.hasParam("update_score") && nh.hasParam("min_add_score")
+        )
     {
-        string object_tracking;
+      nh.getParam("max_euc_dist", params.max_euc_dist);
+      nh.getParam("max_mah_dist", params.max_mah_dist);
+      nh.getParam("init_id", params.init_id);
+      nh.getParam("new_object_score", params.new_object_score);
+      nh.getParam("predict_score", params.predict_score);
+      nh.getParam("update_score", params.update_score);
+      nh.getParam("min_add_score", params.min_add_score);
 
-        nh.getParam("object_tracking", object_tracking);
+      string object_tracking;
+      nh.getParam("object_tracking", object_tracking);
 
-        ObjectTracking::loadCfg(object_tracking);
-
-        ROS_INFO("[Recognizer] Object Tracking Loaded");
+      ObjectTracking::loadCfg(params);
+      ROS_INFO("[Recognizer] Object Tracking Loaded");
     }
     else
     {
         ObjectTracking::loadCfg("");
-
+        params.min_add_score = 8.0;
         ROS_INFO("[Recognizer] Object Tracking Using Default Value");
     }
 
     string odom_ekf_topic;
     string odom_topic;
     string humans_detectec_topic;
+    string pose_pub_topic;
 
     nh.param("odom_ekf_topic", odom_ekf_topic, string("/ekf_pose/odom_combined"));
     nh.param("odom_topic", odom_topic, string("/odom"));
     nh.param("humans_detectec_topic", humans_detectec_topic, string("/HumansDetected"));
+    nh.param("pose_pube_topic", pose_pub_topic, std::string("detected_pose"));
 
     initColor();
 
@@ -42,9 +62,8 @@ Recognizer::Recognizer()
 
     it_pub_ = it_.advertise(imageTopic, 1);
 
-    rviz_pub_ = nh.advertise<visualization_msgs::MarkerArray>("markers", 1);
-
     output_cv_ptr.reset(new cv_bridge::CvImage);
+
     output_cv_ptr->encoding = "rgb8";
 
     with_odom = false;
@@ -58,7 +77,15 @@ Recognizer::Recognizer()
     odom_sub_ = nh.subscribe(odom_topic, 1, &Recognizer::setOdom, this);
     odom_ekf_sub_ = nh.subscribe(odom_ekf_topic, 1, &Recognizer::setOdomEkf, this);
 
-    Humanpublisher = nh.advertise<hdetect::HumansFeatClass>(humans_detectec_topic,1);
+    // Publishers advertise
+    // Array for visualization purpuses
+    rviz_pub_ = nh.advertise<visualization_msgs::MarkerArray>("markers", 1);
+
+    // Vector with all the detections
+    human_publisher = nh.advertise<hdetect::HumansFeatClass>(humans_detectec_topic,1);
+
+    // Pose of the detection with highest score
+    best_pose_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>(pose_pub_topic,1);
 }
 
 
@@ -69,75 +96,99 @@ Recognizer::~Recognizer()
 void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
                                const sensor_msgs::LaserScan::ConstPtr &lScan)
 {
-//    curTimestamp = getTimestamp();
-    static double init_time =  lScan->header.stamp.sec;
-    curTimestamp = lScan->header.stamp.toSec() - init_time;
+  //    curTimestamp = getTimestamp();
+  static double init_time =  lScan->header.stamp.sec;
+  curTimestamp = lScan->header.stamp.toSec() - init_time;
 
-    laser_frame_id = lScan->header.frame_id;
+  laser_frame_id = lScan->header.frame_id;
 
-    //getTimestamp();
-    //ROS_INFO("laser %f - getTimestamp %f = %f",
-    //         curTimestamp, getTimestamp(), curTimestamp -getTimestamp());
-    observations.clear();
-    pairs.clear();
+  //getTimestamp();
+  //ROS_INFO("laser %f - getTimestamp %f = %f",
+  //         curTimestamp, getTimestamp(), curTimestamp -getTimestamp());
 
-    detector::detectHumans(image, lScan);
+  observations.clear();
 
-    // Convert image to RGB
-    cvtColor(cv_ptr->image, rawImage , CV_GRAY2RGB);
+  pairs.clear();
 
-    loadObservation();
+  detector::detectHumans(image, lScan);
 
-    //ROS_INFO("Before: Humans = %d, Observations = %d", (int)humans.size(), (int)observations.size());
+  // Convert image to RGB
+  cvtColor(cv_ptr->image, rawImage , CV_GRAY2RGB);
 
-    // Eliminate Untracked Human
-    ObjectTracking::eliminate(humans);
+  loadObservation();
 
-    ObjectTracking::predict(humans);
+  //ROS_INFO("Before: Humans = %d, Observations = %d", (int)humans.size(), (int)observations.size());
 
-    ObjectTracking::pair(humans, observations, pairs);
+  // Eliminate Untracked Human
+  ObjectTracking::eliminate(humans);
 
-    ObjectTracking::update(humans, observations, pairs);
+  ObjectTracking::predict(humans);
 
-    publish(lScan);
+  ObjectTracking::pair(humans, observations, pairs);
 
-    //ROS_INFO("After : Humans = %d, Pairs = %d\n", (int)humans.size(), (int)pairs.size());
-    //changeframe();
-    //tf::Transform laser_pos;
-    tf::Transform odom_pos;
+  ObjectTracking::update(humans, observations, pairs);
 
-    // Publish Humans detected
-    for(uint i=0 ; i < humans.size() ; i++)
+  publish(lScan);
+
+  //ROS_INFO("After : Humans = %d, Pairs = %d\n", (int)humans.size(), (int)pairs.size());
+  //changeframe();
+  //tf::Transform laser_pos;
+
+  tf::Transform odom_pos;
+  geometry_msgs::PoseWithCovarianceStamped best_pose;
+  int max_score_index = -1;
+  float max_score = 0.0;
+
+  // Publish Humans detected
+  for(uint i=0 ; i < humans.size() ; i++)
+  {
+    tf::Transform laser_pos(tf::Quaternion(), tf::Vector3(humans[i].state(1), humans[i].state(2), 0));
+    if(with_odom_ekf == true)
     {
-        tf::Transform laser_pos(tf::Quaternion(), tf::Vector3(humans[i].state(1), humans[i].state(2), 0));
-        if(with_odom_ekf == true)
-        {
-          odom_pos = cur_odom_ekf * laser_pos;
-        }
-        else if(with_odom == true)
-        {
-          odom_pos = cur_odom * laser_pos;
-        }
-        else
-        {
-          odom_pos = laser_pos;
-        }
-
-        HumansAux.id = humans[i].id;
-        HumansAux.x =  odom_pos.getOrigin().getX(); // humans[i].state(1);
-        HumansAux.y = odom_pos.getOrigin().getY();  // humans[i].state(2);
-        HumansAux.velx = humans[i].state(3);
-        HumansAux.vely = humans[i].state(4);
-        HumansAux.detectiontime = humans[i].firstTimestamp.sec + (humans[i].firstTimestamp.nsec * 0.000000001);
-        HumansVector.push_back(HumansAux);
+      odom_pos = cur_odom_ekf * laser_pos;
     }
-    geometry_msgs::Vector3Stamped pos_laser;
-    geometry_msgs::Vector3Stamped pos_odom;
-    HumansDetected.HumansDetected = HumansVector;
-    Humanpublisher.publish(HumansDetected);
-    HumansVector.clear();
+    else if(with_odom == true)
+    {
+      odom_pos = cur_odom * laser_pos;
+    }
+    else
+    {
+      odom_pos = laser_pos;
+    }
 
-    preTimestamp = curTimestamp;
+    if(humans[i].score > max_score)
+    {
+      max_score = humans[i].score;
+      max_score_index = i;
+      best_pose.pose.pose.position.x = odom_pos.getOrigin().getX();
+      best_pose.pose.pose.position.y = odom_pos.getOrigin().getY();
+    }
+
+    human_aux.id = humans[i].id;
+    human_aux.x =  odom_pos.getOrigin().getX(); // humans[i].state(1);
+    human_aux.y = odom_pos.getOrigin().getY();  // humans[i].state(2);
+    human_aux.velx = humans[i].state(3);
+    human_aux.vely = humans[i].state(4);
+    human_aux.detectiontime = humans[i].firstTimestamp.sec + (humans[i].firstTimestamp.nsec * 0.000000001);
+    humans_vec.push_back(human_aux);
+  }
+
+  geometry_msgs::Vector3Stamped pos_laser;
+  geometry_msgs::Vector3Stamped pos_odom;
+  if(max_score_index > -1)
+  {
+    best_pose.header = lScan->header;
+    best_pose.pose.covariance.at(0) = humans[max_score_index].cov(1,1);
+    best_pose.pose.covariance.at(4) = humans[max_score_index].cov(2,2);
+    best_pose_pub.publish(best_pose);
+  }
+
+  humans_detected.HumansDetected = humans_vec;
+  humans_detected.header.frame_id = laser_frame_id;
+  humans_detected.header.stamp = ros::Time::now();
+  human_publisher.publish(humans_detected);
+  humans_vec.clear();
+  preTimestamp = curTimestamp;
 }
 
 void Recognizer::initColor()

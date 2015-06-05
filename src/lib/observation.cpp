@@ -1,9 +1,11 @@
 #include <hdetect/lib/observation.hpp>
 
 
-using namespace cv;
-using namespace NEWMAT;
-
+//using namespace cv;
+using cv::Mat;
+using cv::Rect;
+//using namespace NEWMAT;
+using NEWMAT::ColumnVector;
 Observation::Observation(int scan_index, float prob, bool camera_detected, geometry_msgs::Point32 &pos)
 {
     this->scan_index = scan_index;

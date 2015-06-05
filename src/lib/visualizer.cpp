@@ -1,7 +1,14 @@
 #include <hdetect/lib/visualizer.hpp>
 
-using namespace std;
-using namespace cv;
+//using namespace std;
+using std::string;
+//using namespace cv;
+using cv::RNG;
+using cv::namedWindow;
+using cv::Scalar;
+using cv::Point;
+using cv::waitKey;
+using cv::Mat;
 
 #define FALSE 0
 #define TRUE 1

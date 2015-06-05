@@ -185,12 +185,16 @@ add_executable(headlessRT src/headlessRT.cpp ${HEADER_FILES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(visualizeRT hdetectr_generate_messages_cpp)
-add_dependencies(recognizeRT hdetectr_generate_messages_cpp)
-add_dependencies(showRT hdetectr_generate_messages_cpp)
-add_dependencies(annotateData hdetectr_generate_messages_cpp)
-add_dependencies(trainLaser hdetectr_generate_messages_cpp)
-add_dependencies(headlessRT hdetectr_generate_messages_cpp)
+
+add_dependencies(showRT hdetect_generate_messages_cpp)
+
+add_dependencies(lgeometry hdetect_generate_messages_cpp)
+add_dependencies(Header hdetect_generate_messages_cpp)
+add_dependencies(lfeatures hdetect_generate_messages_cpp)
+add_dependencies(projectTools hdetect_generate_messages_cpp)
+add_dependencies(bagReader hdetect_generate_messages_cpp)
+add_dependencies(trainLaser hdetect_generate_messages_cpp)
+
 
 add_dependencies(visualizer detector)
 add_dependencies(Recognizer detector)
