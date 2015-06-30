@@ -26,7 +26,7 @@ void ObjectTracking::loadCfg(string cfg)
   max_mah_dist = 2.3;
   max_euc_dist = 3.3;
 
-  init_id = 1;
+  init_id = 0;
 
   new_object_score = 4.0;
   predict_score = -1.0;
