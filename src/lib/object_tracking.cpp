@@ -162,14 +162,14 @@ void ObjectTracking::pair(deque<Human> &humans, deque<Observation> &observations
       }
       else
       {
-        //     fprintf(stderr, "Euc Fail -- Hum id: %d Obs: %d, minMah = %.2f - minEuc = %.2f \n", humans[j].id, i, minMah, minEuc);
+        //fprintf(stderr, "Euc Fail -- Hum id: %d Obs: %d, minMah = %.2f - minEuc = %.2f \n", humans[j].id, i, minMah, minEuc);
         EucDis(row, col) = std::numeric_limits<float>::infinity();
         MahDis(row, col) = std::numeric_limits<float>::infinity();
       }
     }
     else
     {
-      //fprintf(stderr, "Euc Fail = Obs: %d Hum id: %d, minEuc = %.2f \n", i, humans[j].id, minEuc);
+      //fprintf(stderr, "Mah Fail = Obs: %d Hum id: %d, minMah = %.2f \n", i, humans[j].id, minEuc);
       break;
     }
 
