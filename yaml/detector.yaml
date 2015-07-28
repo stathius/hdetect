@@ -15,10 +15,10 @@ cameraA: -4.0 # probability sigmoid
 cameraB: 0.0 # parameters for camera
 #m_to_pixels: 1000.0 # ROI meter to pixel ratio
 m_to_pixels: 1600.0 # ROI meter to pixel ratio
-laser_range: 30.0 # accepted laser range
-fusion_prob: 0.2 # threshold of fusion probability
+laser_range: 20.0 # accepted laser range
+fusion_prob: 0.25 # threshold of fusion probability
 min_camera_prob: 0.1  # Minimun probability fo camera detection module
-min_laser_prob: 0.2 # Minimun probability for laser detection module
+min_laser_prob: 0.1 # Minimun probability for laser detection module
 #detection_prob: 0.4 # threshold of fusion probability
 max_euc_dist: 1.2 # Maximum euclidean distance
 max_mah_dist: 4.0 # Maximum mahalanobis distance
