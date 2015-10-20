@@ -52,9 +52,6 @@ DOI = {10.3390/s130911603}
 
 ## Videos
 
-Autonomous detection, tracking and following of pedestrians in large dynamic environments
-[![Autonomous detection, tracking and following of pedestrians in large dynamic environments](http://img.youtube.com/vi/gqlUAyLwUE4/0.jpg)](https://youtu.be/gqlUAyLwUE4)
-
 Human Detection with fusion of laser and camera
 
 [![Human Detection with fusion of laser and camera](http://img.youtube.com/vi/W84ERQ0LYjM/0.jpg)](http://www.youtube.com/watch?v=W84ERQ0LYjM)
