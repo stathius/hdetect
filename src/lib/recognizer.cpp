@@ -48,13 +48,17 @@ Recognizer::Recognizer()
 
     string odom_ekf_topic;
     string odom_topic;
+    string amcl_pose_topic;
     string humans_detectec_topic;
     string pose_pub_topic;
+    bool use_amcl_par;
 
     nh.param("odom_ekf_topic", odom_ekf_topic, string("/ekf_pose/odom_combined"));
     nh.param("odom_topic", odom_topic, string("/odom"));
+    nh.param("amcl_topic", amcl_pose_topic, string("/amcl_pose"));
     nh.param("humans_detectec_topic", humans_detectec_topic, string("/HumansDetected"));
     nh.param("pose_pube_topic", pose_pub_topic, std::string("detected_pose"));
+    nh.param("use_amcl", use_amcl_par, false);
 
     initColor();
 
@@ -68,6 +72,8 @@ Recognizer::Recognizer()
 
     with_odom = false;
     with_odom_ekf = false;
+    with_amcl = false;
+    use_amcl = use_amcl_par;
 
     resetId();
 
@@ -76,6 +82,7 @@ Recognizer::Recognizer()
 
     odom_sub_ = nh.subscribe(odom_topic, 1, &Recognizer::setOdom, this);
     odom_ekf_sub_ = nh.subscribe(odom_ekf_topic, 1, &Recognizer::setOdomEkf, this);
+    pos_amcl_sub_  = nh.subscribe(amcl_pose_topic, 1, &Recognizer::setPosAMCL, this);
 
     // Publishers advertise
     // Array for visualization purpuses
@@ -143,16 +150,21 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
   for(uint i=0 ; i < humans.size() ; i++)
   {
     tf::Transform laser_pos(tf::Quaternion(), tf::Vector3(humans[i].state(1), humans[i].state(2), 0));
-    if(with_odom_ekf == true)
+
+    if(with_amcl)
+    {
+      odom_pos = cur_amcl * laser_pos;
+      laser_frame_id = std::string("/map");
+    }
+    else if(with_odom_ekf)
     {
       odom_pos = cur_odom_ekf * laser_pos;
       laser_frame_id = std::string("odom_combined");
     }
-    else if(with_odom == true)
+    else if(with_odom)
     {
       odom_pos = cur_odom * laser_pos;
       laser_frame_id = std::string("odom");
-
     }
     else
     {
@@ -446,7 +458,7 @@ void Recognizer::setOdom(const nav_msgs::Odometry &odom)
 
     cur_odom = tf::Transform(quaternion, vector3);
 
-    if (with_odom == false)
+    if (!with_odom)
     {
         pre_odom = cur_odom;
     }
@@ -467,7 +479,7 @@ void Recognizer::setOdomEkf(const geometry_msgs::PoseWithCovarianceStamped &odom
 
     cur_odom_ekf = tf::Transform(quaternion, vector3);
 
-    if (with_odom_ekf == false)
+    if (!with_odom_ekf)
     {
         pre_odom_ekf = cur_odom_ekf;
     }
@@ -475,6 +487,26 @@ void Recognizer::setOdomEkf(const geometry_msgs::PoseWithCovarianceStamped &odom
     with_odom_ekf = true;
 }
 
+void Recognizer::setPosAMCL(const geometry_msgs::PoseWithCovarianceStamped &posAMCL)
+{
+    tf::Vector3 vector3(posAMCL.pose.pose.position.x,
+                        posAMCL.pose.pose.position.y,
+                        posAMCL.pose.pose.position.z);
+
+    tf::Quaternion quaternion(posAMCL.pose.pose.orientation.x,
+                              posAMCL.pose.pose.orientation.y,
+                              posAMCL.pose.pose.orientation.z,
+                              posAMCL.pose.pose.orientation.w);
+
+    cur_amcl = tf::Transform(quaternion, vector3);
+
+    if (!with_amcl)
+    {
+        pre_amcl = cur_amcl;
+    }
+
+    with_amcl = true;
+}
 void Recognizer::correctOdom(ColumnVector &state)
 {
     tf::Transform pre_pos(tf::Quaternion(), tf::Vector3(state(1), state(2), 0));
@@ -503,6 +535,19 @@ void Recognizer::correctOdomEkf(ColumnVector &state)
     state(2) = cur_pos.getOrigin().getY();
 }
 
+void Recognizer::correctPosAMCL(ColumnVector &state)
+{
+  tf::Transform pre_pos(tf::Quaternion(), tf::Vector3(state(1), state(2), 0));
+
+  // Translate position from previous robot coordination to global coordination
+  tf::Transform global_amcl = pre_amcl * pre_pos;
+
+  // Invert position from previous robot coordination to global coordination
+  tf::Transform cur_pos = cur_amcl.inverse() * global_amcl;
+
+  state(1) = cur_pos.getOrigin().getX();
+  state(2) = cur_pos.getOrigin().getY();
+}
 void Recognizer::setPoint(float x, float y, float z, geometry_msgs::Point &p)
 {
     p.x = x;

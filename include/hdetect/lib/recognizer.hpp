@@ -45,6 +45,7 @@ class Recognizer : public detector
 
         ros::Subscriber odom_sub_;
         ros::Subscriber odom_ekf_sub_;
+        ros::Subscriber pos_amcl_sub_;
 
         ros::Publisher rviz_pub_;
 
@@ -63,9 +64,14 @@ class Recognizer : public detector
         tf::Transform cur_odom;
         tf::Transform pre_odom;
 
+
         // Odometry Ekf
         tf::Transform cur_odom_ekf;
         tf::Transform pre_odom_ekf;
+
+        // Using AMCL localization
+        tf::Transform pre_amcl;
+        tf::Transform cur_amcl;
 
     private:
 
@@ -83,6 +89,10 @@ class Recognizer : public detector
 
         bool with_odom_ekf;
 
+        bool with_amcl;
+
+        bool use_amcl;
+
         int rviz_id[RVIZ_TOTAL];
 
         void initColor();
@@ -95,9 +105,13 @@ class Recognizer : public detector
 
         void setOdomEkf(const geometry_msgs::PoseWithCovarianceStamped &odom);
 
+        void setPosAMCL(const geometry_msgs::PoseWithCovarianceStamped &posAMCL);
+
         void correctOdom(NEWMAT::ColumnVector &state);
 
         void correctOdomEkf(NEWMAT::ColumnVector &state);
+
+        void correctPosAMCL(NEWMAT::ColumnVector &state);
 
         void setPoint(float x, float y, float z, geometry_msgs::Point &p);
 
