@@ -146,10 +146,13 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
     if(with_odom_ekf == true)
     {
       odom_pos = cur_odom_ekf * laser_pos;
+      laser_frame_id = std::string("odom_combined");
     }
     else if(with_odom == true)
     {
       odom_pos = cur_odom * laser_pos;
+      laser_frame_id = std::string("odom");
+
     }
     else
     {
@@ -408,14 +411,16 @@ void Recognizer::publish(const sensor_msgs::LaserScan::ConstPtr &lScan)
         // False observation with white line
         else
         {
-//            setPoint(0.0, 0.0, 0.0, point);
-//            temp_line.points.push_back(point);
-//            setPoint(observations[i].state(1), observations[i].state(2), 0.0, point);
-//            temp_line.points.push_back(point);
-//            temp_line.color.r = 1.0;
-//            temp_line.color.g = 1.0;
-//            temp_line.color.b = 1.0;
-//            temp_line.color.a = 0.5;
+ /*
+            setPoint(0.0, 0.0, 0.0, point);
+            temp_line.points.push_back(point);
+            setPoint(observations[i].state(1), observations[i].state(2), 0.0, point);
+            temp_line.points.push_back(point);
+            temp_line.color.r = 1.0;
+            temp_line.color.g = 1.0;
+            temp_line.color.b = 1.0;
+            temp_line.color.a = 0.5;
+*/
         }
 
         rviz_markers.markers.push_back(temp_line);

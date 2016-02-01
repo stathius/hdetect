@@ -31,9 +31,9 @@
 	 		    /laser_top /camera 20" /> -->
 
 	<node pkg="hdetect" type="recognizeRT" name="recognizeRT" output="screen" cwd="node"
-		  args="/camera/image_raw /scan">
+		  args="/logitech_camera/image_raw /scan">
 
-		<param name="/camera_yaml" value="$(find hdetect)/yaml/camera_calib.yaml"/>
+		<param name="/camera_yaml" value="$(find hdetect)/yaml/logitech_cam_hd.yml"/>
 		<param name="/camera_name" value="00b09d0100aa73bb"/>
 		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>

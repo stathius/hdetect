@@ -9,7 +9,26 @@ The code was written for the [ROTOS](http://robcib.etsii.upm.es/) project in the
 
 ## Publications
 
-If you use this code please reference the following work:
+If you use this code please reference the following works:
+
+[Mario Andrei Garzon Oviedo , Antonio Barrientos , Jaime Del Cerro , Andrés Alacid , Efstathios Fotiadis , Gonzalo R. Rodríguez-Canosa , Bang-Chen Wang. Tracking and following pedestrian trajectories, an approach for autonomous surveillance of critical infrastructures. Industrial Robot: An International Journal, 2015 42:5 , 429-440](http://dx.doi.org/10.1108/IR-02-2015-0037)
+
+Bibtext entry:
+
+```
+@article{doi:10.1108/IR-02-2015-0037,
+author = { Mario Andrei Garzon Oviedo  and  Antonio Barrientos  and  Jaime Del Cerro  and  Andrés Alacid  and  Efstathios Fotiadis  and  Gonzalo R. Rodríguez-Canosa  and  Bang-Chen Wang },
+title = {Tracking and following pedestrian trajectories, an approach for autonomous surveillance of critical infrastructures},
+journal = {Industrial Robot: An International Journal},
+volume = {42},
+number = {5},
+pages = {429-440},
+year = {2015},
+doi = {10.1108/IR-02-2015-0037},
+URL = {http://dx.doi.org/10.1108/IR-02-2015-0037}
+}
+```
+
 
 [Fotiadis, E.P.; Garzón, M.; Barrientos, A.	Human Detection from a Mobile Robot Using Fusion of Laser and Vision Information. Sensors 2013, 13, 11603-11635.](http://www.mdpi.com/1424-8220/13/9/11603)
 
