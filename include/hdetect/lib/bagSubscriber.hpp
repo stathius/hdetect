@@ -25,7 +25,7 @@ class bagSubscriber : public message_filters::SimpleFilter<M>
       */
      void newMessage(const boost::shared_ptr<M const> &msg)
      {
-       signalMessage(msg);
+       this->signalMessage(msg);
      }
 };
 
