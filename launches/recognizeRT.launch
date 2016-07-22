@@ -36,6 +36,14 @@
 		<param name="/camera_yaml" value="$(find hdetect)/yaml/logitech_cam_hd.yml"/>
 		<param name="/camera_name" value="00b09d0100aa73bb"/>
 		<param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+                <param name="odom_topic" value="/summit_xl_controller/odom"/>
+                <param name="odom_ekf_topic" value="/ekf_pose/odom_combined"/>
+                <param name="amcl_topic" value="/amcl_pose"/>
+                <param name="use_amcl" value="true"/>
+
+
+
+
         <rosparam command="load" file="$(find hdetect)/yaml/detector.yaml"/>
 
 	</node>

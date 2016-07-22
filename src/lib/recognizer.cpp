@@ -82,7 +82,10 @@ Recognizer::Recognizer()
 
     odom_sub_ = nh.subscribe(odom_topic, 1, &Recognizer::setOdom, this);
     odom_ekf_sub_ = nh.subscribe(odom_ekf_topic, 1, &Recognizer::setOdomEkf, this);
-    pos_amcl_sub_  = nh.subscribe(amcl_pose_topic, 1, &Recognizer::setPosAMCL, this);
+    if (use_amcl)
+    {
+       pos_amcl_sub_  = nh.subscribe(amcl_pose_topic, 1, &Recognizer::setPosAMCL, this);
+    }
 
     // Publishers advertise
     // Array for visualization purpuses
@@ -188,23 +191,28 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
     humans_vec.push_back(human_aux);
   }
 
-  geometry_msgs::Vector3Stamped pos_laser;
-  geometry_msgs::Vector3Stamped pos_odom;
-  if(max_score_index > -1)
+  // Publish only if there is a detection
+  if(humans.size() > 0)
   {
-    best_pose.header = lScan->header;
-    best_pose.pose.covariance.at(0) = humans[max_score_index].cov(1,1);
-    best_pose.pose.covariance.at(4) = humans[max_score_index].cov(2,2);
-    best_pose_pub.publish(best_pose);
-  }
+    geometry_msgs::Vector3Stamped pos_laser;
+    geometry_msgs::Vector3Stamped pos_odom;
+    if(max_score_index > -1)
+    {
+      best_pose.header.stamp = ros::Time::now();
+      best_pose.header.frame_id = laser_frame_id;
+      best_pose.pose.covariance.at(0) = humans[max_score_index].cov(1,1);
+      best_pose.pose.covariance.at(4) = humans[max_score_index].cov(2,2);
+      best_pose_pub.publish(best_pose);
+    }
 
-  humans_detected.HumansDetected = humans_vec;
-  humans_detected.header.frame_id = laser_frame_id;
-  humans_detected.header.stamp = ros::Time::now();
-  human_publisher.publish(humans_detected);
-  humans_vec.clear();
-  preTimestamp = curTimestamp;
-}
+    humans_detected.HumansDetected = humans_vec;
+    humans_detected.header.frame_id = laser_frame_id;
+    humans_detected.header.stamp = ros::Time::now();
+    human_publisher.publish(humans_detected);
+    humans_vec.clear();
+    preTimestamp = curTimestamp;
+  }
+}  
 
 void Recognizer::initColor()
 {
@@ -251,8 +259,17 @@ void Recognizer::loadObservation()
         }
     }
 
+    if(with_amcl)
+    {
+        for (uint i = 0; i < humans.size(); i++)
+        {
+            correctPosAMCL(humans[i].state);
+        }
+        pre_amcl = cur_amcl;
+    }
+
     // Human position correction with odometry
-    if (with_odom_ekf == true)
+    else if (with_odom_ekf == true)
     {
 //        fprintf(stderr, "Pre Odom Ekf: %.2f %.2f %.2f\n"
 //                , pre_odom_ekf.getOrigin().getX()
