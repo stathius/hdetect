@@ -62,7 +62,7 @@ Autonomous detection tracking and following
 
 
 ## Requirements
- 1. ROS (hydro)
+ 1. ROS (Indigo)
  2. libgsl
     -  install it with:
           $ sudo apt-get install libgsl-ruby
