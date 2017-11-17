@@ -188,6 +188,9 @@ add_dependencies(bagReader ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED
 
 add_dependencies(trainLaser ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_dependencies(Observation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(ObjectTracking ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 
 add_dependencies(visualizer detector)
