@@ -79,7 +79,7 @@ The code compiles only using *catkin*.
 * catkin_make hdetect
 
 ## Demo the code
- 1. Download [this rosbag](https://www.dropbox.com/s/szi5szgs12amv99/moving7.bag?dl=0)
+ 1. Download [this rosbag](https://www.dropbox.com/sh/4uslv212ywle268/AABT589xCamNHPQ5aZr5T_zsa?dl=0)
  2. Change the *recognizeBag.launch* launchfile to point towards the rosbag
  3. Run ```roslaunch hdetect recognizeBag.launch```
  4. Rviz is going to launch. Enable the image (camera)
