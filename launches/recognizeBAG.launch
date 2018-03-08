@@ -31,7 +31,7 @@
 
              <param name="/camera_yaml" value="$(find hdetect)/yaml/logitech_cam_hd.yml"/>
              <param name="/camera_name" value="00b09d0100aa73bb"/>
-             <param name="/boost_xml" value="$(find hdetect)/data/trained_boost.xml"/>
+             <param name="/boost_xml" value="$(find hdetect)/data/trained_boost_new.xml"/>
              <param name="odom_topic" value="/odom"/>
              <param name="odom_ekf_topic" value="/ekf_pose/odom_combined"/>
              <param name="amcl_topic" value="/amcl_pose"/>
@@ -41,7 +41,6 @@
 
 	<node pkg="rosbag" type="play" name="play" output="screen" 
                   args=" $(find hdetect)/bag/bag1.bag --pause --clock --loop "/>
-
-<!--	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find hdetect)/rviz/hdetect2.rviz"/> -->
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hdetect)/rviz/hdetect2.rviz"/>
 
 </launch> 

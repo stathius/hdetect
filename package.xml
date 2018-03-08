@@ -35,8 +35,8 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>image_geometry</build_depend> 
   <build_depend>nav_msgs</build_depend> 
-  <build_depend>camera_calibration_parsers</build_depend> 
-
+  <build_depend>camera_calibration_parsers</build_depend>
+  <build_depend>opencv2</build_depend>
   
   <run_depend>roslib</run_depend>
   <run_depend>rosbag</run_depend>
@@ -59,6 +59,7 @@
   <run_depend>geometry_msgs</run_depend>
   <run_depend>image_geometry</run_depend> 
   <run_depend>nav_msgs</run_depend> 
-  <run_depend>camera_calibration_parsers</run_depend> 
+  <run_depend>camera_calibration_parsers</run_depend>
+  <run_depend>opencv2</run_depend>
 
 </package>

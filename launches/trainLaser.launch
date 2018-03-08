@@ -1,9 +1,9 @@
-<launch>
-	<param name="use_sim_time" value="false" />
-	<param name="pkg_path" value="$(find hdetect)"/>
+<?xml version="1.0"?>
 
-	<node pkg="hdetect" type="trainLaser" name="trainLaser" output="screen" 
-		args="/data/Annotation.csv" >
-	</node>
+<launch>
+    <node pkg="hdetect" type="trainLaser" name="trainLaser" output="screen">
+        <param name="read_path" value="$(find hdetect)/data/annotation.csv"/>
+        <param name="write_path" value="$(find hdetect)/data/trained_boost_new.xml"/>
+    </node>
 
 </launch>

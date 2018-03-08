@@ -18,33 +18,49 @@ using namespace Header;
 detector::detector() : nh("~")
 {
   //string s = nh.getNamespace();
-  //ROS_INFO("[DETECTOR] my namespace %s ", s.c_str());
+  //ROS_INFO("[detector::detector] my namespace %s ", s.c_str());
 
   if (nh.hasParam("camera_yaml") && nh.hasParam("camera_name") && nh.hasParam("boost_xml"))
   {
     string camera_yaml;
     string cname;
     string boost_xml;
-
-		nh.getParam("camera_yaml", camera_yaml);
-
-		nh.getParam("camera_name", cname);
-
+    nh.getParam("camera_yaml", camera_yaml);
+    nh.getParam("camera_name", cname);
     nh.getParam("boost_xml", boost_xml);
+
     if(!camera_calibration_parsers::readCalibrationYml(camera_yaml, cname, params.cInfo))
     {
-      ROS_ERROR("[DETECTOR] Failure reading camera calibration parameters.");
+      ROS_ERROR("[detector::detector] Failure reading camera calibration parameters.");
       return;
     }
 
-    // Load the boost classifier
-    boost.load(boost_xml.c_str() , "boost");
 
-    ROS_INFO("[DETECTOR] Camera calibration & Boost Classifier Loaded");
+    ROS_INFO("[detector::detector] Create Classifier");
+    // create the boost classifier
+    //boost = cv::ml::Boost::create();
+
+    ROS_INFO("[detector::detector] Load Boost Classifier parameters %s", boost_xml.c_str());
+    // Load the boost classifier
+    //boost->load(boost_xml.c_str());
+    boost = cv::ml::Boost::load(boost_xml.c_str());
+
+
+
+
+    ROS_INFO("[detector::detector] Camera calibration & Boost Classifier Loaded");
+    ROS_INFO("[detector::detector] Boost type: %d", boost->getBoostType());
+    ROS_INFO("[detector::detector] Weak count: %d", boost->getWeakCount());
+    ROS_INFO("[detector::detector] CV Folds: %d", boost->getCVFolds());
+    ROS_INFO("[detector::detector] Splits: %d", (int)boost->getSplits().size());
+    ROS_INFO("[detector::detector] getWeightTrimRate: %.2f", boost->getWeightTrimRate());
+
+    //boost->save(boost_xml_2.c_str());
+
   }
   else
   {
-    ROS_ERROR("[DETECTOR] Need to set the parameters in order to load the camera calibration and the boost classifier.");
+    ROS_ERROR("[detector::detector] Need to set the parameters in order to load the camera calibration and the boost classifier.");
     return;
   }
 
@@ -199,7 +215,6 @@ void detector::initClusterData(vector<hdetect::ClusteredScan> &clusterData)
         clusterData[i].detection_laser_prob = 0.0;
         clusterData[i].detection_camera_prob = 0.0;
         clusterData[i].detection_fusion_prob = 0.0;
-
         clusterData[i].label = NOT_HUMAN;
     }
 }
@@ -212,6 +227,7 @@ void detector::findProjectedClusters(vector<hdetect::ClusteredScan> &clusterData
   {
     // Convert the cog to image coordinates
     projectPoint(clusterData[i].cog, prPixel, K, D, transform);
+
     // If the pixel is projected within the image limits
     if (prPixel.x >= 0 && prPixel.x < cv_ptr->image.cols &&
         prPixel.y >= 0 && prPixel.y < cv_ptr->image.rows)
@@ -219,11 +235,13 @@ void detector::findProjectedClusters(vector<hdetect::ClusteredScan> &clusterData
       clusterData[i].cog_projected = true;
       // Get the box size and corners
       getBox(clusterData[i].cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
+//      getBox(clusterData[i].cog, prPixel, rect, m_to_pixel, params.body_ratio);
       // Check if the whole box lies inside the image
       if (checkBox(params.cInfo, rect))
       {
         // Flag the cluster as 'fusable'. Meaning they appear with a valid box on the image.
         clusterData[i].crop_projected = true;
+        //ROS_INFO("Cluster %d - Ok to project", i);
       }
     }
   }
@@ -231,6 +249,9 @@ void detector::findProjectedClusters(vector<hdetect::ClusteredScan> &clusterData
 
 void detector::classifyLaser(std_msgs::Float32MultiArray &features, float &probs)
 {
+    // The laser feature matrix
+    cv::Mat lFeatures;
+
     lFeatures = Mat::zeros(1, params.no_features + 1, CV_32FC1);
 
 //    fprintf(stderr, "%d\n", features.data.size());
@@ -247,20 +268,35 @@ void detector::classifyLaser(std_msgs::Float32MultiArray &features, float &probs
     }
 
     // Find the prediction
-    probs = boost.predict(lFeatures, Mat(), Range::all(), false, true);
+    //probs = boost->predict(lFeatures, Mat(), Range::all(), false, true);
+    //C++: float CvBoost::predict(const cv::Mat& sample, const cv::Mat& missing=Mat(), const cv::Range& slice=Range::all(), bool rawMode=false, bool returnSum=false ) const
+
+
+//    ROS_INFO("[detector::classifyLaser] Pre - prediction");
+//
+//    probs = boost->predict(lFeatures);
+//    ROS_INFO("[detector::classifyLaser] Prediction Result: %.2f", probs);
+//    probs = boost->predict(lFeatures, cv::noArray(), cv::ml::StatModel::RAW_OUTPUT);
+//    ROS_INFO("[detector::classifyLaser] Prediction Result raw: %.2f", probs);
+    probs = boost->predict(lFeatures, cv::noArray(), cv::ml::Boost::PREDICT_SUM);
+   // ROS_INFO("[detector::classifyLaser] Prediction Result PREDICT SUM: %.2f", probs);
 
 	// Convert prediction to probabilty
     probs = 1 / ( 1 + exp(params.laserA * probs + params.laserB) );
+    // ROS_INFO("[detector::classifyLaser] Prob: %f", probs);
+
 	//laserProb.push_back(pred);
 }
 
 void detector::classifyCamera(geometry_msgs::Point32 &cog, float &prob)
 {
+//  ROS_INFO("[detector::classifyCamera] - Obtain Crop");
   // Convert the cog to image coordinates
   projectPoint(cog, prPixel, K, D, transform);
 
   // Get the box size and corners
   getBox(cog, prPixel, rect, params.m_to_pixels, params.body_ratio);
+
 
   // Extract the crop from the image
   getCrop(crop, cv_ptr->image, rect);
@@ -283,14 +319,14 @@ void detector::classifyCamera(geometry_msgs::Point32 &cog, float &prob)
                        cv::Size(8,8), cv::Size(0,0), 1.1,
                        params.hog_group_threshold, params.hog_meanshift);
 
- // ROS_INFO("[DETECTOR] after hog OK, weightM size %d ", (int)(foundM.size()));
+ // ROS_INFO("[detector::classifyCamera] - weightM size %d ", (int)(foundM.size()));
 
 	/// TODO HOW TO ACCEPT A POSITIVE (mean shift)
     if (weightM.size() > 0)
     {
       //  ROS_INFO("[DETECTOR] after hog OK, weightM size %d , %d", (int)(weightM.size()), (int)(foundM.size()));
       prob = *max_element(weightM.begin(), weightM.end());
-      //ROS_INFO("[DETECTOR] max element %f", prob);
+      ROS_INFO("[detector::classifyCamera] max element %f", prob);
     }
 }
 
@@ -304,51 +340,50 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
   float cameraProb;
   float fusionProb;
 
+  ROS_INFO("[detector::detectFusion] - New Observation");
   for (uint i = 0; i < clusterData.size(); i++)
   {
     // put the cog into the ClusterClass
-    //ROS_INFO("i %d",i);
 
     // ONLY with camera
-    laserProb = 0;//MIN_PROB;
-    cameraProb = 0;//MIN_PROB;
-
+    laserProb = 0.0000001;//MIN_PROB;
+    cameraProb = 0.0000001;//MIN_PROB;
     classifyLaser(clusterData[i].features, laserProb);
 
-    if (laserProb < params.min_laser_prob)
+//    ROS_INFO("[detector::detectFusion] - laserProb %.2f", laserProb); 
+
+    if(laserProb < params.min_laser_prob)
     {
-      clusterData[i].crop_projected = false;
+        clusterData[i].crop_projected == false;
+        ROS_INFO("[detector::detectFusion] - Cluster %d Pos (%.2f %.2f) - Laser Prob: %f", i, clusterData[i].cog.x, clusterData[i].cog.y, laserProb);
+
     }
 
     if (clusterData[i].crop_projected == true)
     {
+
+      ROS_INFO("[detector::detectFusion] - Cluster %d Pos (%.2f %.2f) - Laser Prob: %f", i, clusterData[i].cog.x, clusterData[i].cog.y, laserProb);
+
       classifyCamera(clusterData[i].cog, cameraProb);
       if (cameraProb == 0)
       {
         clusterData[i].crop_projected = false;
-        // Take Down probability (Not possible to fusion with zero)
-        fusionProb = laserProb * 0.25 ;
+        // Take Down probability (Not possible to make fusion with zero)
+        cameraProb = 0.0000001;
       }
-      else
-      {
-        //Bayesian fusion
-        fusionProb = (laserProb * cameraProb) /
-                                 ((laserProb * cameraProb) + (1.0 - laserProb) * (1.0 - cameraProb) );
-      }
-      // fusionProb = cameraProb;
     }
-    else
-    {
-      //Keep just the laser Prob.
-      fusionProb = laserProb;
-    }
+    //Bayesian fusion
+    fusionProb = (laserProb * cameraProb) /
+            ((laserProb * cameraProb) + (1.0 - laserProb) * (1.0 - cameraProb) );
+
+    ROS_INFO("[detector::detectFusion] - FusionProb %f", fusionProb);
 
     clusterData[i].detection_laser_prob = laserProb;
     clusterData[i].detection_camera_prob = cameraProb;
     clusterData[i].detection_fusion_prob = fusionProb;
 
-    if (fusionProb > params.fusion_prob)
-    {
+//    if (fusionProb > params.fusion_prob)
+//    {
       if (clusterData[i].crop_projected == true)
       {
         if(cameraProb > params.min_camera_prob)
@@ -356,9 +391,10 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
       }
       else
       {
-        clusterData[i].detection_label = LASER_HUMAN;
+          if(laserProb > params.min_laser_prob)
+              clusterData[i].detection_label = LASER_HUMAN;
       }
-    }
+//    }
     //        ROS_INFO("[DETECTOR] cluster %d: projection %d fusion %d prob %3.3f label %d",i+1,
     //                clusterData->projected[i], clusterData->fusion[i], clusterData->detection_probs[i], clusterData->detection_labels[i]);
   }

@@ -23,11 +23,12 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
   nav_msgs
   camera_calibration_parsers
-  
 )
+
+#find_package(OpenCV 2 REQUIRED)
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS signals)
-find_library(NEWMAT newmat /usr/lib)
+find_library(NEWMAT newmat REQUIRED)
 
 ### GSL IS NEEDED FOR PEOPLE2D LIBRARY TO COMPILE
 find_package(PkgConfig REQUIRED)
@@ -127,8 +128,8 @@ catkin_package(
 ###########
 
 #Add custom (non compiling) targets so launch scripts and python files show up in QT Creator's project view.
-file(GLOB_RECURSE EXTRA_FILES */*)
-add_custom_target(${PROJECT_NAME}_OTHER_FILES ALL WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} SOURCES ${EXTRA_FILES})
+#file(GLOB_RECURSE EXTRA_FILES */*)
+#add_custom_target(${PROJECT_NAME}_OTHER_FILES ALL WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} SOURCES ${EXTRA_FILES})
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -137,6 +138,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${NEWMAT_INCLUDE_DIRS})
 include_directories(${GSL_INCLUDE_DIRS})
+#include_directories(${OpenCV_INCLUDE_DIRS})
 
 link_directories(${GLS_LIBRARY_DIRS})
 
@@ -212,7 +214,7 @@ add_dependencies(headlessRT detector)
 add_dependencies(headlessRT lgeometry)
 
 add_dependencies(recognizeRT Recognizer)
-add_dependencies(recognizeRT Humam)
+add_dependencies(recognizeRT Human)
 add_dependencies(recognizeRT ObjectTracking)
 add_dependencies(recognizeRT Observation)
 
@@ -236,7 +238,7 @@ target_link_libraries(lengine lgeometry lfeatures Header)
 target_link_libraries(laserLib lengine)
 target_link_libraries(detector laserLib projectTools)
 target_link_libraries(visualizer detector)
-target_link_libraries(Recognizer detector)
+target_link_libraries(Recognizer detector ${NEWMAT})
 target_link_libraries(visualizeRT visualizer lgeometry  ${NEWMAT})
 target_link_libraries(headlessRT detector lgeometry ${NEWMAT})
 target_link_libraries(recognizeRT Recognizer lgeometry ${NEWMAT} Recognizer ObjectTracking Human Observation)
@@ -268,15 +270,24 @@ target_link_libraries(showRT ${catkin_LIBRARIES})
 target_link_libraries(annotateData ${catkin_LIBRARIES})
 target_link_libraries(trainLaser ${catkin_LIBRARIES})
 
-# )
+#target_link_libraries(Header ${OpenCV_LIBRARIES})
+#target_link_libraries(Recognizer ${OpenCV_LIBRARIES})
+#target_link_libraries(ObjectTracking ${OpenCV_LIBRARIES})
+#target_link_libraries(Observation ${OpenCV_LIBRARIES})
+#target_link_libraries(laserLib ${OpenCV_LIBRARIES})
+#target_link_libraries(visualizer ${OpenCV_LIBRARIES})
+#target_link_libraries(lgeometry ${OpenCV_LIBRARIES})
+#target_link_libraries(lfeatures ${OpenCV_LIBRARIES})
+#target_link_libraries(lengine ${OpenCV_LIBRARIES})
+#target_link_libraries(projectTools ${OpenCV_LIBRARIES})
+#target_link_libraries(detector ${OpenCV_LIBRARIES})
+#target_link_libraries(annotator ${OpenCV_LIBRARIES})
+#target_link_libraries(bagReader ${OpenCV_LIBRARIES})
 
+#target_link_libraries(visualizeRT ${OpenCV_LIBRARIES})
+#target_link_libraries(headlessRT ${OpenCV_LIBRARIES})
+#target_link_libraries(recognizeRT ${OpenCV_LIBRARIES})
+#target_link_libraries(showRT ${OpenCV_LIBRARIES})
+#target_link_libraries(annotateData ${OpenCV_LIBRARIES})
+##target_link_libraries(trainLaser ${OpenCV_LIBRARIES})
 
-# LIBRARIES
-
-#find_library(NEWMAT newmat /usr/lib)
-
-
-
-
-
-#target_link_libraries(detectTest visualizer)

@@ -65,7 +65,7 @@ Autonomous detection tracking and following
  1. ROS (Indigo)
  2. libgsl
     -  install it with:
-          $ sudo apt-get install libgsl-ruby
+          $ sudo apt-get install libgsl-dev
  3. NEWMAT
     -  install it with: 
           $ sudo apt-get install libnewmat10-dev   

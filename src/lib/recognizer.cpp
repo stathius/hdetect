@@ -125,6 +125,7 @@ void Recognizer::recognizeData(const sensor_msgs::Image::ConstPtr &image,
   // Convert image to RGB
   cvtColor(cv_ptr->image, rawImage , CV_GRAY2RGB);
 
+  ROS_INFO("RECOGNIZER Load obs");
   loadObservation();
 
   //ROS_INFO("Before: Humans = %d, Observations = %d", (int)humans.size(), (int)observations.size());
@@ -232,6 +233,7 @@ void Recognizer::initColor()
 
 void Recognizer::loadObservation()
 {
+    ROS_INFO("[Recognizer::loadObservation]");
 
     // Iterate through every cog of the scanClusters
     for (uint i = 0; i < clusterData.size(); i++)
@@ -255,6 +257,8 @@ void Recognizer::loadObservation()
         }
         else if (clusterData[i].detection_label == LASER_HUMAN)
         {
+//            ROS_INFO("[Recognizer::loadObservation] - %d laser human ", i);
+
             observations.push_back(Observation(i, prob, false, pos));
         }
     }

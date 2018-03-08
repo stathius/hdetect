@@ -2,6 +2,7 @@
 #define DETECTOR_HPP
 
 // ROS
+#include<cstdlib>
 #include <sensor_msgs/image_encodings.h>
 #include <camera_calibration_parsers/parse_yml.h>
 #include <cv_bridge/cv_bridge.h>
@@ -137,81 +138,79 @@ protected:
     cv_bridge::CvImagePtr cv_ptr;
 
 
-	// The adaboost detector for the laser
-	CvBoost boost;
+    /// The adaboost detector for the laser
+    cv::Ptr<cv::ml::Boost> boost;
 
-	// The laser feature matrix
-	cv::Mat lFeatures;
+    // The HoG detector for the image
+    cv::HOGDescriptor hog;
 
-	// The HoG detector for the image
-	cv::HOGDescriptor hog;
-
-	/// Mat where the temporary crop will be saved
+    /// Mat where the temporary crop will be saved
     cv::Mat crop;
 
 	// Vectors to hold the class and the probability of the ROI
     std::vector<cv::Rect> hogFound;
-	std::vector<double> hogPred;
+    std::vector<double> hogPred;
 
-	// Publishes the detected humans coordinates and probability
-  ros::Publisher detectionPublisher;
+    // Publishes the detected humans coordinates and probability
+    ros::Publisher detectionPublisher;
 
-	/// Contains the laser clusters, annotation, features, , annotation, if it should be fused etc.
+    /// Contains the laser clusters, annotation, features, , annotation, if it should be fused etc.
     std::vector<hdetect::ClusteredScan> clusterData;
 
-	/// Contains the coordinates, the labels and the probabilities of the detections
+    /// Contains the coordinates, the labels and the probabilities of the detections
     hdetect::ClusterClass detections;
 
-	/// Does the laser segmentation, feature extraction etc into scanClusters
+    /// Does the laser segmentation, feature extraction etc into scanClusters
     void processLaser(const sensor_msgs::LaserScan::ConstPtr &lScan, std::vector<hdetect::ClusteredScan> &clusterData);
 
-	/// Brings sensor_msgs::Image to an opencv accesible pointer.
-	void getImage(const sensor_msgs::Image::ConstPtr &image);
+    /// Brings sensor_msgs::Image to an opencv accesible pointer.
+    void getImage(const sensor_msgs::Image::ConstPtr &image);
 
-	/// Returns the transform between image and lScan
-	void getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan);
+    /// Returns the transform between image and lScan
+    void getTF(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan);
 
     /// Initialize cog_projected, image_projected, probs and label to default
     /// Uses directly clusterData
     void initClusterData(std::vector<hdetect::ClusteredScan> &clusterData);
 
-	/// Does the rest of the laser processing, find projected and fused segments
-	/// Uses directly scanClusters
+    /// Does the rest of the laser processing, find projected and fused segments
+    /// Uses directly scanClusters
     void findProjectedClusters(std::vector<hdetect::ClusteredScan> &clusterData);
 
-	/// Detects if there is a pedestrian in the cluster and or ROI
-	/// Gives the probabilities and the class output of each detector
+    /// Detects if there is a pedestrian in the cluster and or ROI
+    /// Gives the probabilities and the class output of each detector
     void detectFusion(std::vector<hdetect::ClusteredScan> &clusterData, hdetect::ClusterClass &detections);
 
-	/// Detects if there is a pedestrian using only the camera ROI
-	/// Gives the probabilities and the class output of each detector
+    /// Detects if there is a pedestrian using only the camera ROI
+    /// Gives the probabilities and the class output of each detector
     void detectCamera(hdetect::ClusteredScan &clusterData);
 
-	/// Finds the class and the probability for a given sample of laser features
+    /// Finds the class and the probability for a given sample of laser features
     void classifyLaser(std_msgs::Float32MultiArray &features, float &prob);
 
-	/// Finds the class and the probability for a given crop of the image
+    /// Finds the class and the probability for a given crop of the image
     void classifyCamera(geometry_msgs::Point32 &cog, float &prob);
 
 public:
-	detector();
+
+    detector();
     ~detector();
 
-	/** Extracts all the info from an imaga/laserscan pair
-	 *	First it segments the laser scan and finds the cog for each cluster.
-	 *	Then translates each cog into the corresponding pixel values.
-	 *	Crops the ROI from the image.
-	 *
-	 * @param image Image message
-	 * @param lScan LaserScan message
-	 */
-	void detectHumans(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan);
+    /** Extracts all the info from an imaga/laserscan pair
+     *	First it segments the laser scan and finds the cog for each cluster.
+     *	Then translates each cog into the corresponding pixel values.
+     *	Crops the ROI from the image.
+     *
+     * @param image Image message
+     * @param lScan LaserScan message
+     */
+    void detectHumans(const sensor_msgs::Image::ConstPtr &image, const sensor_msgs::LaserScan::ConstPtr &lScan);
 
-	/**
-	 * Used only for annotation purposes
-	 * @param cs
-	 */
-	//void setClusters(hdetect::ClusteredScan cs);
-	//hdetect::ClusteredScan getClusters();
+    /**
+     * Used only for annotation purposes
+     * @param cs
+     */
+    //void setClusters(hdetect::ClusteredScan cs);
+    //hdetect::ClusteredScan getClusters();
 };
 #endif
