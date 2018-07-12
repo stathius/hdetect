@@ -111,46 +111,46 @@ It is suggested to run the launch files than to run the bin files
 
 ## Brief explanation of the code
 
-####lengine
+#### lengine
 Segments the laser points into clusters
 
-####lfeature
+#### lfeature
 Computes the features of the laser clusters
 
-####lgeometry
+#### lgeometry
 compute the geometry used by the computation of the features
 
-####laserLib
+#### laserLib
 Loads the raw laser points
 
-####projectTools
+#### projectTools
 Standard function for projection
 
-####header
+#### header
 Contains the enumeration of HUMAN, the static topic name, curTimeStamp and preTimeStamp
 
-####human
+#### human
 Structure for storing the value of the human detection and tracking
 
-####observation
+#### observation
 Structure for storing the value casted from detection
 
-####object_tracking
+#### object_tracking
 Using Kalman filter to track the object, including predict and update
 
-####detector
+#### etector
 Callback function of headlessRT, main function for detection, run the detection of laser and of image, then merge them together
 
-####visualizer
+#### visualizer
 Callback function of visualizeRT, run the detector first, then plot them on the window
 
-####recognizer
+#### recognizer
 Callback function of recognizeRT, run the detector first, then do the tracking of the human, and stand it to rviz
 
-####annotator
+#### annotator
 Callback function of annotateData, main function of the annotation
 
-####bagReader
+#### bagReader
 read the bag for the annotation 
  
 ## Acknowledgements
