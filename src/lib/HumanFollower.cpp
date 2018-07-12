@@ -1,4 +1,4 @@
-#include "HumanFollower.hpp"
+#include <hdetect/human_follower.hpp>
 
 using namespace std;
 using namespace std_msgs;

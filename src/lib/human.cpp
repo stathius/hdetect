@@ -1,8 +1,11 @@
 #include <hdetect/lib/human.hpp>
 
 
-using namespace NEWMAT;
-using namespace geometry_msgs;
+//using namespace NEWMAT;
+using NEWMAT::Matrix;
+using NEWMAT::ColumnVector;
+
+using geometry_msgs::Point;
 
 Human::Human(int id, float score, ColumnVector state, Matrix cov, int preTimestamp)
 {

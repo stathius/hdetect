@@ -20,9 +20,9 @@
 #include "actionlib/client/simple_action_client.h"
 
 // Project includes
-#include "Human.hpp"
-#include "Header.hpp"
-#include "Recognizer.hpp"
+#include <hdetect/lib/human.hpp>
+#include <hdetect/lib/header.hpp>
+#include <hdetect/lib/recognizer.hpp>
 
 
 /**

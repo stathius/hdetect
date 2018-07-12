@@ -34,7 +34,6 @@ class Recognizer : public detector
 {
     public:
         Recognizer();
-        Recognizer(const string odomTopic, const string odomEkfTopic);
         ~Recognizer();
 
         void recognizeData(const sensor_msgs::Image::ConstPtr &image,
@@ -46,6 +45,7 @@ class Recognizer : public detector
 
         ros::Subscriber odom_sub_;
         ros::Subscriber odom_ekf_sub_;
+        ros::Subscriber pos_amcl_sub_;
 
         ros::Publisher rviz_pub_;
 
@@ -64,9 +64,14 @@ class Recognizer : public detector
         tf::Transform cur_odom;
         tf::Transform pre_odom;
 
+
         // Odometry Ekf
         tf::Transform cur_odom_ekf;
         tf::Transform pre_odom_ekf;
+
+        // Using AMCL localization
+        tf::Transform pre_amcl;
+        tf::Transform cur_amcl;
 
     private:
 
@@ -84,6 +89,10 @@ class Recognizer : public detector
 
         bool with_odom_ekf;
 
+        bool with_amcl;
+
+        bool use_amcl;
+
         int rviz_id[RVIZ_TOTAL];
 
         void initColor();
@@ -96,9 +105,13 @@ class Recognizer : public detector
 
         void setOdomEkf(const geometry_msgs::PoseWithCovarianceStamped &odom);
 
+        void setPosAMCL(const geometry_msgs::PoseWithCovarianceStamped &posAMCL);
+
         void correctOdom(NEWMAT::ColumnVector &state);
 
         void correctOdomEkf(NEWMAT::ColumnVector &state);
+
+        void correctPosAMCL(NEWMAT::ColumnVector &state);
 
         void setPoint(float x, float y, float z, geometry_msgs::Point &p);
 
@@ -118,11 +131,14 @@ class Recognizer : public detector
 
         uint getNewId(int category);
 
+        string laser_frame_id;
+
         // Publisher variables
-        ros::Publisher Humanpublisher;
-        hdetect::HumansFeat HumansAux;
-        std::vector<hdetect::HumansFeat> HumansVector;
-        hdetect::HumansFeatClass HumansDetected;
+        ros::Publisher human_publisher;
+        ros::Publisher best_pose_pub;
+        hdetect::HumansFeat human_aux;
+        std::vector<hdetect::HumansFeat> humans_vec;
+        hdetect::HumansFeatClass humans_detected;
 
 };
 

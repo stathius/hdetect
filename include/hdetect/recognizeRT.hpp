@@ -12,9 +12,9 @@
 
 #include <boost/bind.hpp>
 
-#include "Recognizer.hpp"
-#include "Header.hpp"
-#include "hdetect/ClusterClass.h"
+#include <hdetect/lib/recognizer.hpp>
+#include <hdetect/lib/header.hpp>
+#include <hdetect/ClusterClass.h>
 
 /**
  * A node to set up all things needed for recognition.

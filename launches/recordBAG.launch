@@ -1,11 +1,14 @@
+<?xml version="1.0"?>
+
 <launch>
     <node pkg="rosbag" type="record" name="record" output="screen" 
 	args="-o $(find hdetect)/bag/UTMFF_ 
-	/laser/parameter_updates
-	/iri_hokuyo_laser/scan
-	/camera/camera_info
-	/camera/image_raw
-	/camera/image_raw/compressed" 
+	/hokuyo_node/parameter_updates
+	/scan
+        /logitech_camera/camera_info
+        /logitech_camera/image_raw
+	/tf
+	/odom" 
 	required="true">
 	</node> 
 </launch>

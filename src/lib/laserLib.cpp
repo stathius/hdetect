@@ -8,7 +8,8 @@ Stathis Fotiadis 2012
  */
 #include "hdetect/lib/laserLib.hpp"
 
-using namespace std;
+//using namespace std;
+using std::vector;
 
 /// Starts the laser filter. people2D_engine parameter setting.
 laserLib::laserLib(double jumpdist, int feature_set, double laser_range ) : laserFilter("sensor_msgs::LaserScan") {

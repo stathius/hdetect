@@ -1,4 +1,4 @@
-#include "Recognizer.hpp"
+#include <hdetect/lib/recognizer.hpp>
 
 using namespace std;
 using namespace std_msgs;

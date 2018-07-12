@@ -10,8 +10,8 @@
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 // MY INCLUDES
-#include "laserLib.hpp"
-#include "projectTools.hpp"
+#include <hdetect/lib/laserLib.hpp>
+#include <hdetect/lib/projectTools.hpp>
 #include <hdetect/ClusterClass.h>
 
 
@@ -68,6 +68,34 @@ class detectorParameters
 
         /// Threshold of fusion probability
         double fusion_prob;
+
+        /// Minimum acceptable camera problability
+        double min_camera_prob;
+
+        /// Minimum acceptable laser problability
+        double min_laser_prob;
+
+        /// Maximum euclidean distance for pairing
+        double max_euc_dist;//: 3.5 # Maximum euclidean distance
+
+        /// Maximum mahalanobis distance for pairing
+        double max_mah_dist;//: 4. # Maximum mahalanobis distance
+
+        /// Inital Human ID
+        int init_id;//: 1      # Inital Human ID
+
+        /// Score given to a detection when initialized
+        double new_object_score;//: 4.0 # Score given to a detection when initialized
+
+        /// Score for prediction (must be negative)
+        double predict_score; //: -1.0       # Score for prediction (must be negative)
+
+        /// Score for detection positive
+        double update_score;//: 1.0         # Score for detection positive
+
+        /// Value to consider an detection "Real"
+        double min_add_score;//: 8
+
 };
 
 class detector
@@ -126,7 +154,7 @@ protected:
 	std::vector<double> hogPred;
 
 	// Publishes the detected humans coordinates and probability
-	ros::Publisher detectionPublisher;
+  ros::Publisher detectionPublisher;
 
 	/// Contains the laser clusters, annotation, features, , annotation, if it should be fused etc.
     std::vector<hdetect::ClusteredScan> clusterData;

@@ -1,5 +1,5 @@
-#include "lib/HumanFollower.hpp"
-#include "lib/recognizeRT.hpp"
+#include <hdetect/lib/human_follower.hpp>
+#include <hdetect/recognizeRT.hpp>
 
 /**
  * A node to execute following process.

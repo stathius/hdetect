@@ -21,7 +21,8 @@
 
 #include "hdetect/lib/lfeatures.hpp"
 
-using namespace std;
+//using namespace std;
+using std::vector;
 
 //~ COMMENT: the scan line must be ordered by angle
 //~ COMMENT: at least 3 points are needed to compute the featureset

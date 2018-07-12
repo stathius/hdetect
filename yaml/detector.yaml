@@ -4,18 +4,28 @@ rect: 0 # 0 for original, 1 if rectified image is used. for projection purposes.
 jumpdist: 0.45 # laser segmentation distance
 #jumpdist: 0.80 # laser segmentation distance
 feature_set: 0 # 0 = 17, 1 = 63
-hog_hit_threshold: 0.0 # hog svm bias
-hog_group_threshold : 0 # hog grouping threshold, use 0 for meanshift
-hog_meanshift: 1 # if meanshift grouping is used
-body_ratio: 1.2 # upper/lower body ratio
+hog_hit_threshold: 0 # hog svm bias
+hog_group_threshold : 0 #0 # hog grouping threshold, use 0 for meanshift
+hog_meanshift: false # if meanshift grouping is used
+body_ratio: 1.5 # upper/lower body ratio
 tf_timeout: 30 # how long to wait tf
 laserA: -2.0 # probability sigmoid
 laserB: 0.0 # parameters for laser
 cameraA: -4.0 # probability sigmoid
 cameraB: 0.0 # parameters for camera
 #m_to_pixels: 1000.0 # ROI meter to pixel ratio
-m_to_pixels: 900.0 # ROI meter to pixel ratio
-laser_range: 30.0 # accepted laser range
-fusion_prob: 0.15 # threshold of fusion probability
-max_euc_dist: 3.5 # Maximum euclidean distance
-max_mah_dist: 4.5 # Maximum mahalanobis distance
+m_to_pixels: 1600.0 # ROI meter to pixel ratio
+laser_range: 20.0 # accepted laser range
+fusion_prob: 0.25 # threshold of fusion probability
+min_camera_prob: 0.1  # Minimun probability fo camera detection module
+min_laser_prob: 0.0001 # Minimun probability for laser detection module
+#detection_prob: 0.4 # threshold of fusion probability
+max_euc_dist: 2.0 # Maximum euclidean distance
+max_mah_dist: 4.0 # Maximum mahalanobis distance
+init_id: 0 # Inital Human ID
+new_object_score: 1.5 # Score given to a detection when initialized
+predict_score: -1.0   # Score for prediction (must be negative)
+update_score: 1.0     # Score for detection positive
+min_add_score: 4.0    # Value to consider an detection "Real"
+object_tracking: 'object_tracking' # I don't know why is this here
+
