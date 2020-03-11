@@ -42,8 +42,7 @@ detector::detector() : nh("~")
 
     ROS_INFO("[detector::detector] Load Boost Classifier parameters %s", boost_xml.c_str());
     // Load the boost classifier
-    //boost->load(boost_xml.c_str());
-    boost = cv::ml::Boost::load(boost_xml.c_str());
+    boost = cv::Algorithm::load<cv::ml::Boost>(boost_xml.c_str());
 
 
 
@@ -350,7 +349,7 @@ void detector::detectFusion(vector<hdetect::ClusteredScan> &clusterData, hdetect
     cameraProb = 0.0000001;//MIN_PROB;
     classifyLaser(clusterData[i].features, laserProb);
 
-//    ROS_INFO("[detector::detectFusion] - laserProb %.2f", laserProb); 
+//    ROS_INFO("[detector::detectFusion] - laserProb %.2f", laserProb);
 
     if(laserProb < params.min_laser_prob)
     {
