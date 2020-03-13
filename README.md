@@ -62,21 +62,19 @@ Autonomous detection tracking and following
 
 
 ## Requirements
- 1. ROS (Indigo)
- 2. libgsl
-    -  install it with:
-          $ sudo apt-get install libgsl-dev
- 3. NEWMAT
-    -  install it with: 
-          $ sudo apt-get install libnewmat10-dev   
- 4. all the ROS components listed in the package.xml dependencies
- 
+ 1. ROS (Melodic)
+ 2. All the ROS components listed in the package.xml dependencies
+    - Check the dependencies with:
+          $ rosdep check hdetect
+    - Install them with:
+          $ rosdep install hdetect
+
 ## How to compile
 
 The code compiles only using *catkin*.
 
 * cd to catkin workspace
-* catkin_make hdetect
+* catkin build
 
 ## Demo the code
  1. Download [this rosbag](https://www.dropbox.com/sh/4uslv212ywle268/AABT589xCamNHPQ5aZr5T_zsa?dl=0)
@@ -94,7 +92,7 @@ The code compiles only using *catkin*.
 * annotateData - annotate the human for training and save the result to csv file
 * trainLaser – train the annotation with given csv file and save the result to boost.xml
 
-## Launch files. 
+## Launch files.
 
 It is suggested to run the launch files than to run the bin files
 
@@ -152,8 +150,8 @@ callback function of recognizeRT, run the detector first, then do the tracking o
 callback function of annotateData, main function of the annotation
 
 #### bagReader
-read the bag for the annotation 
- 
+read the bag for the annotation
+
 ## Acknowledgements
 
 The laser processing module uses code swritten by L. Spinello.  The tracking module is based on the work of Gonzalo Rodriguez-Canosa
